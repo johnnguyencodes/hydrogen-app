@@ -38,6 +38,7 @@ export default [
       'plugin:react/recommended',
       'plugin:react-hooks/recommended',
       'plugin:jsx-a11y/recommended',
+      'plugin:prettier/recommended',
     ),
   ),
   {
@@ -129,6 +130,7 @@ export default [
       'react/no-array-index-key': 'warn',
       'react/prop-types': 'off',
       'react/react-in-jsx-scope': 'off',
+      'prettier/prettier': ['error', {endOfLine: 'auto'}],
     },
   },
   ...fixupConfigRules(
