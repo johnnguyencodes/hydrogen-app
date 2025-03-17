@@ -1,6 +1,77 @@
-/**
- * Configure Tailwind v4 in this file using CSS variables and directives:
- * https://tailwindcss.com/docs/v4-beta#css-first-configuration
- */
-
 @import 'tailwindcss';
+@plugin 'tailwindcss-debug-screens';
+/* @plugin 'tailwindcss/aspect-ratio'; */
+@plugin 'tailwindcss-animate';
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  /* /1* code highlight *1/ */
+  /* --sh-class: #2d5e9d; */
+  /* --sh-identifier: #354150; */
+  /* --sh-sign: #8996a3; */
+  /* --sh-string: #007f7a; */
+  /* --sh-keyword: #e02518; */
+  /* --sh-comment: #a19595; */
+  /* --sh-jsxliterals: #6266d1; */
+  /* --sh-property: #e25a1c; */
+  /* --sh-entity: #e25a1c; */
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-display: 'Inter var', 'Tahoma', 'sans';
+
+  --breakpoint-xs: 23.5rem;
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
+
+  /* dark mode colors */
+  --color-darkmode-text: #fcfcfa;
+  --color-darkmode-background: #2d2a2e;
+  --color-darkmode-dark1: #221f22;
+  --color-darkmode-dark2: #19181a;
+  --color-darkmode-dimmed1: #c1c0c0;
+  --color-darkmode-dimmed2: #939293;
+  --color-darkmode-dimmed3: #727072;
+  --color-darkmode-dimmed4: #5b595c;
+  --color-darkmode-dimmed5: #403e41;
+  --color-darkmode-panel: #fdf7f3;
+  --color-darkmode-light: #fffcfa;
+  --color-darkmode-red: #ff6188;
+  --color-darkmode-orange: #fc9867;
+  --color-darkmode-yellow: #ffd866;
+  --color-darkmode-green: #aadc76;
+  --color-darkmode-blue: #78dce8;
+  --color-darkmode-purple: #ab9df2;
+  --color-darkmode-highlight: #cfe8e5;
+
+  /* lightmode colors */
+  --color-lightmode-text: #2c232e;
+  --color-lightmode-background: #f8efe7;
+  --color-lightmode-dark1: #eee5de;
+  --color-lightmode-dark2: #d2c9c4;
+  --color-lightmode-dimmed1: #72696d;
+  --color-lightmode-dimmed2: #92898a;
+  --color-lightmode-dimmed3: #a59c9c;
+  --color-lightmode-dimmed4: #beb5b3;
+  --color-lightmode-dimmed5: #d2c9c4;
+  --color-lightmode-panel: #fdf7f3;
+  --color-lightmode-light: #fffcfa;
+  --color-lightmode-red: #ce4770;
+  --color-lightmode-orange: #d4572b;
+  --color-lightmode-yellow: #b16803;
+  --color-lightmode-green: #218871;
+  --color-lightmode-blue: #2473b6;
+  --color-lightmode-purple: #6851a2;
+  --color-lightmode-highlight: #fee1cf;
+}
