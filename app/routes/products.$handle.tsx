@@ -11,6 +11,7 @@ import {
 import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
+import {Button} from '~/components/ui/button';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [
@@ -119,6 +120,7 @@ export default function Product() {
         <br />
         <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
         <br />
+        <Button>Click me</Button>
       </div>
       <Analytics.ProductView
         data={{
