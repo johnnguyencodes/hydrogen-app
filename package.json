@@ -22,7 +22,8 @@
     "graphql-tag": "^2.12.6",
     "isbot": "^5.1.21",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^4.0.14"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.5",
@@ -30,7 +31,7 @@
     "@eslint/js": "^9.18.0",
     "@graphql-codegen/cli": "5.0.2",
     "@remix-run/dev": "^2.15.3",
-    "@shopify/cli": "~3.75.3",
+    "@shopify/cli": "^3.76.2",
     "@shopify/hydrogen-codegen": "^0.3.2",
     "@shopify/mini-oxygen": "^3.1.1",
     "@shopify/oxygen-workers-types": "^4.1.2",
@@ -54,6 +55,8 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "globals": "^15.14.0",
     "prettier": "^3.5.3",
+    "tailwindcss-animate": "^1.0.7",
+    "tailwindcss-debug-screens": "^3.0.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.8",
     "vite-tsconfig-paths": "^4.3.1"
@@ -61,7 +64,5 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "browserslist": [
-    "defaults"
-  ]
+  "browserslist": ["defaults"]
 }
