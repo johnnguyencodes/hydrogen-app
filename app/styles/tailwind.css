@@ -1,6 +1,5 @@
 @import 'tailwindcss';
 @plugin 'tailwindcss-debug-screens';
-@plugin 'tailwindcss/aspect-ratio';
 @plugin 'tailwindcss-animate';
 
 @layer base {
