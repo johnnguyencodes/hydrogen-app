@@ -41,10 +41,22 @@ jobs:
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: npx shopify hydrogen deploy --auth-bypass-token --token $SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN
 
+      - name: Start Dev Server
+        env:
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+        run: |
+          # Start dev server in background
+          SESSION_SECRET=$SESSION_SECRET nohup npm run dev >/dev/null 2>&1 &
+
+          # Wait a few seconds for server to come up
+          sleep 15
+
       - name: Run End-to-end Tests
         env:
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: |
+          # The server is now presumably listening on http://localhost:3000
+          # Make sure your baseURL in playwright config is "http://localhost:3000"
           export AUTH_BYPASS_TOKEN=$(jq -r '.authBypassToken' h2_deploy_log.json)
           export DEPLOYMENT_URL=$(jq -r '.url' h2_deploy_log.json)
           npm run test:e2e
