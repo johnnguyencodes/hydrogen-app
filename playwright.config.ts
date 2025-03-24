@@ -91,10 +91,15 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
+
   webServer: {
-    command: process.env.SESSION_SECRET
-      ? `SESSION_SECRET=${process.env.SESSION_SECRET} npm run dev`
-      : 'npm run dev',
+    command: `echo "Child sees $SESSION_SECRET" && SESSION_SECRET=${
+      process.env.SESSION_SECRET
+    } npm run dev`,
+    // webServer: {
+    //   command: process.env.SESSION_SECRET
+    //     ? `SESSION_SECRET=${process.env.SESSION_SECRET} npm run dev`
+    //     : 'npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
   },
