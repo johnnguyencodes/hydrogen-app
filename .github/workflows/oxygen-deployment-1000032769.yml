@@ -44,4 +44,4 @@ jobs:
         run: |
           export AUTH_BYPASS_TOKEN=$(jq -r '.authBypassToken' h2_deploy_log.json)
           export DEPLOYMENT_URL=$(jq -r '.url' h2_deploy_log.json)
-          npm run e2e-testi
+          npm run e2e-test
