@@ -96,12 +96,12 @@ export default defineConfig({
   //   command: `echo "Child sees $SESSION_SECRET" && SESSION_SECRET=${
   //     process.env.SESSION_SECRET
   //   } npm run dev`,
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:3000',
-    env: {
-      SESSION_SECRET: process.env.SESSION_SECRET || '',
-    },
-    reuseExistingServer: !process.env.CI,
-  },
+  // webServer: {
+  //   command: 'npm run dev',
+  //   url: 'http://localhost:3000',
+  //   env: {
+  //     SESSION_SECRET: process.env.SESSION_SECRET || '',
+  //   },
+  //   reuseExistingServer: !process.env.CI,
+  // },
 });
