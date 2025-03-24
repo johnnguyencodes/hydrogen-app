@@ -49,10 +49,15 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
+      # Build the production app
+      - name: Build
+        run: npm run build
+
       # Run Playwright tests
       - name: Run Playwright tests
         run: npx playwright test --reporter=html
         env:
+          NODE_ENV: production
           BASE_URL: ${{ secrets.BASE_URL }}
 
       # Upload Playwright Report
