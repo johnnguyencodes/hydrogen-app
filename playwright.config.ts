@@ -54,7 +54,7 @@ export default defineConfig({
     command: isDevelopment
       ? 'NODE_ENV=test npm run dev'
       : 'NODE_ENV=test npm run preview',
-    port: isDevelopment ? 3000 : 4173,
+    port: 3000,
     timeout: 10000,
     reuseExistingServer: isDevelopment,
   },
