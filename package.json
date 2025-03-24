@@ -10,7 +10,8 @@
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest",
+    "test": "vitest --ui --coverage",
+    "test:e2e": "NODE_ENV=development playwright test --reporter=html",
     "codegen": "shopify hydrogen codegen"
   },
   "prettier": "@shopify/prettier-config",
@@ -36,6 +37,7 @@
     "@eslint/eslintrc": "^3.2.0",
     "@eslint/js": "^9.18.0",
     "@graphql-codegen/cli": "5.0.2",
+    "@playwright/test": "^1.51.1",
     "@remix-run/dev": "^2.15.3",
     "@shopify/cli": "^3.76.2",
     "@shopify/hydrogen-codegen": "^0.3.2",
@@ -45,6 +47,7 @@
     "@tailwindcss/vite": "4.0.0-beta.8",
     "@total-typescript/ts-reset": "^0.4.2",
     "@types/eslint": "^9.6.1",
+    "@types/node": "^22.13.11",
     "@types/react": "^18.2.22",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
@@ -74,7 +77,5 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "browserslist": [
-    "defaults"
-  ]
+  "browserslist": ["defaults"]
 }

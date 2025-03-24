@@ -16,7 +16,13 @@ declare global {
   /**
    * A global `process` object is only available during build to access NODE_ENV.
    */
-  const process: {env: {NODE_ENV: 'production' | 'development'}};
+  const process: {
+    env: {
+      NODE_ENV: 'production' | 'development';
+      CI?: string;
+      BROWSER_NAME?: string;
+    };
+  };
 
   interface Env extends HydrogenEnv {
     // declare additional Env parameter use in the fetch handler and Remix loader context here
@@ -33,3 +39,5 @@ declare module '@shopify/remix-oxygen' {
     // declare local additions to the Remix session data here
   }
 }
+
+export {};
