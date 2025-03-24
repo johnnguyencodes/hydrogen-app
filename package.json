@@ -10,7 +10,7 @@
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest --ui --coverage",
+    "test": "vitest",
     "test:e2e": "NODE_ENV=development playwright test --reporter=html",
     "codegen": "shopify hydrogen codegen"
   },
