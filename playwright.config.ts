@@ -9,7 +9,7 @@ const __dirname = path.dirname(__filename);
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 const devURL = 'localhost:3000';
-const prodURL = 'https://www.johnnguyencodes.codes';
+const prodURL = 'https://www.johnnguyen.codes';
 
 const reportDir = path.resolve(__dirname, 'playwright-report');
 
