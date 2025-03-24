@@ -11,7 +11,7 @@
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
-    "test:e2e": "NODE_ENV=development playwright test --reporter=html",
+    "test:e2e": "playwright test",
     "codegen": "shopify hydrogen codegen"
   },
   "prettier": "@shopify/prettier-config",
