@@ -13,7 +13,7 @@ export default defineConfig({
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
-      'app/tests/end-to-end-tests/**',
+      '**/tests/end-to-end-tests/**',
     ],
   },
   resolve: {

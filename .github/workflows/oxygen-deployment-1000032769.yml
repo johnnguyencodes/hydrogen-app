@@ -16,7 +16,7 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "lts/*"
+          node-version: 'lts/*'
           check-latest: true
 
       - name: Cache node modules
@@ -36,6 +36,12 @@ jobs:
         run: npm ci
 
       - name: Build and Publish to Oxygen
-        run: npx shopify hydrogen deploy
         env:
           SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000032769 }}
+        run: npx shopify hydrogen deploy --auth-bypass-token --token $SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN
+
+      - name: Run End-to-end Tests
+        run: |
+          export AUTH_BYPASS_TOKEN=$(jq -r '.authBypassToken' h2_deploy_log.json)
+          export DEPLOYMENT_URL=$(jq -r '.url' h2_deploy_log.json)
+          npm run e2e-testi

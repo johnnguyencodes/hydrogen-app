@@ -10,9 +10,11 @@
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "tsc --noEmit",
+    "codegen": "shopify hydrogen codegen",
     "test": "vitest",
     "test:e2e": "playwright test",
-    "codegen": "shopify hydrogen codegen"
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:codegen": "playwright codegen http://localhost:3000"
   },
   "prettier": "@shopify/prettier-config",
   "dependencies": {

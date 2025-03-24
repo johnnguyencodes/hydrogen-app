@@ -1,90 +1,79 @@
-import fs from 'fs';
-import path from 'path';
-import {fileURLToPath} from 'url';
 import {defineConfig, devices} from '@playwright/test';
 
-// Define __dirname in ES module scope
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+/**
+ * Read environment variables from file.
+ * https://github.com/motdotla/dotenv
+ */
+// import dotenv from 'dotenv';
+// import path from 'path';
+// dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-const isDevelopment = process.env.NODE_ENV === 'development';
-const devURL = 'localhost:3000';
-const prodURL = 'https://www.johnnguyen.codes';
-
-const reportDir = path.resolve(__dirname, 'playwright-report');
-
-console.log('Base URL:', isDevelopment ? devURL : prodURL);
-
-// Ensure the report directory exists
-if (!fs.existsSync(reportDir)) {
-  fs.mkdirSync(reportDir, {recursive: true});
-}
-
+/**
+ * See https://playwright.dev/docs/test-configuration.
+ */
 export default defineConfig({
-  testDir: './app/tests/', // Adjust to your tests folder
-  testMatch: '**/end-to-end-tests/*.spec.ts',
-  timeout: 15 * 1000,
-  expect: {
-    // maximum time expect() should wait for the condition to be met
-    timeout: 45000,
-  },
-  // Run tests in files in parallel
-  fullyParallel: false,
-  // Fail the build on CI if you accidentally left test only in the source code
+  testDir: './tests/end-to-end-tests',
+  /* Run tests in files in parallel */
+  fullyParallel: true,
+  /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
-  // Retry on CI only
+  /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
-  // Opt out of parallel tests on CI
+  /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  reporter: 'html',
+  /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    // Maximum time each action such as click() can take. Defaults to 0 (no limit)
-    actionTimeout: 0,
-    baseURL: isDevelopment ? devURL : prodURL,
-    // Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer
+    /* Base URL to use in actions like `await page.goto('/')`. */
+    baseURL: 'http://localhost:3000',
+
+    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    headless: true, // You can toggle this
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
-    launchOptions: {
-      args:
-        process.env.BROWSER_NAME === 'webkit' ? [] : ['--disable-web-security'], // Only use this argument for Chromium and Firefox
-    },
   },
-  webServer: {
-    command: isDevelopment
-      ? 'NODE_ENV=test npm run dev'
-      : 'NODE_ENV=test npm run preview',
-    port: 3000,
-    timeout: 10000,
-    reuseExistingServer: isDevelopment,
-  },
-  reporter: [
-    ['list'],
-    ['html', {outputFolder: 'playwright-report', open: 'never'}],
-  ], // Output options
-  // Compile ts using ts-node
+
+  /* Configure projects for major browsers */
   projects: [
     {
       name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        launchOptions: {args: ['--disable-web-security']},
-      },
+      use: {...devices['Desktop Chrome']},
     },
+
     {
       name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-        launchOptions: {args: ['--disable-web-security']},
-      },
+      use: {...devices['Desktop Firefox']},
     },
-    ...(process.env.CI
-      ? [] // Skip WebKit in CI
-      : [
-          {
-            name: 'webkit',
-            use: {...devices['Desktop Safari'], launchOptions: {args: []}},
-          },
-        ]),
+
+    {
+      name: 'webkit',
+      use: {...devices['Desktop Safari']},
+    },
+
+    /* Test against mobile viewports. */
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: { ...devices['Pixel 5'] },
+    // },
+    // {
+    //   name: 'Mobile Safari',
+    //   use: { ...devices['iPhone 12'] },
+    // },
+
+    /* Test against branded browsers. */
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
+    // },
+    // {
+    //   name: 'Google Chrome',
+    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    // },
   ],
+
+  /* Run your local dev server before starting the tests */
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:3000',
+    reuseExistingServer: !process.env.CI,
+  },
 });
