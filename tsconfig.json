@@ -1,5 +1,5 @@
 {
-  "include": ["./**/*.d.ts", "./**/*.ts", "./**/*.tsx"],
+  "include": ["./**/*.d.ts", "./**/*.ts", "./**/*.tsx", "types"],
   "exclude": ["node_modules", "dist"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],

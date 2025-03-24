@@ -10,6 +10,7 @@
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "tsc --noEmit",
+    "test": "vitest",
     "codegen": "shopify hydrogen codegen"
   },
   "prettier": "@shopify/prettier-config",
@@ -59,12 +60,14 @@
     "eslint-plugin-react": "^7.37.4",
     "eslint-plugin-react-hooks": "^5.1.0",
     "globals": "^15.14.0",
+    "jsdom": "^26.0.0",
     "prettier": "^3.5.3",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-debug-screens": "^3.0.1",
     "typescript": "^5.2.2",
     "vite": "^5.1.8",
-    "vite-tsconfig-paths": "^4.3.1"
+    "vite-tsconfig-paths": "^4.3.1",
+    "vitest": "^3.0.9"
   },
   "engines": {
     "node": ">=18.0.0"
