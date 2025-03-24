@@ -4,8 +4,6 @@ import {isbot} from 'isbot';
 import {renderToReadableStream} from 'react-dom/server';
 import {createContentSecurityPolicy} from '@shopify/hydrogen';
 
-console.log('SERVER sees SESSION_SECRET =', process.env.SESSION_SECRET);
-
 export default async function handleRequest(
   request: Request,
   responseStatusCode: number,

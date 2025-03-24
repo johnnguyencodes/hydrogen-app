@@ -1,10 +1,5 @@
 import {defineConfig, devices} from '@playwright/test';
 
-console.log(
-  'Playwright config sees SESSION_SECRET =',
-  process.env.SESSION_SECRET,
-);
-
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
