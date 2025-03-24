@@ -36,17 +36,32 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: {...devices['Desktop Chrome']},
+      use: {
+        ...devices['Desktop Chrome'],
+        extraHTTPHeaders: {
+          'Hydrogen-Bypass-Token': process.env.AUTH_BYPASS_TOKEN || '',
+        },
+      },
     },
 
     {
       name: 'firefox',
-      use: {...devices['Desktop Firefox']},
+      use: {
+        ...devices['Desktop Firefox'],
+        extraHTTPHeaders: {
+          'Hydrogen-Bypass-Token': process.env.AUTH_BYPASS_TOKEN || '',
+        },
+      },
     },
 
     {
       name: 'webkit',
-      use: {...devices['Desktop Safari']},
+      use: {
+        ...devices['Desktop Safari'],
+        extraHTTPHeaders: {
+          'Hydrogen-Bypass-Token': process.env.AUTH_BYPASS_TOKEN || '',
+        },
+      },
     },
 
     /* Test against mobile viewports. */

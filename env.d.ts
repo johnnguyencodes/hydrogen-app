@@ -21,6 +21,7 @@ declare global {
       NODE_ENV: 'production' | 'development';
       CI?: string;
       BROWSER_NAME?: string;
+      AUTH_BYPASS_TOKEN?: string;
     };
   };
 
