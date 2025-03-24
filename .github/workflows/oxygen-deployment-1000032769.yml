@@ -38,9 +38,12 @@ jobs:
       - name: Build and Publish to Oxygen
         env:
           SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000032769 }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: npx shopify hydrogen deploy --auth-bypass-token --token $SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN
 
       - name: Run End-to-end Tests
+        env:
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: |
           export AUTH_BYPASS_TOKEN=$(jq -r '.authBypassToken' h2_deploy_log.json)
           export DEPLOYMENT_URL=$(jq -r '.url' h2_deploy_log.json)
