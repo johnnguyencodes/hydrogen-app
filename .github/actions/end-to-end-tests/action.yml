@@ -90,12 +90,13 @@ runs:
         AUTH_BYPASS_TOKEN=${{ inputs.auth-bypass-token }} \
         npx playwright test
 
-    - name: 📜 Upload Server Logs
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: server-logs
-        path: server.log
+    # uncomment the following if there are issues with running playwright tests in CI
+    # - name: 📜 Upload Server Logs
+    #   if: always()
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: server-logs
+    #     path: server.log
 
     - name: 📊 Upload Playwright Report
       if: always()
