@@ -70,8 +70,22 @@ runs:
         echo "SESSION_SECRET=${{ inputs.session-secret }}" > .env
         echo "PUBLIC_STORE_DOMAIN=${{ inputs.public-store-domain }}" >> .env
         echo "PUBLIC_STOREFRONT_TOKEN=${{ inputs.public-storefront-token }}" >> .env
+
+    - name: Debug .env file
+      shell: bash
+      run: cat .env
+
+    - name: Run Preview Server
+      shell: bash
+      run: |
         npm run build
+
+        # Pass the env vars directly into the server process
+        SESSION_SECRET=${{ inputs.session-secret }} \
+        PUBLIC_STORE_DOMAIN=${{ inputs.public-store-domain }} \
+        PUBLIC_STOREFRONT_TOKEN=${{ inputs.public-storefront-token }} \
         nohup npm run preview -- --port=3000 > server.log 2>&1 &
+
         sleep 15
 
     - name: 🍄 Run Playwright tests
