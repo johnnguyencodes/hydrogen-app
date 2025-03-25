@@ -14,8 +14,8 @@ test.beforeEach(async ({page}) => {
 
 test('test', async ({page}) => {
   console.log('Running test');
-  await page.screenshot({path: 'debug.png'});
   await page.goto('http://localhost:3000/');
+  await page.screenshot({path: 'debug.png'});
   await expect(page.getByRole('link', {name: 'Home page'})).toBeVisible();
   await page
     .getByRole('link', {
