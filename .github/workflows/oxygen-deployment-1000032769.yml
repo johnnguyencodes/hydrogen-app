@@ -49,3 +49,5 @@ jobs:
           url: ${{ env.DEPLOYMENT_URL }}
           auth-bypass-token: ${{ env.AUTH_BYPASS_TOKEN }}
           session-secret: ${{ secrets.SESSION_SECRET }}
+          public-store-domain: ${{ secrets.PUBLIC_STORE_DOMAIN }}
+          public-storefront-token: ${{ secrets.PUBLIC_STOREFRONT_TOKEN }}

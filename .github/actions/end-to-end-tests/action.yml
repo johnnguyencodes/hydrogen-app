@@ -10,6 +10,12 @@ inputs:
   session-secret:
     required: false
     type: string
+  public-store-domain:
+    required: false
+    type: string
+  public-storefront-token:
+    required: false
+    type: string
 
 runs:
   using: 'composite'
@@ -58,10 +64,12 @@ runs:
       if: steps.playwright-cache.outputs.cache-hit == 'true'
       run: npx playwright install-deps
 
-    - name: Start Preview Servern
-      shell: 'bash'
+    - name: Start Preview Server
+      shell: bash
       run: |
         echo "SESSION_SECRET=${{ inputs.session-secret }}" > .env
+        echo "PUBLIC_STORE_DOMAIN=${{ inputs.public-store-domain }}" >> .env
+        echo "PUBLIC_STOREFRONT_TOKEN=${{ inputs.public-storefront-token }}" >> .env
         npm run build
         nohup npm run preview -- --port=3000 > server.log 2>&1 &
         sleep 15
