@@ -1,5 +1,17 @@
 import {test, expect} from '@playwright/test';
 
+test.beforeEach(async ({page}) => {
+  // Log console messages
+  page.on('console', (msg) => {
+    console.log(`PAGE LOG: ${msg.type()}`, msg.text());
+  });
+
+  // Log page errors
+  page.on('pageerror', (error) => {
+    console.log('PAGE ERROR:', error);
+  });
+});
+
 test('test', async ({page}) => {
   console.log('Running test');
   await page.screenshot({path: 'debug.png'});
