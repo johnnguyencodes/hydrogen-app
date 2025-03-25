@@ -82,7 +82,7 @@ function FeaturedCollection({
           <Image data={image} sizes="100vw" />
         </div>
       )}
-      <h1>{collection.title}</h1>
+      <h1 data-testid="collection-title">{collection.title}</h1>
     </Link>
   );
 }
