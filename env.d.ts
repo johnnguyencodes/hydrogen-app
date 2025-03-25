@@ -23,6 +23,7 @@ declare global {
       AUTH_BYPASS_TOKEN?: string;
       SESSION_SECRET?: string;
       URL?: string;
+      PUBLIC_STOREFRONT_API_TOKEN?: string;
     };
   };
 

@@ -42,6 +42,12 @@ jobs:
           echo "AUTH_BYPASS_TOKEN=$(jq -r '.authBypassToken' h2_deploy_log.json)" >> $GITHUB_ENV
           echo "DEPLOYMENT_URL=$(jq -r '.url' h2_deploy_log.json)" >> $GITHUB_ENV
 
+      - name: Debug inputs
+        run: |
+          echo "PUBLIC_STORE_DOMAIN=${{ secrets.PUBLIC_STORE_DOMAIN }}"
+          echo "PUBLIC_STOREFRONT_TOKEN=${{ secrets.PUBLIC_STOREFRONT_TOKEN }}"
+          echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}"
+
       - name: Run end-to-end tests
         id: end-to-end-tests
         uses: ./.github/actions/end-to-end-tests
