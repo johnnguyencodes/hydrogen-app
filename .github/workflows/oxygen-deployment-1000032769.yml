@@ -54,6 +54,7 @@ jobs:
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: npx shopify hydrogen deploy --auth-bypass-token --token $SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN
       
+      # env file
       - name: Create .env file
         run: |
         echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> .env
