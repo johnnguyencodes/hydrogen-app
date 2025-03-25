@@ -74,7 +74,7 @@ runs:
         echo "PUBLIC_STOREFRONT_API_TOKEN=${{ inputs.public-storefront-api-token }}" >> .env
         echo "PUBLIC_CHECKOUT_DOMAIN=${{ inputs.public-checkout-domain }}" >> .env
         echo "--- .env contents ---"
-        cat .env
+        echo ".env file created (values hidden)"
 
     - name: 🚀 Start preview server
       shell: bash
