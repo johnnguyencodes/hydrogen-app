@@ -54,15 +54,17 @@ jobs:
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: npx shopify hydrogen deploy --auth-bypass-token --token $SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN
 
-      - name: Start Dev Server
+      - name: Build Production
+        run: npm run build
+
+      - name: Start Production Server
         env:
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: |
-          # Start dev server in background
-          # SESSION_SECRET=$SESSION_SECRET nohup npm run dev >/dev/null 2>&1 &
-          SESSION_SECRET=$SESSION_SECRET npm run dev &
+          # Start the production server in the background
+          SESSION_SECRET=$SESSION_SECRET npm run preview &
 
-          # Wait a few seconds for server to come up
+          # Wait a few seconds for the server to come up
           sleep 15
 
       - name: Run End-to-end Tests
@@ -74,6 +76,13 @@ jobs:
           export AUTH_BYPASS_TOKEN=$(jq -r '.authBypassToken' h2_deploy_log.json)
           export DEPLOYMENT_URL=$(jq -r '.url' h2_deploy_log.json)
           npx playwright test --reporter=html
+
+      - name: Upload Server Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-logs
+          path: server.log
 
       - name: Upload Playwright Report
         if: always()
