@@ -56,4 +56,4 @@ jobs:
           auth-bypass-token: ${{ env.AUTH_BYPASS_TOKEN }}
           session-secret: ${{ secrets.SESSION_SECRET }}
           public-store-domain: ${{ secrets.PUBLIC_STORE_DOMAIN }}
-          public-storefront-token: ${{ secrets.PUBLIC_STOREFRONT_TOKEN }}
+          public-storefront-api-token: ${{ secrets.PUBLIC_STOREFRONT_API_TOKEN }}
