@@ -55,6 +55,13 @@ runs:
       if: steps.playwright-cache.outputs.cache-hit == 'true'
       run: npx playwright install-deps
 
+    - name: Start Preview Server
+      run: |
+        echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" > .env
+        npm run build
+        nohup npm run preview -- --port=3000 > server.log 2>&1 &
+        sleep 15
+
     - name: 🍄 Run Playwright tests
       shell: 'bash'
       run: URL=${{ inputs.url }} AUTH_BYPASS_TOKEN=${{ inputs.auth-bypass-token }} npx playwright test
