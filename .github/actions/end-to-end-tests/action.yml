@@ -7,6 +7,9 @@ inputs:
   auth-bypass-token:
     required: false
     type: string
+  session-secret:
+    required: false
+    type: string
 
 runs:
   using: 'composite'
@@ -55,9 +58,10 @@ runs:
       if: steps.playwright-cache.outputs.cache-hit == 'true'
       run: npx playwright install-deps
 
-    - name: Start Preview Server
+    - name: Start Preview Servern
+      shell: 'bash'
       run: |
-        echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" > .env
+        echo "SESSION_SECRET=${{ inputs.session-secret }}" > .env
         npm run build
         nohup npm run preview -- --port=3000 > server.log 2>&1 &
         sleep 15
