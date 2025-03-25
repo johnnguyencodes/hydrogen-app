@@ -62,7 +62,7 @@ jobs:
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: |
           # Start the production server in the background
-          SESSION_SECRET=$SESSION_SECRET npm run preview &
+          SESSION_SECRET=$SESSION_SECRET npm run preview -- --port=3000 &
 
           # Wait a few seconds for the server to come up
           sleep 15
