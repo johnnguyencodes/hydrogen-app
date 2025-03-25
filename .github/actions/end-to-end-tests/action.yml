@@ -48,19 +48,19 @@ runs:
     - name: 💽 Install Playwright Browsers (all)
       shell: 'bash'
       if: steps.playwright-cache.outputs.cache-hit != 'true'
-      run: npx playwright install --with-deps chromium
+      run: npx playwright install --with-deps
 
     - name: 💽 Install Playwright (only system deps)
       shell: 'bash'
       if: steps.playwright-cache.outputs.cache-hit == 'true'
-      run: npx playwright install-deps chromium
+      run: npx playwright install-deps
 
     - name: 🍄 Run Playwright tests
       shell: 'bash'
       run: URL=${{ inputs.url }} AUTH_BYPASS_TOKEN=${{ inputs.auth-bypass-token }} npx playwright test
 
     - name: 🗒 Report
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       if: always()
       with:
         name: playwright-report
