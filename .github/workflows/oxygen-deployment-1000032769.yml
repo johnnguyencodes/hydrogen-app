@@ -62,7 +62,7 @@ jobs:
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: |
           # Start the production server in the background
-          SESSION_SECRET=$SESSION_SECRET npm run preview -- --port=3000 &
+          SESSION_SECRET=$SESSION_SECRET npm run preview -- --port=3000 2>&1 | tee server.log &
 
           # Wait a few seconds for the server to come up
           sleep 15
@@ -71,8 +71,6 @@ jobs:
         env:
           SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         run: |
-          # The server is now presumably listening on http://localhost:3000
-          # Make sure your baseURL in playwright config is "http://localhost:3000"
           export AUTH_BYPASS_TOKEN=$(jq -r '.authBypassToken' h2_deploy_log.json)
           export DEPLOYMENT_URL=$(jq -r '.url' h2_deploy_log.json)
           npx playwright test --reporter=html
