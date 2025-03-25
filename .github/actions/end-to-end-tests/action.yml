@@ -16,6 +16,9 @@ inputs:
   public-storefront-api-token:
     required: false
     type: string
+  public-checkout-domain:
+    required: false
+    type: string
 
 runs:
   using: 'composite'
@@ -69,6 +72,7 @@ runs:
         echo "SESSION_SECRET=${{ inputs.session-secret }}" > .env
         echo "PUBLIC_STORE_DOMAIN=${{ inputs.public-store-domain }}" >> .env
         echo "PUBLIC_STOREFRONT_API_TOKEN=${{ inputs.public-storefront-api-token }}" >> .env
+        echo "PUBLIC_CHECKOUT_DOMAIN=${{ inputs.public-checkout-domain }}" >> .env
         echo "--- .env contents ---"
         cat .env
 

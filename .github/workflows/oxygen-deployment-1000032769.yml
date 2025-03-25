@@ -45,7 +45,7 @@ jobs:
       - name: Debug inputs
         run: |
           echo "PUBLIC_STORE_DOMAIN=${{ secrets.PUBLIC_STORE_DOMAIN }}"
-          echo "PUBLIC_STOREFRONT_TOKEN=${{ secrets.PUBLIC_STOREFRONT_TOKEN }}"
+          echo "PUBLIC_STOREFRONT_API_TOKEN=${{ secrets.PUBLIC_STOREFRONT_API_TOKEN }}"
           echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}"
 
       - name: Run end-to-end tests
@@ -57,3 +57,4 @@ jobs:
           session-secret: ${{ secrets.SESSION_SECRET }}
           public-store-domain: ${{ secrets.PUBLIC_STORE_DOMAIN }}
           public-storefront-api-token: ${{ secrets.PUBLIC_STOREFRONT_API_TOKEN }}
+          public-checkout-domain: ${{ secrets.PUBLIC_CHECKOUT_DOMAIN }}
