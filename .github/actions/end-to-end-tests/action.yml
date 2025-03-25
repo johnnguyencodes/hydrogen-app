@@ -1,0 +1,113 @@
+name: 🧪 End-to-end tests
+
+inputs:
+  url:
+    required: false
+    type: string
+  auth-bypass-token:
+    required: false
+    type: string
+  session-secret:
+    required: false
+    type: string
+  public-store-domain:
+    required: false
+    type: string
+  public-storefront-api-token:
+    required: false
+    type: string
+  public-checkout-domain:
+    required: false
+    type: string
+
+runs:
+  using: 'composite'
+  steps:
+    - name: ⬇️ Checkout repo
+      uses: actions/checkout@v4
+
+    - name: 📥 Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: 💾 Turbo cache
+      id: turbo-cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          node_modules/.cache/turbo
+          **/.turbo
+        key: turbo-${{ github.job }}-${{ github.ref_name }}-${{ github.sha }}
+        restore-keys: |
+          turbo-${{ github.job }}-${{ github.ref_name }}-
+
+    - name: 📄 Get installed Playwright version
+      shell: bash
+      run: echo "PLAYWRIGHT_VERSION=$(npm ls @playwright/test | grep @playwright -m 1 | sed 's/.*@//')" >> $GITHUB_ENV
+
+    - name: 💾 Cache Playwright binaries
+      uses: actions/cache@v3
+      id: playwright-cache
+      with:
+        path: ~/.cache/ms-playwright
+        key: ${{ runner.os }}-playwright-${{ env.PLAYWRIGHT_VERSION }}
+
+    - name: 💽 Install Playwright Browsers (all)
+      shell: bash
+      if: steps.playwright-cache.outputs.cache-hit != 'true'
+      run: npx playwright install --with-deps
+
+    - name: 💽 Install Playwright (only system deps)
+      shell: bash
+      if: steps.playwright-cache.outputs.cache-hit == 'true'
+      run: npx playwright install-deps
+
+    - name: 📦 Build
+      shell: bash
+      run: npm run build
+
+    - name: 🌱 Create .env file
+      shell: bash
+      run: |
+        echo "SESSION_SECRET=${{ inputs.session-secret }}" > .env
+        echo "PUBLIC_STORE_DOMAIN=${{ inputs.public-store-domain }}" >> .env
+        echo "PUBLIC_STOREFRONT_API_TOKEN=${{ inputs.public-storefront-api-token }}" >> .env
+        echo "PUBLIC_CHECKOUT_DOMAIN=${{ inputs.public-checkout-domain }}" >> .env
+        echo "--- .env contents ---"
+        echo ".env file created (values hidden)"
+
+    - name: 🚀 Start preview server
+      shell: bash
+      run: |
+        npm run build
+        nohup npm run preview -- --port=3000 > server.log 2>&1 &
+        sleep 15
+
+    - name: 🍄 Run Playwright tests
+      shell: bash
+      run: |
+        URL=${{ inputs.url }} \
+        AUTH_BYPASS_TOKEN=${{ inputs.auth-bypass-token }} \
+        npx playwright test
+
+    - name: 📜 Upload Server Logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: server-logs
+        path: server.log
+
+    - name: 📊 Upload Playwright Report
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-report
+        path: playwright-report/
+        retention-days: 30
+
+    - name: 📸 Upload test screenshots
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: playwright-screenshots
+        path: debug.png

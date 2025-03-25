@@ -16,7 +16,7 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "lts/*"
+          node-version: 'lts/*'
           check-latest: true
 
       - name: Cache node modules
@@ -36,6 +36,27 @@ jobs:
         run: npm ci
 
       - name: Build and Publish to Oxygen
-        run: npx shopify hydrogen deploy
-        env:
-          SHOPIFY_HYDROGEN_DEPLOYMENT_TOKEN: ${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000032769 }}
+        id: deploy
+        run: |
+          npx shopify hydrogen deploy --auth-bypass-token --token "${{ secrets.OXYGEN_DEPLOYMENT_TOKEN_1000032769 }}"
+          echo "AUTH_BYPASS_TOKEN=$(jq -r '.authBypassToken' h2_deploy_log.json)" >> $GITHUB_ENV
+          echo "DEPLOYMENT_URL=$(jq -r '.url' h2_deploy_log.json)" >> $GITHUB_ENV
+
+      - name: Mask secrets from logs
+        shell: bash
+        run: |
+          echo "::add-mask::${{ secrets.SESSION_SECRET }}"
+          echo "::add-mask::${{ secrets.PUBLIC_STORE_DOMAIN }}"
+          echo "::add-mask::${{ secrets.PUBLIC_STOREFRONT_API_TOKEN }}"
+          echo "::add-mask::${{ secrets.PUBLIC_CHECKOUT_DOMAIN }}"
+
+      - name: Run end-to-end tests
+        id: end-to-end-tests
+        uses: ./.github/actions/end-to-end-tests
+        with:
+          url: ${{ env.DEPLOYMENT_URL }}
+          auth-bypass-token: ${{ env.AUTH_BYPASS_TOKEN }}
+          session-secret: ${{ secrets.SESSION_SECRET }}
+          public-store-domain: ${{ secrets.PUBLIC_STORE_DOMAIN }}
+          public-storefront-api-token: ${{ secrets.PUBLIC_STOREFRONT_API_TOKEN }}
+          public-checkout-domain: ${{ secrets.PUBLIC_CHECKOUT_DOMAIN }}
