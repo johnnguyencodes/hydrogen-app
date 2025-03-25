@@ -16,10 +16,6 @@ export default {
     env: Env,
     executionContext: ExecutionContext,
   ): Promise<Response> {
-    console.log('SESSION_SECRET', env.SESSION_SECRET);
-    console.log('PUBLIC_STORE_DOMAIN', env.PUBLIC_STORE_DOMAIN);
-    console.log('PUBLIC_STOREFRONT_API_TOKEN', env.PUBLIC_STOREFRONT_API_TOKEN);
-
     try {
       const appLoadContext = await createAppLoadContext(
         request,
