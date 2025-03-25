@@ -73,3 +73,10 @@ jobs:
           export AUTH_BYPASS_TOKEN=$(jq -r '.authBypassToken' h2_deploy_log.json)
           export DEPLOYMENT_URL=$(jq -r '.url' h2_deploy_log.json)
           npm run test:e2e
+
+      - name: Upload test screenshots
+        if: always() # run this step even if previous step failed
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-screenshots
+          path: debug.png
