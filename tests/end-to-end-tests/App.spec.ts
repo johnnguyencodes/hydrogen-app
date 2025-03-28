@@ -32,6 +32,6 @@ test('test', async ({page}) => {
     page.getByRole('link', {name: 'Continue to Checkout →'}),
   ).toBeVisible();
   await page.getByRole('link', {name: 'Continue to Checkout →'}).click();
-  await expect(page.getByRole('heading', {name: 'Opening soon'})).toBeVisible();
   await page.screenshot({path: 'debug.png'});
+  await expect(page.getByRole('heading', {name: 'Opening soon'})).toBeVisible();
 });
