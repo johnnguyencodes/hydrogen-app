@@ -88,6 +88,7 @@ function CollectionItem({
         />
       )}
       <h5>{collection.title}</h5>
+      <p>{collection.description}</p>
     </Link>
   );
 }
@@ -97,6 +98,7 @@ const COLLECTIONS_QUERY = `#graphql
     id
     title
     handle
+    description
     image {
       id
       url

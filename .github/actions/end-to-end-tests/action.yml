@@ -76,6 +76,10 @@ runs:
         echo "--- .env contents ---"
         echo ".env file created (values hidden)"
 
+    - name: 🔍 Debug .env contents
+      shell: bash
+      run: cat .env
+
     - name: 🚀 Start preview server
       shell: bash
       run: |

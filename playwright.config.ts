@@ -72,12 +72,6 @@ if (process.env.URL) {
     baseURL: process.env.URL,
   };
 
-  if (process.env.AUTH_BYPASS_TOKEN) {
-    use.extraHTTPHeaders = {
-      'oxygen-auth-bypass-token': process.env.AUTH_BYPASS_TOKEN,
-    };
-  }
-
   config = {
     ...config,
     use,
