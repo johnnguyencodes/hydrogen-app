@@ -33,6 +33,11 @@ export const meta: MetaFunction<typeof loader> = ({data}) => {
 };
 
 // Main loader function: runs on the server before rendering the page
+// type LoaderFunctionArgs = {
+//  request: Request;
+//  context: AppLoadContext;
+//  params: Params;
+// }
 export async function loader(args: LoaderFunctionArgs) {
   // Fetches any non-critical data that can load later
   const deferredData = loadDeferredData(args);
@@ -45,12 +50,15 @@ export async function loader(args: LoaderFunctionArgs) {
 }
 
 /**
+ * Load data necessary for rendering content above the fold. This is the critical data
+ * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
+ *
  * Load critical data needed before the page can be rendered.
  * This will call Shopify's Storefront API to get product data.
  */
 async function loadCriticalData({
   context, // comes from createAppLoadContext() via server.ts
-  params, // includes dynamic route params like product handle
+  params, // includes dynamic route params like product handle from the URL and any other URL param
   request, // the full HTTP request
 }: LoaderFunctionArgs) {
   const {handle} = params;
@@ -81,6 +89,10 @@ async function loadCriticalData({
 }
 
 /**
+ * Load data for rendering content below the fold. This data is deferred and will be
+ * fetched after the initial page load. If it's unavailable, the page should still 200.
+ * Make sure to not throw any errors here, as it will cause the page to 500.*
+ *
  * Load non-critical data that can load after initial render.
  * Example: product reviews, recommendations, etc.
  */
@@ -94,12 +106,17 @@ export default function Product() {
   // Pull product data returned by the loader
   const {product} = useLoaderData<typeof loader>();
 
+  // Optimistically selects a variant with given available variant information
+  //
   // Smartly preselect a variant, even if none is selected in URL
   const selectedVariant = useOptimisticVariant(
     product.selectedOrFirstAvailableVariant,
     getAdjacentAndFirstAvailableVariants(product),
   );
 
+  // Sets the search param to the selected variant without navigation
+  // only when no search params are set in the url
+  //
   // Update URL search params with selected variant (no reload)
   useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
 
@@ -137,9 +154,6 @@ export default function Product() {
           <strong>Description</strong>
         </p>
         <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-
-        {/* Example button (customize this) */}
-        <Button>Click me</Button>
       </div>
 
       {/* Sends product view event to analytics */}
@@ -256,3 +270,21 @@ const PRODUCT_QUERY = `#graphql
   }
   ${PRODUCT_FRAGMENT}
 ` as const;
+
+// Recap of how server.ts and context.ts hydrate this route
+// 1️⃣ User requests /products/plant-handle
+// 2️⃣ server.ts receives the request via fetch()
+// 3️⃣ server.ts calls createAppLoadContext() from context.ts
+// 4️⃣ context.ts creates the storefront client and returns it in context
+// 5️⃣ loader() in products.$handle.tsx is called with { context, params, request }
+// 6️⃣ storefront.query(...) fetches product data
+// 7️⃣ Loader returns { product } to Remix
+// 8️⃣ useLoaderData() injects product into the React component
+// 9️⃣ Hydrogen helpers enhance UX
+// 🔟 The page is rendered and hydrated 💧
+//
+// Layer >	Responsibility
+// server.ts >>	Handles the raw HTTP request, sets up context using createAppLoadContext, and passes it to Remix’s loader()
+// context.ts >>	Creates and returns the storefront client + session and other values for the context object
+// products.$handle.tsx → loader() >>	Gets context.storefront, uses it to fetch the product, and returns it to the UI
+// useLoaderData() >> Hydrates the React component with the product fetched on the server
