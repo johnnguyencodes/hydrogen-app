@@ -10,6 +10,9 @@ import {AppSession} from '~/lib/session';
 import {CART_QUERY_FRAGMENT} from '~/lib/fragments';
 
 /**
+ * The context implementation is separate from server.ts
+ * so that type can be extracted for AppLoadContext
+ *
  * This function is called in server.ts and returns an object that becomes
  * available in every Remix route's loader/action as `context`
  */
@@ -18,6 +21,8 @@ export async function createAppLoadContext(
   env: Env, // Environment variables (Shopify tokens, etc)
   executionContext: ExecutionContext, // Oxygen background context
 ) {
+  // Open a cache instance in the worker and a custom session insance.
+  //
   // If your SESSION_SECRET env var isn’t set, fail early for security
   if (!env?.SESSION_SECRET) {
     throw new Error('SESSION_SECRET environment variable is not set');
@@ -35,6 +40,7 @@ export async function createAppLoadContext(
 
   // Core Hydrogen context setup
   const hydrogenContext = createHydrogenContext({
+    // storefront is internally set up and returned when createHydrogenContext is invoked
     env, // For access to storefront token, domain, etc.
     request, // Used to read headers, cookies, method, etc.
     cache, // Optional cache to store/persist query results
