@@ -178,7 +178,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
                 height="0"
                 width="0"
                 title="Google Tag Manager NoScript"
-                style={{display: 'none', visibility: 'hidden'}}
+                style="display:none;visibility:hidden"
               ></iframe>
             `,
           }}
