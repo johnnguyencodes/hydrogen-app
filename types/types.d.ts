@@ -5,5 +5,6 @@ declare global {
     analytics?: {
       track: (event: string, payload?: Record<string, unknown>) => void;
     };
+    gtag?: (...args: any[]) => void;
   }
 }
