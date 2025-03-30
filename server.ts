@@ -80,6 +80,20 @@ export default {
       // This actually runs the Remix app and returns a response
       const response = await handleRequest(request);
 
+      // Inject the correct CSP to allow GTM scripts to run
+      const nonce = appLoadContext.nonce;
+
+      const csp = [
+        `default-src 'self'`,
+        `script-src 'self' 'nonce-${nonce}' https://cdn.shopify.com https://www.googletagmanager.com`,
+        `connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com`,
+        `img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com`,
+        `style-src 'self' 'unsafe-inline'`,
+        `frame-src https://www.googletagmanager.com`,
+      ].join('; ');
+
+      response.headers.set('Content-Security-Policy', csp);
+
       // 👇 If session data has changed (e.g., user login, cart update), commit the cookie
       if (appLoadContext.session.isPending) {
         response.headers.set(
@@ -99,6 +113,8 @@ export default {
         return storefrontRedirect({
           request,
           response,
+          // storefront is a preconfigured Shopify Storefront GraphQL API client
+
           storefront: appLoadContext.storefront,
         });
       }
