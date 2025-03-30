@@ -150,7 +150,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
     <html lang="en">
       <head>
         <script
-          // START: Google Tag Manager
+          // START: Google Tag Manager Container
           dangerouslySetInnerHTML={{
             __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
             new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -158,7 +158,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
             'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
             })(window,document,'script','dataLayer','GTM-TGVSRM6Q');`,
           }}
-          // END: Google Tag Manager
+          // END: Google Tag Manager Container
         />
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -169,15 +169,21 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Links />
       </head>
       <body className="debug-screens">
-        <noscript>
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-TGVSRM6Q"
-            height="0"
-            width="0"
-            title="Google Tag Manager NoScript"
-            style={{display: 'none', visibility: 'hidden'}}
-          ></iframe>
-        </noscript>
+        <noscript
+          // START: Google Tag Manager Container NoScript
+          dangerouslySetInnerHTML={{
+            __html: `
+              <iframe
+                src="https://www.googletagmanager.com/ns.html?id=GTM-TGVSRM6Q"
+                height="0"
+                width="0"
+                title="Google Tag Manager NoScript"
+                style={{display: 'none', visibility: 'hidden'}}
+              ></iframe>
+            `,
+          }}
+          // END: Google Tag Manager Container NoScript
+        />
         {data ? (
           <Analytics.Provider
             cart={data.cart}
