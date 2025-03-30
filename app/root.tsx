@@ -149,6 +149,9 @@ export function Layout({children}: {children?: React.ReactNode}) {
   return (
     <html lang="en">
       <head>
+        <script nonce={nonce}>
+          {`window.dataLayer = window.dataLayer || [];`}
+        </script>
         <script
           // START: Google Tag Manager Container
           nonce={nonce}
