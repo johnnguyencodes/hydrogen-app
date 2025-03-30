@@ -106,8 +106,8 @@ export default function Plant() {
  * A minimal GraphQL fragment for Shopify Product data.
  * This is reused in the query below for consistency.
  */
-const PRODUCT_FRAGMENT = `#graphql
-  fragment Plant on Product {
+const PLANT_PRODUCT_FRAGMENT = `#graphql
+  fragment PlantProduct on Product {
     id
     title
     descriptionHtml
@@ -123,8 +123,8 @@ const PRODUCT_QUERY = `#graphql
     $handle: String!
   ) {
     product(handle: $handle) {
-      ...Plant
+      ...PlantProduct
     }
   }
-  ${PRODUCT_FRAGMENT}
+  ${PLANT_PRODUCT_FRAGMENT}
 ` as const;
