@@ -119,7 +119,7 @@ const PLANT_PRODUCT_FRAGMENT = `#graphql
  * This query is executed via storefront.query() in the loader.
  */
 const PRODUCT_QUERY = `#graphql
-  query Product(
+  query PlantProduct(
     $handle: String!
   ) {
     product(handle: $handle) {
