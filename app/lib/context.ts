@@ -55,8 +55,11 @@ export async function createAppLoadContext(
     },
   });
 
+  const nonce = request.headers.get('nonce');
+
   return {
     ...hydrogenContext,
+    nonce,
     // You can spread in other custom things if needed (like your own database client)
   };
 }
