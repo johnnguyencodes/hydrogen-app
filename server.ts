@@ -114,7 +114,6 @@ export default {
           request,
           response,
           // storefront is a preconfigured Shopify Storefront GraphQL API client
-
           storefront: appLoadContext.storefront,
         });
       }
