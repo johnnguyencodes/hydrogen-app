@@ -107,7 +107,7 @@ export default function Plant() {
  * This is reused in the query below for consistency.
  */
 const PRODUCT_FRAGMENT = `#graphql
-  fragment Product on Product {
+  fragment Plant on Product {
     id
     title
     descriptionHtml
@@ -123,7 +123,7 @@ const PRODUCT_QUERY = `#graphql
     $handle: String!
   ) {
     product(handle: $handle) {
-      ...Product
+      ...Plant
     }
   }
   ${PRODUCT_FRAGMENT}
