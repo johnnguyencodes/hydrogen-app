@@ -151,7 +151,6 @@ export function Layout({children}: {children?: React.ReactNode}) {
       <head>
         <script
           // START: Google Tag Manager Container
-          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `
               (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
