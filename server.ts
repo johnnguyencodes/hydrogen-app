@@ -81,14 +81,19 @@ export default {
       const response = await handleRequest(request);
 
       // Inject the correct CSP to allow GTM scripts to run
-      const nonce = appLoadContext.nonce ?? '';
-
+      const nonce = appLoadContext.nonce;
+      if (!nonce) {
+        console.warn(
+          'Missing nonce in appLoadContext — falling back to unsafe-inline for GTM.',
+        );
+      }
       const csp = [
         `default-src 'self'`,
-        `script-src 'self' 'nonce-${nonce}' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com`,
-        `style-src 'self' 'unsafe-inline' https://cdn.shopify.com`,
+        `script-src 'self' ${nonce ? `'nonce-${nonce}'` : `'unsafe-inline'`} https://cdn.shopify.com https://www.googletagmanager.com https://www.google-analytics.com`,
+        `style-src 'self' 'unsafe-inline' https://cdn.shopify.com https://fonts.googleapis.com`,
+        `img-src 'self' data: blob: https://cdn.shopify.com https://fonts.gstatic.com https://www.google-analytics.com`,
+        `font-src 'self' https://fonts.gstatic.com`,
         `connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com`,
-        `img-src 'self' data: blob: https://cdn.shopify.com https://www.googletagmanager.com https://www.google-analytics.com`,
         `frame-src https://www.googletagmanager.com`,
       ].join('; ');
 
