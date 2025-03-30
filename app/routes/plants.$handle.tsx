@@ -73,10 +73,15 @@ export default function Plant() {
    * Uses window.analytics.track() if available; logs fallback if not.
    */
   useEffect(() => {
-    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-      window.gtag('event', 'plant_view', {
-        plant_id: product.id,
-        plant_title: product.title,
+    if (typeof window !== 'undefined' && window?.analytics?.track) {
+      window.analytics.track('plant_view', {
+        id: product.id,
+        title: product.title,
+      });
+    } else {
+      console.warn('[Analytics Fallback] plant_view', {
+        id: product.id,
+        title: product.title,
       });
     }
   }, [product.id, product.title]);
