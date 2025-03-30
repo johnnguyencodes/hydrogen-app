@@ -20,6 +20,7 @@ export async function createAppLoadContext(
   request: Request, // Incoming HTTP request (from server.ts)
   env: Env, // Environment variables (Shopify tokens, etc)
   executionContext: ExecutionContext, // Oxygen background context
+  nonce: string,
 ) {
   // Open a cache instance in the worker and a custom session insance.
   //
@@ -55,10 +56,9 @@ export async function createAppLoadContext(
     },
   });
 
-  const nonce = request.headers.get('nonce') ?? '';
-
   return {
     ...hydrogenContext,
+    // nonce is passed from server.ts
     nonce,
     // You can spread in other custom things if needed (like your own database client)
   };

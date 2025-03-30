@@ -53,11 +53,14 @@ export default {
     executionContext: ExecutionContext, // Worker execution context (background tasks)
   ): Promise<Response> {
     try {
+      const nonce = crypto.randomUUID();
+
       // 👇 Sets up the app’s context: Shopify API client, session, provides custom logic or helpers to all Remix loaders, etc.
       const appLoadContext = await createAppLoadContext(
         request,
         env,
         executionContext,
+        nonce,
       );
 
       /**
@@ -76,30 +79,36 @@ export default {
         getLoadContext: () => appLoadContext, // makes `context` available in Remix loaders
       });
 
+      console.log('Nonce sent to context:', nonce);
+
       // 👇 Call Remix to handle the request (routes, loaders, rendering, etc.)
       // This actually runs the Remix app and returns a response
-      const response = await handleRequest(request);
+      const remixResponse = await handleRequest(request);
 
-      // Inject the correct CSP to allow GTM scripts to run
-      const nonce = appLoadContext.nonce;
-      if (!nonce) {
-        console.warn(
-          'Missing nonce in appLoadContext — falling back to unsafe-inline for GTM.',
-        );
-      }
       const csp = [
         `default-src 'self'`,
-        `script-src 'self' ${nonce ? `'nonce-${nonce}'` : `'unsafe-inline'`} https://cdn.shopify.com https://www.googletagmanager.com https://www.google-analytics.com`,
-        `style-src 'self' 'unsafe-inline' https://cdn.shopify.com https://fonts.googleapis.com`,
-        `img-src 'self' data: blob: https://cdn.shopify.com https://fonts.gstatic.com https://www.google-analytics.com`,
-        `font-src 'self' https://fonts.gstatic.com`,
-        `connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com`,
+        `script-src 'self' 'nonce-${nonce}' https://cdn.shopify.com https://www.googletagmanager.com https://www.google-analytics.com`,
+        `connect-src 'self' https://www.google-analytics.com https://www.googletagmanager.com https://monorail-edge.shopifysvc.com`,
+        `img-src 'self' data: blob: https://www.googletagmanager.com https://www.google-analytics.com https://cdn.shopify.com https://fonts.gstatic.com`,
+        `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.shopify.com`,
+        `font-src https://fonts.gstatic.com`,
         `frame-src https://www.googletagmanager.com`,
       ].join('; ');
 
+      const headers = new Headers(remixResponse.headers);
+      headers.set('Content-Type', 'text/html');
+
+      // 🔁 Reconstruct response to ensure headers can be modified
+      const response = new Response(remixResponse.body, {
+        status: remixResponse.status,
+        statusText: remixResponse.statusText,
+        headers,
+      });
+
+      // ✅ Inject CSP with nonce into new response
       response.headers.set('Content-Security-Policy', csp);
 
-      // 👇 If session data has changed (e.g., user login, cart update), commit the cookie
+      // ✅ Set cookie if needed
       if (appLoadContext.session.isPending) {
         response.headers.set(
           'Set-Cookie',
@@ -107,23 +116,15 @@ export default {
         );
       }
 
-      // 👇 Handle 404s by checking Shopify's redirect settings
+      // ✅ Shopify 404 redirect handling
       if (response.status === 404) {
-        /**
-         * This checks if Shopify has a redirect rule (in admin > navigation > URL redirects)
-         * and applies it. If not, it just returns the 404 response.
-         * Even though we are running a headless site, the app can still use Shopify's native URL redirects
-         * defined in the Shopify admin panel
-         */
         return storefrontRedirect({
           request,
           response,
-          // storefront is a preconfigured Shopify Storefront GraphQL API client
           storefront: appLoadContext.storefront,
         });
       }
 
-      // 👇 If not a 404, return the Remix-rendered response
       return response;
     } catch (error) {
       // 👇 Catch-all for unexpected errors
