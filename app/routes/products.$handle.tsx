@@ -19,7 +19,6 @@ import {
 import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
-import {Button} from '~/components/ui/button';
 
 // Set SEO metadata for this page using product info from the loader
 export const meta: MetaFunction<typeof loader> = ({data}) => {
