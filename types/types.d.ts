@@ -6,4 +6,7 @@ declare global {
       track: (event: string, payload?: Record<string, unknown>) => void;
     };
   }
+  interface Window {
+    dataLayer: any[];
+  }
 }
