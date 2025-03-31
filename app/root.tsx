@@ -14,6 +14,7 @@ import {
 import favicon from '~/assets/favicon.svg';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
+import tailwindcss from './styles/tailwind.css?url';
 import {PageLayout} from '~/components/PageLayout';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
 import {GoogleTagManager} from '~/components/GoogleTagManager';
@@ -152,6 +153,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="stylesheet" href={tailwindCss}></link>
         <link rel="stylesheet" href={resetStyles}></link>
         <link rel="stylesheet" href={appStyles}></link>
         <Meta />
@@ -170,7 +172,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         {/**********   EXAMPLE UPDATE END   ************/
         /***********************************************/}
       </head>
-      <body>
+      <body className="debug-screens">
         {/***********************************************/
         /**********  EXAMPLE UPDATE STARTS  ************/}
         <noscript>
