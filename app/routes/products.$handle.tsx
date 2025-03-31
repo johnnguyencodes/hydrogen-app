@@ -1,289 +1,129 @@
-// Import type-safe loader context from Hydrogen
+// React and Remix imports
+import {useEffect} from 'react';
+import {useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 
-// useLoaderData gives us the data returned from the loader
-// MetaFunction helps generate SEO-friendly metadata
-import {useLoaderData, type MetaFunction} from '@remix-run/react';
+// =========================
+// Loader Function
+// =========================
 
-// Hydrogen helpers for working with product variants and analytics
-import {
-  getSelectedProductOptions, // parses selected options from URL
-  Analytics, // handles analytics events
-  useOptimisticVariant, // smartly guesses which variant to show
-  getProductOptions, // returns formatted list of product options
-  getAdjacentAndFirstAvailableVariants, // helps with variant switching
-  useSelectedOptionInUrlParam, // syncs selected variant to URL search params
-} from '@shopify/hydrogen';
-
-// Local UI components for product display
-import {ProductPrice} from '~/components/ProductPrice';
-import {ProductImage} from '~/components/ProductImage';
-import {ProductForm} from '~/components/ProductForm';
-
-// Set SEO metadata for this page using product info from the loader
-export const meta: MetaFunction<typeof loader> = ({data}) => {
-  return [
-    {title: `Hydrogen | ${data?.product.title ?? ''}`},
-    {
-      rel: 'canonical',
-      href: `/products/${data?.product.handle}`,
-    },
-  ];
-};
-
-// Main loader function: runs on the server before rendering the page
-// type LoaderFunctionArgs = {
-//  request: Request;
-//  context: AppLoadContext;
-//  params: Params;
-// }
+/**
+ * Remix runs this loader on the server before rendering the page.
+ * We split data loading into critical (needed to render the page)
+ * and deferred (optional, loaded later if needed).
+ */
 export async function loader(args: LoaderFunctionArgs) {
-  // Fetches any non-critical data that can load later
-  const deferredData = loadDeferredData(args);
+  const criticalData = await loadCriticalData(args); // Must-have data
+  const deferredData = loadDeferredData(args); // Optional data
 
-  // Waits for the important data needed to render the product
-  const criticalData = await loadCriticalData(args);
-
-  // Combine and return all data to the client
-  return {...deferredData, ...criticalData};
+  return {
+    ...criticalData,
+    ...deferredData,
+  };
 }
 
 /**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- *
- * Load critical data needed before the page can be rendered.
- * This will call Shopify's Storefront API to get product data.
+ * Load data that is *required* for the page to render.
+ * If this data fails (e.g. missing handle or product), we throw.
  */
-async function loadCriticalData({
-  context, // comes from createAppLoadContext() via server.ts
-  params, // includes dynamic route params like product handle from the URL and any other URL param
-  request, // the full HTTP request
-}: LoaderFunctionArgs) {
+async function loadCriticalData({context, params}: LoaderFunctionArgs) {
   const {handle} = params;
-  const {storefront} = context; // this was injected by server.ts and created in context.ts
+  const {storefront} = context;
 
   if (!handle) {
     throw new Error('Expected product handle to be defined');
   }
 
-  // Query Shopify's Storefront API for product data
-  const [{product}] = await Promise.all([
-    storefront.query(PRODUCT_QUERY, {
-      variables: {
-        handle,
-        selectedOptions: getSelectedProductOptions(request), // get variant from URL if available
-      },
-    }),
-    // Future: you can load more stuff in parallel here
-  ]);
+  const variables = {handle};
 
-  // If no product found, return 404
-  if (!product?.id) {
+  // Calls Shopify Storefront API using the pre-injected storefront client
+  const {product} = await storefront.query(PRODUCT_QUERY, {
+    variables,
+  });
+
+  if (!product.id) {
     throw new Response(null, {status: 404});
   }
 
-  // Return the product data to the loader
   return {product};
 }
 
 /**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.*
- *
- * Load non-critical data that can load after initial render.
- * Example: product reviews, recommendations, etc.
+ * Load data that is *optional* or can be loaded after initial render.
+ * Great for journal entries, growth photos, logs, etc.
  */
 function loadDeferredData({context, params}: LoaderFunctionArgs) {
-  // Nothing deferred yet, but this is where you'd add it
+  // Future implementation: hydrate with care notes, photos, etc.
   return {};
 }
 
-// Client-side component: hydrated with loader data from the server
-export default function Product() {
-  // Pull product data returned by the loader
-  const {product} = useLoaderData<typeof loader>();
+// =========================
+// React Component
+// =========================
 
-  // Optimistically selects a variant with given available variant information
-  //
-  // Smartly preselect a variant, even if none is selected in URL
-  const selectedVariant = useOptimisticVariant(
-    product.selectedOrFirstAvailableVariant,
-    getAdjacentAndFirstAvailableVariants(product),
-  );
+/**
+ * Hydrated on the client after server-side rendering.
+ * Uses the `product` returned from the loader.
+ */
+export default function Plant() {
+  const {product} = useLoaderData<typeof loader>(); // Get product from server
 
-  // Sets the search param to the selected variant without navigation
-  // only when no search params are set in the url
-  //
-  // Update URL search params with selected variant (no reload)
-  useSelectedOptionInUrlParam(selectedVariant.selectedOptions);
+  /**
+   * Analytics: track page view when the plant page is viewed.
+   * Uses window.analytics.track() if available; logs fallback if not.
+   */
+  useEffect(() => {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({
+      event: 'plant_view',
+      plant_id: product.id,
+      plant_title: product.title,
+    });
+    console.log('[GTM] plant_view event pushed:', {
+      plant_id: product.id,
+      plant_title: product.title,
+    });
+  }, [product.id, product.title]);
 
-  // Extract product options (e.g., Size, Color)
-  const productOptions = getProductOptions({
-    ...product,
-    selectedOrFirstAvailableVariant: selectedVariant,
-  });
-
-  const {title, descriptionHtml} = product;
-
+  /**
+   * Simple HTML layout showing the plant title and description.
+   * Uses Shopify's product.descriptionHtml (trusted, sanitized).
+   */
   return (
-    <div className="product">
-      {/* Product image */}
-      <ProductImage image={selectedVariant?.image} />
-
-      <div className="product-main">
-        {/* Product title */}
-        <h1>{title}</h1>
-
-        {/* Pricing display */}
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
-        />
-
-        {/* Variant selectors + add to cart */}
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-
-        {/* Product description */}
-        <p>
-          <strong>Description</strong>
-        </p>
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-      </div>
-
-      {/* Sends product view event to analytics */}
-      <Analytics.ProductView
-        data={{
-          products: [
-            {
-              id: product.id,
-              title: product.title,
-              price: selectedVariant?.price.amount || '0',
-              vendor: product.vendor,
-              variantId: selectedVariant?.id || '',
-              variantTitle: selectedVariant?.title || '',
-              quantity: 1,
-            },
-          ],
-        }}
-      />
+    <div className="plant-page">
+      <h1>{product.title}</h1>
+      <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
     </div>
   );
 }
 
-// GraphQL fragments for reusability
-const PRODUCT_VARIANT_FRAGMENT = `#graphql
-  fragment ProductVariant on ProductVariant {
-    availableForSale
-    compareAtPrice {
-      amount
-      currencyCode
-    }
-    id
-    image {
-      __typename
-      id
-      url
-      altText
-      width
-      height
-    }
-    price {
-      amount
-      currencyCode
-    }
-    product {
-      title
-      handle
-    }
-    selectedOptions {
-      name
-      value
-    }
-    sku
-    title
-    unitPrice {
-      amount
-      currencyCode
-    }
-  }
-` as const;
+// =========================
+// GraphQL Definitions
+// =========================
 
-// Product fragment with rich info + nested variant fragment
-const PRODUCT_FRAGMENT = `#graphql
-  fragment Product on Product {
+/**
+ * A minimal GraphQL fragment for Shopify Product data.
+ * This is reused in the query below for consistency.
+ */
+const PLANT_PRODUCT_FRAGMENT = `#graphql
+  fragment PlantProduct on Product {
     id
     title
-    vendor
-    handle
     descriptionHtml
-    description
-    encodedVariantExistence
-    encodedVariantAvailability
-    options {
-      name
-      optionValues {
-        name
-        firstSelectableVariant {
-          ...ProductVariant
-        }
-        swatch {
-          color
-          image {
-            previewImage {
-              url
-            }
-          }
-        }
-      }
-    }
-    selectedOrFirstAvailableVariant(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
-      ...ProductVariant
-    }
-    adjacentVariants(selectedOptions: $selectedOptions) {
-      ...ProductVariant
-    }
-    seo {
-      description
-      title
-    }
   }
-  ${PRODUCT_VARIANT_FRAGMENT}
 ` as const;
 
-// Final GraphQL query used by storefront.query()
+/**
+ * Main Shopify Storefront API query to fetch a product by its handle.
+ * This query is executed via storefront.query() in the loader.
+ */
 const PRODUCT_QUERY = `#graphql
-  query Product(
-    $country: CountryCode
+  query PlantProduct(
     $handle: String!
-    $language: LanguageCode
-    $selectedOptions: [SelectedOptionInput!]!
-  ) @inContext(country: $country, language: $language) {
+  ) {
     product(handle: $handle) {
-      ...Product
+      ...PlantProduct
     }
   }
-  ${PRODUCT_FRAGMENT}
+  ${PLANT_PRODUCT_FRAGMENT}
 ` as const;
-
-// Recap of how server.ts and context.ts hydrate this route
-// 1️⃣ User requests /products/plant-handle
-// 2️⃣ server.ts receives the request via fetch()
-// 3️⃣ server.ts calls createAppLoadContext() from context.ts
-// 4️⃣ context.ts creates the storefront client and returns it in context
-// 5️⃣ loader() in products.$handle.tsx is called with { context, params, request }
-// 6️⃣ storefront.query(...) fetches product data
-// 7️⃣ Loader returns { product } to Remix
-// 8️⃣ useLoaderData() injects product into the React component
-// 9️⃣ Hydrogen helpers enhance UX
-// 🔟 The page is rendered and hydrated 💧
-//
-// Layer >	Responsibility
-// server.ts >>	Handles the raw HTTP request, sets up context using createAppLoadContext, and passes it to Remix’s loader()
-// context.ts >>	Creates and returns the storefront client + session and other values for the context object
-// products.$handle.tsx → loader() >>	Gets context.storefront, uses it to fetch the product, and returns it to the UI
-// useLoaderData() >> Hydrates the React component with the product fetched on the server
