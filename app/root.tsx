@@ -1,4 +1,4 @@
-import {useNonce, getShopAnalytics, Analytics} from '@shopify/hydrogen';
+import {useNonce, getShopAnalytics, Analytics, Script} from '@shopify/hydrogen';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {
   Links,
@@ -17,6 +17,7 @@ import appStyles from '~/styles/app.css?url';
 import tailwindCss from './styles/tailwind.css?url';
 import {PageLayout} from '~/components/PageLayout';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+import {GoogleTagManager} from '~/components/GoogleTagManager';
 
 export type RootLoader = typeof loader;
 
@@ -29,16 +30,15 @@ export const shouldRevalidate: ShouldRevalidateFunction = ({
   nextUrl,
 }) => {
   // revalidate when a mutation is performed e.g add to cart, login...
-  if (formMethod && formMethod !== 'GET') return true;
+  if (formMethod && formMethod !== 'GET') {
+    return true;
+  }
 
   // revalidate when manually revalidating via useRevalidator
-  if (currentUrl.toString() === nextUrl.toString()) return true;
+  if (currentUrl.toString() === nextUrl.toString()) {
+    return true;
+  }
 
-  // Defaulting to no revalidation for root loader data to improve performance.
-  // When using this feature, you risk your UI getting out of sync with your server.
-  // Use with caution. If you are uncomfortable with this optimization, update the
-  // line below to `return defaultShouldRevalidate` instead.
-  // For more details see: https://remix.run/docs/en/main/route/should-revalidate
   return false;
 };
 
@@ -86,7 +86,7 @@ export async function loader(args: LoaderFunctionArgs) {
     consent: {
       checkoutDomain: env.PUBLIC_CHECKOUT_DOMAIN,
       storefrontAccessToken: env.PUBLIC_STOREFRONT_API_TOKEN,
-      withPrivacyBanner: false,
+      withPrivacyBanner: true,
       // localize the privacy banner
       country: args.context.storefront.i18n.country,
       language: args.context.storefront.i18n.language,
@@ -111,7 +111,9 @@ async function loadCriticalData({context}: LoaderFunctionArgs) {
     // Add other queries here, so that they are loaded in parallel
   ]);
 
-  return {header};
+  return {
+    header,
+  };
 }
 
 /**
@@ -156,8 +158,37 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link rel="stylesheet" href={appStyles}></link>
         <Meta />
         <Links />
+        {/***********************************************/
+        /**********  EXAMPLE UPDATE STARTS  ************/}
+        <Script
+          dangerouslySetInnerHTML={{
+            __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-TGVSRM6Q');`,
+          }}
+        ></Script>
+        {/**********   EXAMPLE UPDATE END   ************/
+        /***********************************************/}
       </head>
       <body className="debug-screens">
+        {/***********************************************/
+        /**********  EXAMPLE UPDATE STARTS  ************/}
+        <noscript>
+          <iframe
+            src="https://www.googletagmanager.com/ns.html?id=GTM-TGVSRM6Q"
+            height="0"
+            width="0"
+            title="Google Tag Manager noscript"
+            style={{
+              display: 'none',
+              visibility: 'hidden',
+            }}
+          ></iframe>
+        </noscript>
+        {/**********   EXAMPLE UPDATE END   ************/
+        /***********************************************/}
         {data ? (
           <Analytics.Provider
             cart={data.cart}
@@ -165,6 +196,11 @@ export function Layout({children}: {children?: React.ReactNode}) {
             consent={data.consent}
           >
             <PageLayout {...data}>{children}</PageLayout>
+            {/***********************************************/
+            /**********  EXAMPLE UPDATE STARTS  ************/}
+            <GoogleTagManager />
+            {/**********   EXAMPLE UPDATE END   ************/
+            /***********************************************/}
           </Analytics.Provider>
         ) : (
           children
