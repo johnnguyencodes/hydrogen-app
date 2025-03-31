@@ -67,6 +67,7 @@ export function links() {
 }
 
 export async function loader(args: LoaderFunctionArgs) {
+  console.log('[ROOT LOADER HIT]', args.request.url);
   // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
 
