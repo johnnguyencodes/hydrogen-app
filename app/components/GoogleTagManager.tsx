@@ -1,13 +1,20 @@
 import {useEffect} from 'react';
+import {useLocation} from '@remix-run/react';
 
 export function GoogleTagManager() {
-  useEffect(() => {
-    // Ensure the dataLayer exists
-    window.dataLayer = window.dataLayer || [];
+  const location = useLocation();
 
-    // Optional: push a general GTM-ready signal if needed
-    window.dataLayer.push({event: 'gtm_ready'});
-  }, []);
+  useEffect(() => {
+    if (!window.dataLayer) window.dataLayer = [];
+
+    // Push gtm.js event again on route change
+    window.dataLayer.push({
+      event: 'gtm.js',
+      'gtm.start': new Date().getTime(),
+    });
+
+    console.log('[GTM] gtm.js event manually re-pushed on route change');
+  }, [location.pathname]); // re-run on route change
 
   return null;
 }
