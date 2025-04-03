@@ -1,11 +1,24 @@
 // React and Remix imports
-import {useEffect} from 'react';
-import {useLoaderData} from '@remix-run/react';
+import {Suspense, useEffect} from 'react';
+import {Await, useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 
 // =========================
 // Loader Function
 // =========================
+
+export const config = {
+  future: {
+    v3_singleFetch: true,
+  },
+};
+
+type JournalEntry = {
+  date: string;
+  title: string;
+  content: string;
+  image?: string | null;
+};
 
 /**
  * Remix runs this loader on the server before rendering the page.
@@ -18,7 +31,7 @@ export async function loader(args: LoaderFunctionArgs) {
 
   return {
     ...criticalData,
-    ...deferredData,
+    journalPromise: deferredData.journalPromise,
   };
 }
 
@@ -60,8 +73,15 @@ async function loadCriticalData({context, params}: LoaderFunctionArgs) {
  * Great for journal entries, growth photos, logs, etc.
  */
 function loadDeferredData({context, params}: LoaderFunctionArgs) {
-  // Future implementation: hydrate with care notes, photos, etc.
-  return {};
+  const {storefront} = context;
+
+  const journalPromise = storefront.query(JOURNAL_QUERY, {
+    variables: {
+      handle: params.handle,
+    },
+  });
+
+  return {journalPromise};
 }
 
 // =========================
@@ -73,7 +93,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  * Uses the `product` returned from the loader.
  */
 export default function Plant() {
-  const {product} = useLoaderData<typeof loader>(); // Get product from server
+  const {product, journalPromise} = useLoaderData<typeof loader>(); // Get product from server
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -102,7 +122,7 @@ export default function Plant() {
       <h1>{product.title}</h1>
       <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
       {Array.isArray(product.metafields) && product.metafields.length > 0 ? (
-        product.metafields.map((field, idx) =>
+        product.metafields.map((field: string, idx: number) =>
           field ? (
             <p key={idx}>
               <strong>{field.key.replace(/-/g, ' ')}:</strong> {field.value}
@@ -112,6 +132,39 @@ export default function Plant() {
       ) : (
         <p>No extra details available.</p>
       )}
+
+      {/* Deferred journal entries */}
+      <Suspense fallback={<p> Loading journal...</p>}>
+        <Await resolve={journalPromise}>
+          {(data) => {
+            const metafield = data?.product?.journalEntries;
+            console.log('Journal Entries:', metafield);
+            console.log('[Raw metafield JSON]', metafield?.value);
+
+            let journal: JournalEntry[] = [];
+
+            try {
+              journal = metafield?.value ? JSON.parse(metafield.value) : [];
+            } catch (error) {
+              console.error('Failed to parse journal JSON:', error);
+            }
+
+            console.log('journal data:', journal);
+
+            return journal.length > 0 ? (
+              <ul className="journal-entries">
+                {journal.map((entry: any, index: number) => (
+                  <li key={index}>
+                    <strong>{entry.date}</strong> - {entry.content}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No journal entries yet.</p>
+            );
+          }}
+        </Await>
+      </Suspense>
     </div>
   );
 }
@@ -139,4 +192,15 @@ const PRODUCT_QUERY = `#graphql
       }
     }
   }
+` as const;
+
+const JOURNAL_QUERY = `#graphql
+  query PlantJournal($handle: String!) {
+  product(handle: $handle) {
+    journalEntries: metafield(namespace: "plant", key: "journal") {
+      value
+      type
+    }
+  }
+}
 ` as const;
