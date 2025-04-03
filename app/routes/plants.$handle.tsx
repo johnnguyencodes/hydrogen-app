@@ -34,17 +34,24 @@ async function loadCriticalData({context, params}: LoaderFunctionArgs) {
     throw new Error('Expected product handle to be defined');
   }
 
-  const variables = {handle};
+  const variables = {
+    handle,
+    metafieldIdentifiers: [
+      {namespace: 'plant', key: 'purchase-origin'},
+      {namespace: 'plant', key: 'llifle-link'},
+      {namespace: 'plant', key: 'receive-date'},
+      {namespace: 'plant', key: 'last watered'},
+    ],
+  };
 
   // Calls Shopify Storefront API using the pre-injected storefront client
   const {product} = await storefront.query(PRODUCT_QUERY, {
     variables,
   });
 
-  if (!product.id) {
+  if (!product?.id) {
     throw new Response(null, {status: 404});
   }
-
   return {product};
 }
 
@@ -94,6 +101,17 @@ export default function Plant() {
     <div className="plant-page">
       <h1>{product.title}</h1>
       <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
+      {Array.isArray(product.metafields) && product.metafields.length > 0 ? (
+        product.metafields.map((field, idx) =>
+          field ? (
+            <p key={idx}>
+              <strong>{field.key.replace(/-/g, ' ')}:</strong> {field.value}
+            </p>
+          ) : null,
+        )
+      ) : (
+        <p>No extra details available.</p>
+      )}
     </div>
   );
 }
@@ -106,25 +124,19 @@ export default function Plant() {
  * A minimal GraphQL fragment for Shopify Product data.
  * This is reused in the query below for consistency.
  */
-const PLANT_PRODUCT_FRAGMENT = `#graphql
-  fragment PlantProduct on Product {
-    id
-    title
-    descriptionHtml
-  }
-` as const;
 
-/**
- * Main Shopify Storefront API query to fetch a product by its handle.
- * This query is executed via storefront.query() in the loader.
- */
 const PRODUCT_QUERY = `#graphql
-  query PlantProduct(
-    $handle: String!
-  ) {
+  query PlantProduct($handle: String!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!) {
     product(handle: $handle) {
-      ...PlantProduct
+      id
+      title
+      descriptionHtml
+      metafields(identifiers: $metafieldIdentifiers) {
+        namespace
+        key
+        value
+        type
+      }
     }
   }
-  ${PLANT_PRODUCT_FRAGMENT}
 ` as const;
