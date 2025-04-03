@@ -1,6 +1,6 @@
 // React and Remix imports
-import {useEffect} from 'react';
-import {useLoaderData} from '@remix-run/react';
+import {Suspense, useEffect} from 'react';
+import {Await, useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 
 // =========================
@@ -13,18 +13,19 @@ import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
  * and deferred (optional, loaded later if needed).
  */
 export async function loader(args: LoaderFunctionArgs) {
-  const criticalData = await loadCriticalData(args); // Must-have data
-  const deferredData = loadDeferredData(args); // Optional data
+  const criticalData = await loadCriticalData(args); // Must-have data, required immediately to render
+  const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
 
+  // Return both, including the deferred data wrapped as a promise
   return {
     ...criticalData,
-    ...deferredData,
+    journalPromise: deferredData.journalPromise,
   };
 }
 
 /**
- * Load data that is *required* for the page to render.
- * If this data fails (e.g. missing handle or product), we throw.
+ * Critical data loader: fetches the Shopify product and core metafields.
+ * If the product doesn't exist, throw a 404.
  */
 async function loadCriticalData({context, params}: LoaderFunctionArgs) {
   const {handle} = params;
@@ -41,27 +42,38 @@ async function loadCriticalData({context, params}: LoaderFunctionArgs) {
       {namespace: 'plant', key: 'llifle-link'},
       {namespace: 'plant', key: 'receive-date'},
       {namespace: 'plant', key: 'last watered'},
+      {namespace: 'plant', key: 'growing conditions'},
     ],
   };
 
-  // Calls Shopify Storefront API using the pre-injected storefront client
-  const {product} = await storefront.query(PRODUCT_QUERY, {
-    variables,
-  });
+  // Shopify storefront query using product handle
+  const {product} = await storefront.query(PRODUCT_QUERY, {variables});
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
+
   return {product};
 }
 
 /**
  * Load data that is *optional* or can be loaded after initial render.
  * Great for journal entries, growth photos, logs, etc.
+ *
+ * This runs in parallel with `loadCriticalData`, and will be awaited by <Await />.
  */
 function loadDeferredData({context, params}: LoaderFunctionArgs) {
-  // Future implementation: hydrate with care notes, photos, etc.
-  return {};
+  const {handle} = params;
+  const {storefront} = context;
+
+  const journalPromise = storefront.query(JOURNAL_QUERY, {
+    variables: {
+      handle,
+      metafieldIdentifiers: [{namespace: 'plant', key: 'journal'}],
+    },
+  });
+
+  return {journalPromise};
 }
 
 // =========================
@@ -71,9 +83,12 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 /**
  * Hydrated on the client after server-side rendering.
  * Uses the `product` returned from the loader.
+ *
+ * The component receives the product and deferred journalPromise from useLoaderData().
+ * Hydrated client-side after SSR.
  */
 export default function Plant() {
-  const {product} = useLoaderData<typeof loader>(); // Get product from server
+  const {product, journalPromise} = useLoaderData<typeof loader>();
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -97,14 +112,18 @@ export default function Plant() {
    * Simple HTML layout showing the plant title and description.
    * Uses Shopify's product.descriptionHtml (trusted, sanitized).
    */
+
   return (
     <div className="plant-page">
+      {/* Render core product info immediately */}
       <h1>{product.title}</h1>
       <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
+
+      {/* Display metafields like purchase origin, links, etc. */}
       {Array.isArray(product.metafields) && product.metafields.length > 0 ? (
-        product.metafields.map((field, idx) =>
+        product.metafields.map((field: PlantCriticalMetafield) =>
           field ? (
-            <p key={idx}>
+            <p key={field.key}>
               <strong>{field.key.replace(/-/g, ' ')}:</strong> {field.value}
             </p>
           ) : null,
@@ -112,6 +131,43 @@ export default function Plant() {
       ) : (
         <p>No extra details available.</p>
       )}
+
+      {/* Deferred journal entry block — Suspense + Await */}
+      <Suspense fallback={<p> Loading journal...</p>}>
+        <Await resolve={journalPromise}>
+          {/* data is the resolved value of journalPromise */}
+          {(data) => {
+            // Await gives us the result of journalPromise when it's done
+            const metafield = data?.product?.metafields?.[0];
+
+            let journal: PlantJournalEntry[] = [];
+
+            try {
+              // Parse the raw metafield JSON into a JS array
+              journal = metafield?.value
+                ? (JSON.parse(metafield.value) as PlantJournalEntry[])
+                : [];
+            } catch (error) {
+              console.error('Failed to parse journal JSON:', error);
+            }
+
+            // Render parsed journal entries
+            return journal.length > 0 ? (
+              <div className="mt-5">
+                <ul className="journal-entries">
+                  {journal.map((entry) => (
+                    <li key={entry.date}>
+                      <strong>{entry.date}</strong> - {entry.content}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p>No journal entries yet.</p>
+            );
+          }}
+        </Await>
+      </Suspense>
     </div>
   );
 }
@@ -121,16 +177,30 @@ export default function Plant() {
 // =========================
 
 /**
- * A minimal GraphQL fragment for Shopify Product data.
- * This is reused in the query below for consistency.
+ * Critical product data with specific metafields defined in loadCriticalData
  */
-
 const PRODUCT_QUERY = `#graphql
   query PlantProduct($handle: String!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!) {
     product(handle: $handle) {
       id
       title
       descriptionHtml
+      metafields(identifiers: $metafieldIdentifiers) {
+        namespace
+        key
+        value
+        type
+      }
+    }
+  }
+` as const;
+
+/**
+ * Deferred journal query — fetches only the journal metafield by key.
+ */
+const JOURNAL_QUERY = `#graphql
+  query PlantJournal($handle: String!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!) {
+    product(handle: $handle) {
       metafields(identifiers: $metafieldIdentifiers) {
         namespace
         key
