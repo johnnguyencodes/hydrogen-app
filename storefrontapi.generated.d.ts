@@ -648,19 +648,40 @@ export type PageQuery = {
   >;
 };
 
-export type PlantProductFragment = Pick<
-  StorefrontAPI.Product,
-  'id' | 'title' | 'descriptionHtml'
->;
-
 export type PlantProductQueryVariables = StorefrontAPI.Exact<{
   handle: StorefrontAPI.Scalars['String']['input'];
+  metafieldIdentifiers:
+    | Array<StorefrontAPI.HasMetafieldsIdentifier>
+    | StorefrontAPI.HasMetafieldsIdentifier;
 }>;
 
 export type PlantProductQuery = {
   product?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.Product, 'id' | 'title' | 'descriptionHtml'>
+    Pick<StorefrontAPI.Product, 'id' | 'title' | 'descriptionHtml'> & {
+      metafields: Array<
+        StorefrontAPI.Maybe<
+          Pick<StorefrontAPI.Metafield, 'namespace' | 'key' | 'value' | 'type'>
+        >
+      >;
+    }
   >;
+};
+
+export type PlantJournalQueryVariables = StorefrontAPI.Exact<{
+  handle: StorefrontAPI.Scalars['String']['input'];
+  metafieldIdentifiers:
+    | Array<StorefrontAPI.HasMetafieldsIdentifier>
+    | StorefrontAPI.HasMetafieldsIdentifier;
+}>;
+
+export type PlantJournalQuery = {
+  product?: StorefrontAPI.Maybe<{
+    metafields: Array<
+      StorefrontAPI.Maybe<
+        Pick<StorefrontAPI.Metafield, 'namespace' | 'key' | 'value' | 'type'>
+      >
+    >;
+  }>;
 };
 
 export type PolicyFragment = Pick<
@@ -1231,9 +1252,13 @@ interface GeneratedQueryTypes {
     return: PageQuery;
     variables: PageQueryVariables;
   };
-  '#graphql\n  query PlantProduct(\n    $handle: String!\n  ) {\n    product(handle: $handle) {\n      ...PlantProduct\n    }\n  }\n  #graphql\n  fragment PlantProduct on Product {\n    id\n    title\n    descriptionHtml\n  }\n\n': {
+  '#graphql\n  query PlantProduct($handle: String!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!) {\n    product(handle: $handle) {\n      id\n      title\n      descriptionHtml\n      metafields(identifiers: $metafieldIdentifiers) {\n        namespace\n        key\n        value\n        type\n      }\n    }\n  }\n': {
     return: PlantProductQuery;
     variables: PlantProductQueryVariables;
+  };
+  '#graphql\n  query PlantJournal($handle: String!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!) {\n    product(handle: $handle) {\n      metafields(identifiers: $metafieldIdentifiers) {\n        namespace\n        key\n        value\n        type\n      }\n    }\n  }\n': {
+    return: PlantJournalQuery;
+    variables: PlantJournalQueryVariables;
   };
   '#graphql\n  fragment Policy on ShopPolicy {\n    body\n    handle\n    id\n    title\n    url\n  }\n  query Policy(\n    $country: CountryCode\n    $language: LanguageCode\n    $privacyPolicy: Boolean!\n    $refundPolicy: Boolean!\n    $shippingPolicy: Boolean!\n    $termsOfService: Boolean!\n  ) @inContext(language: $language, country: $country) {\n    shop {\n      privacyPolicy @include(if: $privacyPolicy) {\n        ...Policy\n      }\n      shippingPolicy @include(if: $shippingPolicy) {\n        ...Policy\n      }\n      termsOfService @include(if: $termsOfService) {\n        ...Policy\n      }\n      refundPolicy @include(if: $refundPolicy) {\n        ...Policy\n      }\n    }\n  }\n': {
     return: PolicyQuery;
