@@ -41,7 +41,7 @@
     "@graphql-codegen/cli": "5.0.2",
     "@playwright/test": "^1.51.1",
     "@remix-run/dev": "^2.15.3",
-    "@shopify/cli": "^3.76.2",
+    "@shopify/cli": "^3.77.1",
     "@shopify/hydrogen-codegen": "^0.3.2",
     "@shopify/mini-oxygen": "^3.1.1",
     "@shopify/oxygen-workers-types": "^4.1.2",
@@ -79,5 +79,7 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "browserslist": ["defaults"]
+  "browserslist": [
+    "defaults"
+  ]
 }
