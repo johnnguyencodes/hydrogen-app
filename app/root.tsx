@@ -1,13 +1,22 @@
-import {getShopAnalytics} from '@shopify/hydrogen';
+import {Analytics, getShopAnalytics, useNonce} from '@shopify/hydrogen';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {
   Outlet,
   useRouteError,
   isRouteErrorResponse,
   type ShouldRevalidateFunction,
+  Links,
+  Meta,
+  Scripts,
+  ScrollRestoration,
+  useRouteLoaderData,
 } from '@remix-run/react';
 import favicon from '~/assets/favicon.svg';
 import {FOOTER_QUERY, HEADER_QUERY} from '~/lib/fragments';
+import tailwindCss from '~/styles/tailwind.css?url';
+import resetStyles from '~/styles/reset.css?url';
+import appStyles from '~/styles/app.css?url';
+import {PageLayout} from './components/PageLayout';
 
 export type RootLoader = typeof loader;
 
@@ -133,8 +142,38 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
   };
 }
 
-export default function App() {
-  return <Outlet />;
+export function Layout({children}: {children?: React.ReactNode}) {
+  const nonce = useNonce();
+  const data = useRouteLoaderData<RootLoader>('root');
+
+  return (
+    <html lang="en">
+      <head>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="stylesheet" href={tailwindCss}></link>
+        <link rel="stylesheet" href={resetStyles}></link>
+        <link rel="stylesheet" href={appStyles}></link>
+        <Meta />
+        <Links />
+      </head>
+      <body className="debug-screens">
+        {data ? (
+          <Analytics.Provider
+            cart={data.cart}
+            shop={data.shop}
+            consent={data.consent}
+          >
+            <PageLayout {...data}>{children}</PageLayout>
+          </Analytics.Provider>
+        ) : (
+          children
+        )}
+        <ScrollRestoration nonce={nonce} />
+        <Scripts nonce={nonce} />
+      </body>
+    </html>
+  );
 }
 
 export function ErrorBoundary() {
