@@ -154,23 +154,6 @@ export default function Product() {
         </p>
         <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
       </div>
-
-      {/* Sends product view event to analytics */}
-      <Analytics.ProductView
-        data={{
-          products: [
-            {
-              id: product.id,
-              title: product.title,
-              price: selectedVariant?.price.amount || '0',
-              vendor: product.vendor,
-              variantId: selectedVariant?.id || '',
-              variantTitle: selectedVariant?.title || '',
-              quantity: 1,
-            },
-          ],
-        }}
-      />
     </div>
   );
 }

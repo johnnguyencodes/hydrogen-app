@@ -3,7 +3,7 @@ import {
   Links,
   Meta,
   Scripts,
-  // useRouteLoaderData,
+  useRouteLoaderData,
   ScrollRestoration,
   Outlet,
 } from '@remix-run/react';
@@ -11,12 +11,11 @@ import tailwindCss from '~/styles/tailwind.css';
 import resetStyles from '~/styles/reset.css?url';
 import appStyles from '~/styles/app.css?url';
 import {PageLayout} from '~/components/PageLayout';
-// import {RootLoader} from './root';
-import {Layout as VirtualLayout} from './components/Layout';
+import {RootLoader} from './root';
 
-export function Layout({children}: {children?: React.ReactNode}) {
+export function Layout() {
   const nonce = useNonce();
-  // const data = useRouteLoaderData<RootLoader>('root');
+  const data = useRouteLoaderData<RootLoader>('root');
 
   return (
     <html lang="en">
@@ -30,9 +29,19 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Links />
       </head>
       <body className="debug-screens">
-        <VirtualLayout>
+        {data ? (
+          <Analytics.Provider
+            cart={data.cart}
+            shop={data.shop}
+            consent={data.consent}
+          >
+            <PageLayout {...data}>
+              <Outlet />
+            </PageLayout>
+          </Analytics.Provider>
+        ) : (
           <Outlet />
-        </VirtualLayout>
+        )}
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />
       </body>
