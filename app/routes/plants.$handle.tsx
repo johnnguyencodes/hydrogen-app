@@ -66,6 +66,10 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
   const {handle} = params;
   const {storefront} = context;
 
+  if (!handle) {
+    throw new Error('Expected handle to be defined in loadDeferredData');
+  }
+
   const journalPromise = storefront.query(JOURNAL_QUERY, {
     variables: {
       handle,
@@ -121,13 +125,15 @@ export default function Plant() {
 
       {/* Display metafields like purchase origin, links, etc. */}
       {Array.isArray(product.metafields) && product.metafields.length > 0 ? (
-        product.metafields.map((field: PlantCriticalMetafield) =>
-          field ? (
-            <p key={field.key}>
-              <strong>{field.key.replace(/-/g, ' ')}:</strong> {field.value}
-            </p>
-          ) : null,
-        )
+        product.metafields
+          .filter(Boolean)
+          .map((field: PlantCriticalMetafield) =>
+            field ? (
+              <p key={field.key}>
+                <strong>{field.key.replace(/-/g, ' ')}:</strong> {field.value}
+              </p>
+            ) : null,
+          )
       ) : (
         <p>No extra details available.</p>
       )}
