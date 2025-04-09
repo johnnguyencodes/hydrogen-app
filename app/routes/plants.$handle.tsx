@@ -71,10 +71,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
   }
 
   const journalPromise = storefront.query(JOURNAL_QUERY, {
-    variables: {
-      handle,
-      metafieldIdentifiers: [{namespace: 'plant', key: 'journal'}],
-    },
+    variables: {handle},
   });
 
   return {journalPromise};
@@ -144,7 +141,7 @@ export default function Plant() {
           {/* data is the resolved value of journalPromise */}
           {(data) => {
             // Await gives us the result of journalPromise when it's done
-            const metafield = data?.product?.metafields?.[0];
+            const metafield = data?.product?.journal;
 
             let journal: PlantJournalEntry[] = [];
 
@@ -203,11 +200,13 @@ const PRODUCT_QUERY = `#graphql
 
 /**
  * Deferred journal query — fetches only the journal metafield by key.
+ * This is different from how the metafield query is structured in the PRODUCT_QUERY because we are only querying for one singula
+ * metafield, so this can be directly defined in the graphql query.
  */
 const JOURNAL_QUERY = `#graphql
-  query PlantJournal($handle: String!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!) {
+  query PlantJournal($handle: String!) {
     product(handle: $handle) {
-      metafields(identifiers: $metafieldIdentifiers) {
+      journal: metafield(namespace: "plant", key: "journal") {
         namespace
         key
         value
