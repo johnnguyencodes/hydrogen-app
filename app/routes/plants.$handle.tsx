@@ -2,6 +2,7 @@
 import {Suspense, useEffect} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import {ProductImage} from '~/components/ProductImage';
 
 // =========================
 // Loader Function
@@ -120,6 +121,10 @@ export default function Plant() {
       <h1>{product.title}</h1>
       <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
 
+      {product.images?.nodes?.[0] && (
+        <ProductImage image={product.images.nodes[0]} />
+      )}
+
       {/* Display metafields like purchase origin, links, etc. */}
       {Array.isArray(product.metafields) && product.metafields.length > 0 ? (
         product.metafields
@@ -188,6 +193,15 @@ const PRODUCT_QUERY = `#graphql
       id
       title
       descriptionHtml
+      images(first: 1) {
+        nodes {
+          id
+          url
+          altText
+          width
+          height
+        }
+      }
       metafields(identifiers: $metafieldIdentifiers) {
         namespace
         key
