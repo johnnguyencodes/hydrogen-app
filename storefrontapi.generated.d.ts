@@ -669,17 +669,12 @@ export type PlantProductQuery = {
 
 export type PlantJournalQueryVariables = StorefrontAPI.Exact<{
   handle: StorefrontAPI.Scalars['String']['input'];
-  metafieldIdentifiers:
-    | Array<StorefrontAPI.HasMetafieldsIdentifier>
-    | StorefrontAPI.HasMetafieldsIdentifier;
 }>;
 
 export type PlantJournalQuery = {
   product?: StorefrontAPI.Maybe<{
-    metafields: Array<
-      StorefrontAPI.Maybe<
-        Pick<StorefrontAPI.Metafield, 'namespace' | 'key' | 'value' | 'type'>
-      >
+    journal?: StorefrontAPI.Maybe<
+      Pick<StorefrontAPI.Metafield, 'namespace' | 'key' | 'value' | 'type'>
     >;
   }>;
 };
@@ -1256,7 +1251,7 @@ interface GeneratedQueryTypes {
     return: PlantProductQuery;
     variables: PlantProductQueryVariables;
   };
-  '#graphql\n  query PlantJournal($handle: String!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!) {\n    product(handle: $handle) {\n      metafields(identifiers: $metafieldIdentifiers) {\n        namespace\n        key\n        value\n        type\n      }\n    }\n  }\n': {
+  '#graphql\n  query PlantJournal($handle: String!) {\n    product(handle: $handle) {\n      journal: metafield(namespace: "plant", key: "journal") {\n        namespace\n        key\n        value\n        type\n      }\n    }\n  }\n': {
     return: PlantJournalQuery;
     variables: PlantJournalQueryVariables;
   };
