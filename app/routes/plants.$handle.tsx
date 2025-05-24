@@ -16,13 +16,11 @@ import {ProductImage} from '~/components/ProductImage';
 export async function loader(args: LoaderFunctionArgs) {
   const criticalData = await loadCriticalData(args); // Must-have data, required immediately to render
   const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
-  const carouselImageData = await fetchCarouselImagesFromAdminAPI(args);
 
   // Return both, including the deferred data wrapped as a promise
   return {
     ...criticalData,
     journalPromise: deferredData.journalPromise,
-    carouselImageData,
   };
 }
 
@@ -30,7 +28,8 @@ export async function loader(args: LoaderFunctionArgs) {
  * Critical data loader: fetches the Shopify product and core metafields.
  * If the product doesn't exist, throw a 404.
  */
-async function loadCriticalData({context, params}: LoaderFunctionArgs) {
+async function loadCriticalData(args: LoaderFunctionArgs) {
+  const {context, params} = args;
   const {handle} = params;
   const {storefront} = context;
 
@@ -50,13 +49,16 @@ async function loadCriticalData({context, params}: LoaderFunctionArgs) {
   };
 
   // Shopify storefront query using product handle
-  const {product} = await storefront.query(PRODUCT_QUERY, {variables});
+  const [{product}, carouselImageData] = await Promise.all([
+    storefront.query(PRODUCT_QUERY, {variables}),
+    fetchCarouselImagesFromAdminAPI(args),
+  ]);
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
-  return {product};
+  return {product, carouselImageData};
 }
 
 /**
