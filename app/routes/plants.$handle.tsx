@@ -16,11 +16,13 @@ import {ProductImage} from '~/components/ProductImage';
 export async function loader(args: LoaderFunctionArgs) {
   const criticalData = await loadCriticalData(args); // Must-have data, required immediately to render
   const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
+  const fileImages = await fetchFilesFromAdminAPI(args);
 
   // Return both, including the deferred data wrapped as a promise
   return {
     ...criticalData,
     journalPromise: deferredData.journalPromise,
+    fileImages,
   };
 }
 
@@ -78,6 +80,64 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
   return {journalPromise};
 }
 
+/**
+ * async function to grab files uploaded to the store under Content > Files in the admin panel
+ */
+
+async function fetchFilesFromAdminAPI({context}: LoaderFunctionArgs) {
+  const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
+  const response = await fetch(ADMIN_API_URL, {
+    method: 'POST',
+    headers: {
+      'X-Shopify-Access-Token': context.env.FILES_ADMIN_API_ACCESS_TOKEN,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+        query Files {
+          files(first: 100) {
+            edges {
+              node {
+                __typename
+                ... on MediaImage {
+                  id
+                  alt
+                  image {
+                    url
+                  }
+                }
+                ... on GenericFile {
+                  id
+                  alt
+                  fileStatus
+                  preview {
+                    image {
+                      url
+                    }
+                  } 
+                }
+              }  
+            }
+          }
+        }
+      `,
+    }),
+  });
+
+  const json = (await response.json()) as ShopifyFilesResponse;
+
+  // Log response for debugging
+  if (!json?.data?.files?.edges) {
+    console.error(
+      'Unexpected response from Admin API:',
+      JSON.stringify(json, null, 2),
+    );
+    return []; // Return empty array to avoid 500s
+  }
+
+  return json.data.files.edges.map((edge: any) => edge.node);
+}
+
 // =========================
 // React Component
 // =========================
@@ -89,8 +149,9 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  * The component receives the product and deferred journalPromise from useLoaderData().
  * Hydrated client-side after SSR.
  */
+
 export default function Plant() {
-  const {product, journalPromise} = useLoaderData<typeof loader>();
+  const {product, journalPromise, fileImages} = useLoaderData<typeof loader>();
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -110,6 +171,12 @@ export default function Plant() {
     }
   }, [product.id, product.title]);
 
+  const carouselImages = fileImages.filter((img) =>
+    img.image?.url?.includes(`plants--${product.handle}--carousel--`),
+  );
+
+  console.log('carouselImages:', carouselImages);
+
   /**
    * Simple HTML layout showing the plant title and description.
    * Uses Shopify's product.descriptionHtml (trusted, sanitized).
@@ -121,8 +188,8 @@ export default function Plant() {
       <h1>{product.title}</h1>
       <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
 
-      {product.images?.nodes?.[0] && (
-        <ProductImage image={product.images.nodes[0]} />
+      {carouselImages.length > 0 && (
+        <ProductImage image={{...carouselImages[0].image}} />
       )}
 
       {/* Display metafields like purchase origin, links, etc. */}
@@ -191,7 +258,7 @@ const PRODUCT_QUERY = `#graphql
   query PlantProduct($handle: String!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!) {
     product(handle: $handle) {
       id
-      title
+      handle
       descriptionHtml
       images(first: 1) {
         nodes {

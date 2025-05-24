@@ -7,6 +7,12 @@ declare global {
     };
   }
 
+  interface Env {
+    FILES_ADMIN_API_ACCESS_TOKEN: string;
+    FILES_ADMIN_API_KEY: string;
+    FILES_ADMIN_API_SECRET_KEY: string;
+  }
+
   // Type definition for individual journal entries
   type PlantJournalEntry = {
     date: string;
@@ -20,5 +26,20 @@ declare global {
     key: string;
     value: string;
     type: string;
+  };
+
+  type ShopifyFilesResponse = {
+    data: {
+      files: {
+        edges: Array<{
+          node: {
+            id: string;
+            url: string;
+            alt?: string;
+            createdAt: string;
+          };
+        }>;
+      };
+    };
   };
 }
