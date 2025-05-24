@@ -16,13 +16,13 @@ import {ProductImage} from '~/components/ProductImage';
 export async function loader(args: LoaderFunctionArgs) {
   const criticalData = await loadCriticalData(args); // Must-have data, required immediately to render
   const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
-  const fileImages = await fetchFilesFromAdminAPI(args);
+  const carouselImageData = await fetchCarouselImagesFromAdminAPI(args);
 
   // Return both, including the deferred data wrapped as a promise
   return {
     ...criticalData,
     journalPromise: deferredData.journalPromise,
-    fileImages,
+    carouselImageData,
   };
 }
 
@@ -84,7 +84,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  * async function to grab files uploaded to the store under Content > Files in the admin panel
  */
 
-async function fetchFilesFromAdminAPI({context}: LoaderFunctionArgs) {
+async function fetchCarouselImagesFromAdminAPI({context}: LoaderFunctionArgs) {
   const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
   const response = await fetch(ADMIN_API_URL, {
     method: 'POST',
@@ -131,7 +131,8 @@ async function fetchFilesFromAdminAPI({context}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {product, journalPromise, fileImages} = useLoaderData<typeof loader>();
+  const {product, journalPromise, carouselImageData} =
+    useLoaderData<typeof loader>();
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -151,7 +152,7 @@ export default function Plant() {
     }
   }, [product.id, product.title]);
 
-  const carouselImages = fileImages.filter((img) =>
+  const carouselImages = carouselImageData.filter((img) =>
     img.image?.url?.includes(`plants--${product.handle}--carousel--`),
   );
 
