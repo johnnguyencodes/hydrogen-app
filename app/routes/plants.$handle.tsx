@@ -98,23 +98,12 @@ async function fetchFilesFromAdminAPI({context}: LoaderFunctionArgs) {
           files(first: 100) {
             edges {
               node {
-                __typename
                 ... on MediaImage {
                   id
                   alt
                   image {
                     url
                   }
-                }
-                ... on GenericFile {
-                  id
-                  alt
-                  fileStatus
-                  preview {
-                    image {
-                      url
-                    }
-                  } 
                 }
               }  
             }
