@@ -126,15 +126,6 @@ async function fetchFilesFromAdminAPI({context}: LoaderFunctionArgs) {
 
   const json = (await response.json()) as ShopifyFilesResponse;
 
-  // Log response for debugging
-  if (!json?.data?.files?.edges) {
-    console.error(
-      'Unexpected response from Admin API:',
-      JSON.stringify(json, null, 2),
-    );
-    return []; // Return empty array to avoid 500s
-  }
-
   return json.data.files.edges.map((edge: any) => edge.node);
 }
 
@@ -175,8 +166,6 @@ export default function Plant() {
     img.image?.url?.includes(`plants--${product.handle}--carousel--`),
   );
 
-  console.log('carouselImages:', carouselImages);
-
   /**
    * Simple HTML layout showing the plant title and description.
    * Uses Shopify's product.descriptionHtml (trusted, sanitized).
@@ -189,7 +178,11 @@ export default function Plant() {
       <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
 
       {carouselImages.length > 0 && (
-        <ProductImage image={{...carouselImages[0].image}} />
+        <div className="carousel">
+          {carouselImages.map((img, index) => (
+            <ProductImage key={img.id ?? index} image={{...img.image}} />
+          ))}
+        </div>
       )}
 
       {/* Display metafields like purchase origin, links, etc. */}
@@ -258,6 +251,7 @@ const PRODUCT_QUERY = `#graphql
   query PlantProduct($handle: String!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!) {
     product(handle: $handle) {
       id
+      title
       handle
       descriptionHtml
       images(first: 1) {
