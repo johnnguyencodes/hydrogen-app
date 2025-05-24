@@ -28,7 +28,8 @@ export async function loader(args: LoaderFunctionArgs) {
  * Critical data loader: fetches the Shopify product and core metafields.
  * If the product doesn't exist, throw a 404.
  */
-async function loadCriticalData({context, params}: LoaderFunctionArgs) {
+async function loadCriticalData(args: LoaderFunctionArgs) {
+  const {context, params} = args;
   const {handle} = params;
   const {storefront} = context;
 
@@ -48,13 +49,16 @@ async function loadCriticalData({context, params}: LoaderFunctionArgs) {
   };
 
   // Shopify storefront query using product handle
-  const {product} = await storefront.query(PRODUCT_QUERY, {variables});
+  const [{product}, adminImageData] = await Promise.all([
+    storefront.query(PRODUCT_QUERY, {variables}),
+    fetchImagesFromAdminAPI(args),
+  ]);
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
-  return {product};
+  return {product, adminImageData};
 }
 
 /**
@@ -78,6 +82,44 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
   return {journalPromise};
 }
 
+/**
+ * async function to grab files uploaded to the store under Content > Files in the admin panel
+ */
+
+async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
+  const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
+  const response = await fetch(ADMIN_API_URL, {
+    method: 'POST',
+    headers: {
+      'X-Shopify-Access-Token': context.env.FILES_ADMIN_API_ACCESS_TOKEN,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+        query Files {
+          files(first: 100) {
+            edges {
+              node {
+                ... on MediaImage {
+                  id
+                  alt
+                  image {
+                    url
+                  }
+                }
+              }  
+            }
+          }
+        }
+      `,
+    }),
+  });
+
+  const json = (await response.json()) as ShopifyFilesResponse;
+
+  return json.data.files.edges.map((edge: any) => edge.node);
+}
+
 // =========================
 // React Component
 // =========================
@@ -89,8 +131,10 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  * The component receives the product and deferred journalPromise from useLoaderData().
  * Hydrated client-side after SSR.
  */
+
 export default function Plant() {
-  const {product, journalPromise} = useLoaderData<typeof loader>();
+  const {product, journalPromise, adminImageData} =
+    useLoaderData<typeof loader>();
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -110,6 +154,10 @@ export default function Plant() {
     }
   }, [product.id, product.title]);
 
+  const carouselImages = adminImageData.filter((img) =>
+    img.image?.url?.includes(`plants--${product.handle}--carousel--`),
+  );
+
   /**
    * Simple HTML layout showing the plant title and description.
    * Uses Shopify's product.descriptionHtml (trusted, sanitized).
@@ -121,8 +169,12 @@ export default function Plant() {
       <h1>{product.title}</h1>
       <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
 
-      {product.images?.nodes?.[0] && (
-        <ProductImage image={product.images.nodes[0]} />
+      {carouselImages.length > 0 && (
+        <div className="carousel">
+          {carouselImages.map((img, index) => (
+            <ProductImage key={img.id ?? index} image={{...img.image}} />
+          ))}
+        </div>
       )}
 
       {/* Display metafields like purchase origin, links, etc. */}
@@ -192,6 +244,7 @@ const PRODUCT_QUERY = `#graphql
     product(handle: $handle) {
       id
       title
+      handle
       descriptionHtml
       images(first: 1) {
         nodes {

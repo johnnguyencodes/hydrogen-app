@@ -58,5 +58,12 @@ export async function createAppLoadContext(
   return {
     ...hydrogenContext,
     // You can spread in other custom things if needed (like your own database client)
+    // expose custom env variables so they are available in context.env
+    env: {
+      ...env,
+      FILES_ADMIN_API_ACCESS_TOKEN: env.FILES_ADMIN_API_ACCESS_TOKEN,
+      FILES_ADMIN_API_KEY: env.FILES_ADMIN_API_KEY,
+      FILES_ADMIN_API_SECRET_KEY: env.FILES_ADMIN_API_SECRET_KEY,
+    },
   };
 }
