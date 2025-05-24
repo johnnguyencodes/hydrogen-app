@@ -49,16 +49,16 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   };
 
   // Shopify storefront query using product handle
-  const [{product}, carouselImageData] = await Promise.all([
+  const [{product}, adminImageData] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {variables}),
-    fetchCarouselImagesFromAdminAPI(args),
+    fetchImagesFromAdminAPI(args),
   ]);
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
-  return {product, carouselImageData};
+  return {product, adminImageData};
 }
 
 /**
@@ -86,7 +86,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  * async function to grab files uploaded to the store under Content > Files in the admin panel
  */
 
-async function fetchCarouselImagesFromAdminAPI({context}: LoaderFunctionArgs) {
+async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
   const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
   const response = await fetch(ADMIN_API_URL, {
     method: 'POST',
@@ -133,7 +133,7 @@ async function fetchCarouselImagesFromAdminAPI({context}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {product, journalPromise, carouselImageData} =
+  const {product, journalPromise, adminImageData} =
     useLoaderData<typeof loader>();
 
   /**
@@ -154,7 +154,7 @@ export default function Plant() {
     }
   }, [product.id, product.title]);
 
-  const carouselImages = carouselImageData.filter((img) =>
+  const carouselImages = adminImageData.filter((img) =>
     img.image?.url?.includes(`plants--${product.handle}--carousel--`),
   );
 
