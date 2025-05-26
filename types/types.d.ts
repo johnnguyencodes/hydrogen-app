@@ -1,3 +1,5 @@
+import {ProductVariantFragment} from 'storefrontapi.generated';
+
 export {};
 
 declare global {
@@ -12,6 +14,12 @@ declare global {
     FILES_ADMIN_API_KEY: string;
     FILES_ADMIN_API_SECRET_KEY: string;
   }
+
+  type ProductImageProps = {
+    image: ProductVariantFragment['image'];
+    key?: string | number;
+    alt?: string;
+  };
 
   // Type definition for individual journal entries
   type PlantJournalEntry = {

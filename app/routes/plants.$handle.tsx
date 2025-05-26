@@ -174,7 +174,7 @@ export default function Plant() {
 
   // This function maps through all the plant images and uses regex to find a file match
   // If there isn't a match, use general defaults as fallback for metadata
-  // If there is a match, enter metadata based on the regex match and grab the image's alt tag from the Shopify admin API response
+  // If there is a match, enter metadata based on the regex match
   const sortedPlantImages = unsortedPlantImages
     .map((img) => {
       const regex = /--(\d{4}-\d{2}-\d{2})--([a-z]+)--(\d{3})\./;
@@ -187,7 +187,6 @@ export default function Plant() {
             date: new Date(0),
             imageType: '',
             index: 0,
-            alt: img.image.alt || product.title,
           },
         };
       }
@@ -200,7 +199,6 @@ export default function Plant() {
           date: new Date(dateStr),
           imageType,
           index: parseInt(indexStr, 10),
-          alt: img.image.alt || product.title,
         },
       };
     })
@@ -222,6 +220,19 @@ export default function Plant() {
       return aIndex - bIndex;
     });
 
+  const carouselImages = sortedPlantImages.filter(
+    (img) => img.meta?.imageType === 'carousel',
+  );
+
+  const latestCarouselDate =
+    carouselImages.length > 0
+      ? carouselImages[0].meta.date.toISOString().split('T')[0]
+      : null;
+
+  const latestCarouselImages = carouselImages.filter(
+    (img) => img.meta.date.toISOString().split('T')[0] === latestCarouselDate,
+  );
+
   /**
    * Simple HTML layout showing the plant title and description.
    * Uses Shopify's product.descriptionHtml (trusted, sanitized).
@@ -233,10 +244,14 @@ export default function Plant() {
       <h1>{product.title}</h1>
       <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
 
-      {sortedPlantImages.length > 0 && (
-        <div className="carousel">
-          {sortedPlantImages.map((img, index) => (
-            <ProductImage key={img.id ?? index} image={{...img.image}} />
+      {latestCarouselImages.length > 0 && (
+        <div>
+          {latestCarouselImages.map((img, index) => (
+            <ProductImage
+              key={img.id ?? index}
+              image={{...img.image}}
+              alt={img.alt || `${product.title} image`}
+            />
           ))}
         </div>
       )}
