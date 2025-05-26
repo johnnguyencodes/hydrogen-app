@@ -161,8 +161,8 @@ export default function Plant() {
     img.image?.url?.includes(`plants--${product.handle}`),
   );
 
-  // Since unSortedPlantImages is only concerned about the first two parts of the image url, the sorting logic
-  // will only be concerned about the latter 3 parts of the url:
+  // Since unSortedPlantImages is only concerned about the first two parts of the shopify file object's url,
+  // the sorting logic will only be concerned about the latter 3 parts of the url:
   //   - date
   //   - image type
   //   - index
@@ -170,49 +170,37 @@ export default function Plant() {
   //   - carousel
   //   - journal
   //   - milestone
-  // fileExtension can be any file type, but I am assuming all images will be in webp format.
-
-  const extractMetadata = (url: string) => {
-    // This splits the image url using '--', then grabs only the last 3 parts of the url: the dateStr, the imageType, and the index
-    const parts = url.split('--');
-    const length = parts.length;
-
-    if (length < 4) {
-      return {
-        date: new Date(0),
-        imageType: '',
-        index: 0,
-      };
-    }
-
-    const dateStr = parts[length - 3]; // e.g. 2025-05-25
-    const imageType = parts[length - 2]; // e.g. carousel
-    const indexStrWithExt = parts[length - 1]; // e.g. 008.webp
-    const indexStr = indexStrWithExt.replace(/\.[^/.]+$/, ''); // removes any file extension
-
-    return {
-      date: new Date(dateStr),
-      imageType,
-      index: parseInt(indexStr, 10),
-    };
-  };
+  // fileExtension can be any file type, but I am assuming all images will be in .webp format.
 
   const sortedPlantImages = unsortedPlantImages.slice().sort((a, b) => {
-    const aMeta = extractMetadata(a.image.url);
-    const bMeta = extractMetadata(b.image.url);
+    // the regex looks at the end of the image url and looks for the match
+    const regex = /--(\d{4}-\d{2}-\d{2})--([a-z]+)--(\d{3})\./;
 
-    // 1. Sort by date, most recent first
-    if (bMeta.date.getTime() !== aMeta.date.getTime()) {
-      return bMeta.date.getTime() - aMeta.date.getTime();
+    const aMatch = a.image.url.match(regex);
+    const bMatch = b.image.url.match(regex);
+
+    if (!aMatch || !bMatch) return 0; //If either doesn't match, consider them equal
+
+    const [, aDateStr, aImageType, aIndexStr] = aMatch;
+    const [, bDateStr, bImageType, bIndexStr] = bMatch;
+
+    const aDate = new Date(aDateStr);
+    const bDate = new Date(bDateStr);
+    const aIndex = parseInt(aIndexStr, 10);
+    const bIndex = parseInt(bIndexStr, 10);
+
+    // 1. Sort by date (most recent first);
+    if (bDate.getTime() !== aDate.getTime()) {
+      return bDate.getTime() - aDate.getTime();
     }
 
-    // 2. Sort by image type, alphabetically
-    if (aMeta.imageType !== bMeta.imageType) {
-      return aMeta.imageType.localeCompare(bMeta.imageType);
+    // 2. Sort by image type alphabetically
+    if (aImageType !== bImageType) {
+      return aImageType.localeCompare(bImageType);
     }
 
-    // 3. Sort by index, ascending
-    return aMeta.index - bMeta.index;
+    // 3. Sort by index (ascending)
+    return aIndex - bIndex;
   });
 
   /**
