@@ -154,9 +154,42 @@ export default function Plant() {
     }
   }, [product.id, product.title]);
 
-  const carouselImages = adminImageData.filter((img) =>
-    img.image?.url?.includes(`plants--${product.handle}--carousel--`),
+  const unsortedPlantImages = adminImageData.filter((img) =>
+    img.image?.url?.includes(`plants--${product.handle}`),
   );
+
+  // each plant image is a Shopify file object. Each object has a .image.url that must be named with the following structure
+  // `plants--${product.handle}--${mediaType}--2025-12-31.webp`
+  // where mediaType can be either
+  //   - carousel
+  //   - journal
+  //   - milestone
+
+  const unsortedCarouselImages = unsortedPlantImages.filter((img) =>
+    img.image?.url?.includes('carousel'),
+  );
+
+  const sortedCarouselImages = unsortedCarouselImages.slice().sort((a, b) => {
+    const extractInfo = (url: string) => {
+      const match = url.match(/--carousel--(\d{4}-\d{2}-\d{2})--(\d{2})\.webp/);
+      if (!match) return {date: new Date(0), index: 0}; // fallback
+      return {
+        date: new Date(match[1]), // e.g., 2025-05-25
+        index: parseInt(match[2], 10), // e.g., 04
+      };
+    };
+
+    const aInfo = extractInfo(a.image.url);
+    const bInfo = extractInfo(b.image.url);
+
+    // First: sort by date descending (most recent first)
+    if (bInfo.date.getTime() !== aInfo.date.getTime()) {
+      return bInfo.date.getTime() - aInfo.date.getTime();
+    }
+
+    // Second: sort by index ascending
+    return aInfo.index - bInfo.index;
+  });
 
   /**
    * Simple HTML layout showing the plant title and description.
@@ -169,9 +202,9 @@ export default function Plant() {
       <h1>{product.title}</h1>
       <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
 
-      {carouselImages.length > 0 && (
+      {sortedCarouselImages.length > 0 && (
         <div className="carousel">
-          {carouselImages.map((img, index) => (
+          {sortedCarouselImages.map((img, index) => (
             <ProductImage key={img.id ?? index} image={{...img.image}} />
           ))}
         </div>
