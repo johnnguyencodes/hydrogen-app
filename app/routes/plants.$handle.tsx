@@ -62,8 +62,7 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
 }
 
 /**
- * Load data that is *optional* or can be loaded after initial render.
- * Great for journal entries, growth photos, logs, etc.
+ * Load data that is *optional* and can be deferred initial render.
  *
  * This runs in parallel with `loadCriticalData`, and will be awaited by <Await />.
  */
@@ -83,7 +82,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 }
 
 /**
- * async function to grab files uploaded to the store under Content > Files in the admin panel
+ * async function to fetch files uploaded to the Shopify store under Content > Files in the admin panel
  */
 
 async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
@@ -128,12 +127,12 @@ async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
  * Hydrated on the client after server-side rendering.
  * Uses the `product` returned from the loader.
  *
- * The component receives the product and deferred journalPromise from useLoaderData().
+ * The component receives the critical product data and deferred journalPromise from useLoaderData().
  * Hydrated client-side after SSR.
  */
 
 export default function Plant() {
-  const {product, journalPromise, adminImageData} =
+  const {product, adminImageData, journalPromise} =
     useLoaderData<typeof loader>();
 
   /**
@@ -170,11 +169,11 @@ export default function Plant() {
   //   - carousel
   //   - journal
   //   - milestone
-  // fileExtension can be any file type, but I am assuming all images will be in .webp format.
+  // fileExtension can be any file type, but in my comments I am assuming all images will be in .webp format.
 
   // This function maps through all the plant images and uses regex to find a file match
-  // If there isn't a match, use general defaults as fallback for metadata
   // If there is a match, enter metadata based on the regex match
+  // If there isn't a match, use general defaults as fallback for metadata
   const sortedPlantImages = unsortedPlantImages
     .map((img) => {
       const regex = /--(\d{4}-\d{2}-\d{2})--([a-z]+)--(\d{3})\./;
