@@ -154,12 +154,18 @@ export default function Plant() {
     }
   }, [product.id, product.title]);
 
+  // Each plant image is a Shopify file object. Each object has a .image.url that must be named with the following structure
+  // `plants--${product.handle}--YYYY-MM-DD--${imageType}--${index}.${fileExtension}`
+  // For example: plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--001.webp
   const unsortedPlantImages = adminImageData.filter((img) =>
     img.image?.url?.includes(`plants--${product.handle}`),
   );
 
-  // each plant image is a Shopify file object. Each object has a .image.url that must be named with the following structure
-  // `plants--${product.handle}--YYYY-MM-DD--${imageType}--001.${fileExtension}`
+  // Since unSortedPlantImages is only concerned about the first two parts of the image url, the sorting logic
+  // will only be concerned about the latter 3 parts of the url:
+  //   - date
+  //   - image type
+  //   - index
   // where imageType can be either
   //   - carousel
   //   - journal
