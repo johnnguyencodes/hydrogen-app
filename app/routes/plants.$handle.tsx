@@ -159,36 +159,54 @@ export default function Plant() {
   );
 
   // each plant image is a Shopify file object. Each object has a .image.url that must be named with the following structure
-  // `plants--${product.handle}--YYYY-MM-DD--${mediaType}--01.webp`
-  // where mediaType can be either
+  // `plants--${product.handle}--YYYY-MM-DD--${imageType}--001.${fileExtension}`
+  // where imageType can be either
   //   - carousel
   //   - journal
   //   - milestone
+  // fileExtension can be any file type, but I am assuming all images will be in webp format.
 
-  const unsortedCarouselImages = unsortedPlantImages.filter((img) =>
-    img.image?.url?.includes('carousel'),
-  );
+  const extractMetadata = (url: string) => {
+    // This splits the image url using '--', then grabs only the last 3 parts of the url: the dateStr, the imageType, and the index
+    const parts = url.split('--');
+    const length = parts.length;
 
-  const sortedCarouselImages = unsortedCarouselImages.slice().sort((a, b) => {
-    const extractInfo = (url: string) => {
-      const match = url.match(/--(\d{4}-\d{2}-\d{2})--carousel--(\d{2})\.webp/);
-      if (!match) return {date: new Date(0), index: 0}; // fallback
+    if (length < 4) {
       return {
-        date: new Date(match[1]), // extracts date e.g. 2025-12-3l
-        index: parseInt(match[2], 10), // extracts index e.g. 04
+        date: new Date(0),
+        imageType: '',
+        index: 0,
       };
-    };
-
-    const aInfo = extractInfo(a.image.url);
-    const bInfo = extractInfo(b.image.url);
-
-    // First: sort by date descending (most recent first)
-    if (bInfo.date.getTime() !== aInfo.date.getTime()) {
-      return bInfo.date.getTime() - aInfo.date.getTime();
     }
 
-    // Second: sort by index ascending
-    return aInfo.index - bInfo.index;
+    const dateStr = parts[length - 3]; // e.g. 2025-05-25
+    const imageType = parts[length - 2]; // e.g. carousel
+    const indexStrWithExt = parts[length - 1]; // e.g. 008.webp
+    const indexStr = indexStrWithExt.replace(/\.[^/.]+$/, ''); // removes any file extension
+
+    return {
+      date: new Date(dateStr),
+      imageType,
+      index: parseInt(indexStr, 10),
+    };
+  };
+
+  const sortedPlantImages = unsortedPlantImages.slice().sort((a, b) => {
+    const aMeta = extractMetadata(a.image.url);
+    const bMeta = extractMetadata(b.image.url);
+
+    // 1. Sort by date, most recent first
+    if (bMeta.date.getTime() !== aMeta.date.getTime()) {
+      return bMeta.date.getTime() - aMeta.date.getTime();
+    }
+
+    // 2. Sort by image type, alphabetically
+    if (aMeta.imageType !== bMeta.imageType) {
+      return aMeta.imageType.localeCompare(bMeta.imageType);
+    }
+
+    // 3. Sort by index, ascending
+    return aMeta.index - bMeta.index;
   });
 
   /**
@@ -202,9 +220,9 @@ export default function Plant() {
       <h1>{product.title}</h1>
       <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
 
-      {sortedCarouselImages.length > 0 && (
+      {sortedPlantImages.length > 0 && (
         <div className="carousel">
-          {sortedCarouselImages.map((img, index) => (
+          {sortedPlantImages.map((img, index) => (
             <ProductImage key={img.id ?? index} image={{...img.image}} />
           ))}
         </div>
