@@ -657,7 +657,15 @@ export type PlantProductQueryVariables = StorefrontAPI.Exact<{
 
 export type PlantProductQuery = {
   product?: StorefrontAPI.Maybe<
-    Pick<StorefrontAPI.Product, 'id' | 'title' | 'descriptionHtml'> & {
+    Pick<StorefrontAPI.Product, 'id' | 'handle' | 'descriptionHtml'> & {
+      images: {
+        nodes: Array<
+          Pick<
+            StorefrontAPI.Image,
+            'id' | 'url' | 'altText' | 'width' | 'height'
+          >
+        >;
+      };
       metafields: Array<
         StorefrontAPI.Maybe<
           Pick<StorefrontAPI.Metafield, 'namespace' | 'key' | 'value' | 'type'>
@@ -1247,7 +1255,7 @@ interface GeneratedQueryTypes {
     return: PageQuery;
     variables: PageQueryVariables;
   };
-  '#graphql\n  query PlantProduct($handle: String!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!) {\n    product(handle: $handle) {\n      id\n      title\n      descriptionHtml\n      metafields(identifiers: $metafieldIdentifiers) {\n        namespace\n        key\n        value\n        type\n      }\n    }\n  }\n': {
+  '#graphql\n  query PlantProduct($handle: String!, $metafieldIdentifiers: [HasMetafieldsIdentifier!]!) {\n    product(handle: $handle) {\n      id\n      handle\n      descriptionHtml\n      images(first: 1) {\n        nodes {\n          id\n          url\n          altText\n          width\n          height\n        }\n      }\n      metafields(identifiers: $metafieldIdentifiers) {\n        namespace\n        key\n        value\n        type\n      }\n    }\n  }\n': {
     return: PlantProductQuery;
     variables: PlantProductQueryVariables;
   };
