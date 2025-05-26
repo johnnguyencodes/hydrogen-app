@@ -159,7 +159,7 @@ export default function Plant() {
   );
 
   // each plant image is a Shopify file object. Each object has a .image.url that must be named with the following structure
-  // `plants--${product.handle}--${mediaType}--2025-12-31.webp`
+  // `plants--${product.handle}--YYYY-MM-DD--${mediaType}--01.webp`
   // where mediaType can be either
   //   - carousel
   //   - journal
@@ -171,11 +171,11 @@ export default function Plant() {
 
   const sortedCarouselImages = unsortedCarouselImages.slice().sort((a, b) => {
     const extractInfo = (url: string) => {
-      const match = url.match(/--carousel--(\d{4}-\d{2}-\d{2})--(\d{2})\.webp/);
+      const match = url.match(/--(\d{4}-\d{2}-\d{2})--carousel--(\d{2})\.webp/);
       if (!match) return {date: new Date(0), index: 0}; // fallback
       return {
-        date: new Date(match[1]), // e.g., 2025-05-25
-        index: parseInt(match[2], 10), // e.g., 04
+        date: new Date(match[1]), // extracts date e.g. 2025-12-3l
+        index: parseInt(match[2], 10), // extracts index e.g. 04
       };
     };
 
