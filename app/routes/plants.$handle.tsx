@@ -172,36 +172,55 @@ export default function Plant() {
   //   - milestone
   // fileExtension can be any file type, but I am assuming all images will be in .webp format.
 
-  const sortedPlantImages = unsortedPlantImages.slice().sort((a, b) => {
-    // the regex looks at the end of the image url and looks for the match
-    const regex = /--(\d{4}-\d{2}-\d{2})--([a-z]+)--(\d{3})\./;
+  // This function maps through all the plant images and uses regex to find a file match
+  // If there isn't a match, use general defaults as fallback for metadata
+  // If there is a match, enter metadata based on the regex match and grab the image's alt tag from the Shopify admin API response
+  const sortedPlantImages = unsortedPlantImages
+    .map((img) => {
+      const regex = /--(\d{4}-\d{2}-\d{2})--([a-z]+)--(\d{3})\./;
+      const match = img.image.url.match(regex);
 
-    const aMatch = a.image.url.match(regex);
-    const bMatch = b.image.url.match(regex);
+      if (!match) {
+        return {
+          ...img,
+          meta: {
+            date: new Date(0),
+            imageType: '',
+            index: 0,
+            alt: img.image.alt || product.title,
+          },
+        };
+      }
 
-    if (!aMatch || !bMatch) return 0; //If either doesn't match, consider them equal
+      const [, dateStr, imageType, indexStr] = match;
 
-    const [, aDateStr, aImageType, aIndexStr] = aMatch;
-    const [, bDateStr, bImageType, bIndexStr] = bMatch;
+      return {
+        ...img,
+        meta: {
+          date: new Date(dateStr),
+          imageType,
+          index: parseInt(indexStr, 10),
+          alt: img.image.alt || product.title,
+        },
+      };
+    })
+    .sort((a, b) => {
+      const {date: aDate, imageType: aImageType, index: aIndex} = a.meta;
+      const {date: bDate, imageType: bImageType, index: bIndex} = b.meta;
 
-    const aDate = new Date(aDateStr);
-    const bDate = new Date(bDateStr);
-    const aIndex = parseInt(aIndexStr, 10);
-    const bIndex = parseInt(bIndexStr, 10);
+      // 1. Sort by date (most recent first)
+      if (bDate.getTime() !== aDate.getTime()) {
+        return bDate.getTime() - aDate.getTime();
+      }
 
-    // 1. Sort by date (most recent first);
-    if (bDate.getTime() !== aDate.getTime()) {
-      return bDate.getTime() - aDate.getTime();
-    }
+      // 2. Sort by imageType alphabetically
+      if (aImageType !== bImageType) {
+        return aImageType.localeCompare(bImageType);
+      }
 
-    // 2. Sort by image type alphabetically
-    if (aImageType !== bImageType) {
-      return aImageType.localeCompare(bImageType);
-    }
-
-    // 3. Sort by index (ascending)
-    return aIndex - bIndex;
-  });
+      // 3. Sort by index from lowest to highest
+      return aIndex - bIndex;
+    });
 
   /**
    * Simple HTML layout showing the plant title and description.
