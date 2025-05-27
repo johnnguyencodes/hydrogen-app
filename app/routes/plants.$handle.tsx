@@ -43,8 +43,7 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
       {namespace: 'plant', key: 'purchase-origin'},
       {namespace: 'plant', key: 'llifle-link'},
       {namespace: 'plant', key: 'receive-date'},
-      {namespace: 'plant', key: 'last watered'},
-      {namespace: 'plant', key: 'growing conditions'},
+      {namespace: 'plant', key: 'observed-growth-characteristics'},
     ],
   };
 
@@ -59,26 +58,6 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   }
 
   return {product, adminImageData};
-}
-
-/**
- * Load data that is *optional* and can be deferred initial render.
- *
- * This runs in parallel with `loadCriticalData`, and will be awaited by <Await />.
- */
-function loadDeferredData({context, params}: LoaderFunctionArgs) {
-  const {handle} = params;
-  const {storefront} = context;
-
-  if (!handle) {
-    throw new Error('Expected handle to be defined in loadDeferredData');
-  }
-
-  const journalPromise = storefront.query(JOURNAL_QUERY, {
-    variables: {handle},
-  });
-
-  return {journalPromise};
 }
 
 /**
@@ -117,6 +96,37 @@ async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
   const json = (await response.json()) as ShopifyFilesResponse;
 
   return json.data.files.edges.map((edge: any) => edge.node);
+}
+
+/**
+ * Load data that is *optional* and can be deferred initial render.
+ *
+ * This runs in parallel with `loadCriticalData`, and will be awaited by <Await />.
+ */
+function loadDeferredData({context, params}: LoaderFunctionArgs) {
+  const {handle} = params;
+  const {storefront} = context;
+
+  if (!handle) {
+    throw new Error('Expected handle to be defined in loadDeferredData');
+  }
+
+  const queryOptions = {
+    variables: {
+      handle,
+    },
+  };
+
+  const journalPromise = storefront.query(JOURNAL_QUERY, queryOptions);
+
+  const milestonePromise = storefront.query(MILESTONE_QUERY, queryOptions);
+
+  const carouselCopyPromise = storefront.query(
+    CAROUSEL_COPY_QUERY,
+    queryOptions,
+  );
+
+  return {journalPromise, milestonePromise, carouselCopyPromise};
 }
 
 // =========================
@@ -276,6 +286,7 @@ export default function Plant() {
           {/* data is the resolved value of journalPromise */}
           {(data) => {
             // Await gives us the result of journalPromise when it's done
+            console.log('journal data:', data);
             const metafield = data?.product?.journal;
 
             let journal: PlantJournalEntry[] = [];
@@ -352,6 +363,32 @@ const JOURNAL_QUERY = `#graphql
   query PlantJournal($handle: String!) {
     product(handle: $handle) {
       journal: metafield(namespace: "plant", key: "journal") {
+        namespace
+        key
+        value
+        type
+      }
+    }
+  }
+` as const;
+
+const MILESTONE_QUERY = `#graphql
+  query PlantJournal($handle: String!) {
+    product(handle: $handle) {
+      journal: metafield(namespace: "plant", key: "milestone") {
+        namespace
+        key
+        value
+        type
+      }
+    }
+  }
+` as const;
+
+const CAROUSEL_COPY_QUERY = `#graphql
+  query PlantJournal($handle: String!) {
+    product(handle: $handle) {
+      journal: metafield(namespace: "plant", key: "carousel-copy") {
         namespace
         key
         value
