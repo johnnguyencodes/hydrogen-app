@@ -15,6 +15,22 @@ declare global {
     FILES_ADMIN_API_SECRET_KEY: string;
   }
 
+  type AdminImage = {
+    id: string;
+    alt: string;
+    image: {
+      url: string;
+    };
+  };
+
+  type AdminImageWithMetadata = AdminImage & {
+    meta: {
+      date: string;
+      imageType: string;
+      index: number;
+    };
+  };
+
   type ProductImageProps = {
     image: ProductVariantFragment['image'];
     key?: string | number;

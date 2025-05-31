@@ -205,6 +205,8 @@ export default function Plant() {
     {} as Record<string, string>,
   );
 
+  console.log('latestCarouselImages:', latestCarouselImages);
+
   return (
     <div className="plant-page">
       {/* Render core product info immediately */}
@@ -330,7 +332,7 @@ const JOURNAL_QUERY = `#graphql
 ` as const;
 
 const CAROUSEL_COPY_QUERY = `#graphql
-  query PlantJournal($handle: String!) {
+  query CarouselCopy($handle: String!) {
     product(handle: $handle) {
       journal: metafield(namespace: "plant", key: "carousel-copy") {
         namespace

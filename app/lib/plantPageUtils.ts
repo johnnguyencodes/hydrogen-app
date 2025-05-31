@@ -1,7 +1,10 @@
 // Each plant image is a Shopify file object. Each object has a .image.url that must be named with the following structure
 // `plants--${product.handle}--YYYY-MM-DD--${imageType}--${index}.${fileExtension}`
 // For example: plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--001.webp
-export function filterPlantImagesByHandle(adminImageData, productHandle) {
+export function filterPlantImagesByHandle(
+  adminImageData: AdminImage[],
+  productHandle: string,
+) {
   return adminImageData.filter((img) =>
     img.image?.url?.includes(`plants--${productHandle}`),
   );
@@ -17,7 +20,7 @@ export function filterPlantImagesByHandle(adminImageData, productHandle) {
 //   - journal
 //   - milestone
 // fileExtension can be any file type, but in my comments I am assuming all images will be in .webp format.
-export function addImageMetadata(img: any) {
+export function addImageMetadata(img: AdminImage) {
   const regex = /--(\d{4}-\d{2}-\d{2})--([a-z]+)--(\d{3})\./;
   const match = img.image.url.match(regex);
 
@@ -44,13 +47,19 @@ export function addImageMetadata(img: any) {
   };
 }
 
-export function sortImagesWithMetadata(a, b) {
+export function sortImagesWithMetadata(
+  a: AdminImageWithMetadata,
+  b: AdminImageWithMetadata,
+) {
   const {date: aDate, imageType: aImageType, index: aIndex} = a.meta;
   const {date: bDate, imageType: bImageType, index: bIndex} = b.meta;
 
   // 1. Sort by date (most recent first)
-  if (bDate.getTime() !== aDate.getTime()) {
-    return bDate.getTime() - aDate.getTime();
+  const aDateObj = new Date(aDate);
+  const bDateObj = new Date(bDate);
+
+  if (bDateObj.getTime() !== aDateObj.getTime()) {
+    return bDateObj.getTime() - aDateObj.getTime();
   }
 
   // 2. Sort by imageType alphabetically
@@ -61,23 +70,37 @@ export function sortImagesWithMetadata(a, b) {
   // 3. Sort by index from lowest to highest
   return aIndex - bIndex;
 }
+
 // This function maps through all the plant images and uses regex to find a file match
 // If there is a match, enter metadata based on the regex match
 // If there isn't a match, use general defaults as fallback for metadata
-export function returnCarouselImages(sortedPlantImages) {
+export function returnCarouselImages(
+  sortedPlantImages: AdminImageWithMetadata[],
+) {
   return sortedPlantImages.filter((img) => img.meta?.imageType === 'carousel');
 }
 
-export function getLatestCarouselDate(carouselImages) {
+export function getLatestCarouselDate(
+  carouselImages: AdminImageWithMetadata[],
+) {
+  const carouselImageDateObj = new Date(carouselImages[0].meta.date);
+
   return carouselImages.length > 0
-    ? carouselImages[0].meta.date.toISOString().split('T')[0]
+    ? carouselImageDateObj.toISOString().split('T')[0]
     : null;
 }
 
-export function getLatestCarouselImages(carouselImages, latestCarouselDate) {
+export function getLatestCarouselImages(
+  carouselImages: AdminImageWithMetadata[],
+  latestCarouselDate: string,
+) {
   return carouselImages.filter(
-    (img) => img.meta.date.toISOString().split('T')[0] === latestCarouselDate,
+    (img) => getISODate(img.meta.date) === latestCarouselDate,
   );
+}
+
+function getISODate(date: Date | string) {
+  return new Date(date).toISOString().split('T')[0];
 }
 
 export function toCamelCase(str: string) {
