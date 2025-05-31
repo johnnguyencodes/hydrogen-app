@@ -20,7 +20,7 @@ export function filterPlantImagesByHandle(
 //   - journal
 //   - milestone
 // fileExtension can be any file type, but in my comments I am assuming all images will be in .webp format.
-export function addImageMetadata(img: AdminImage) {
+export function addImageMetadata(img: AdminImage): AdminImageWithMetadata {
   const regex = /--(\d{4}-\d{2}-\d{2})--([a-z]+)--(\d{3})\./;
   const match = img.image.url.match(regex);
 
@@ -50,7 +50,7 @@ export function addImageMetadata(img: AdminImage) {
 export function sortImagesWithMetadata(
   a: AdminImageWithMetadata,
   b: AdminImageWithMetadata,
-) {
+): number {
   const {date: aDate, imageType: aImageType, index: aIndex} = a.meta;
   const {date: bDate, imageType: bImageType, index: bIndex} = b.meta;
 
@@ -92,8 +92,9 @@ export function getLatestCarouselDate(
 
 export function getLatestCarouselImages(
   carouselImages: AdminImageWithMetadata[],
-  latestCarouselDate: string,
+  latestCarouselDate: string | null,
 ) {
+  if (!latestCarouselDate) return [];
   return carouselImages.filter(
     (img) => getISODate(img.meta.date) === latestCarouselDate,
   );

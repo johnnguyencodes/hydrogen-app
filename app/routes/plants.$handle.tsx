@@ -205,8 +205,6 @@ export default function Plant() {
     {} as Record<string, string>,
   );
 
-  console.log('latestCarouselImages:', latestCarouselImages);
-
   return (
     <div className="plant-page">
       {/* Render core product info immediately */}
@@ -218,7 +216,11 @@ export default function Plant() {
           {latestCarouselImages.map((img, index) => (
             <ProductImage
               key={img.id ?? index}
-              image={{...img.image}}
+              id={img.id ?? index}
+              image={{
+                __typename: 'Image',
+                url: img.image.url,
+              }}
               alt={img.alt || `${product.title} image`}
             />
           ))}
@@ -332,7 +334,7 @@ const JOURNAL_QUERY = `#graphql
 ` as const;
 
 const CAROUSEL_COPY_QUERY = `#graphql
-  query CarouselCopy($handle: String!) {
+  query PlantCarouselCopy($handle: String!) {
     product(handle: $handle) {
       journal: metafield(namespace: "plant", key: "carousel-copy") {
         namespace

@@ -25,7 +25,7 @@ declare global {
 
   type AdminImageWithMetadata = AdminImage & {
     meta: {
-      date: string;
+      date: Date;
       imageType: string;
       index: number;
     };
@@ -33,8 +33,9 @@ declare global {
 
   type ProductImageProps = {
     image: ProductVariantFragment['image'];
-    key?: string | number;
-    alt?: string;
+    key: string | number;
+    alt: string;
+    id: string;
   };
 
   // Type definition for individual journal entries
@@ -59,7 +60,7 @@ declare global {
           node: {
             id: string;
             url: string;
-            alt?: string;
+            alt: string;
             createdAt: string;
           };
         }>;
