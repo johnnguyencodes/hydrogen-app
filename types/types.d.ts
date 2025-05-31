@@ -15,10 +15,27 @@ declare global {
     FILES_ADMIN_API_SECRET_KEY: string;
   }
 
+  type AdminImage = {
+    id: string;
+    alt: string;
+    image: {
+      url: string;
+    };
+  };
+
+  type AdminImageWithMetadata = AdminImage & {
+    meta: {
+      date: Date;
+      imageType: string;
+      index: number;
+    };
+  };
+
   type ProductImageProps = {
     image: ProductVariantFragment['image'];
-    key?: string | number;
-    alt?: string;
+    key: string | number;
+    alt: string;
+    id: string;
   };
 
   // Type definition for individual journal entries
@@ -43,7 +60,7 @@ declare global {
           node: {
             id: string;
             url: string;
-            alt?: string;
+            alt: string;
             createdAt: string;
           };
         }>;

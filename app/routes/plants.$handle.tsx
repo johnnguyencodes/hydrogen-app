@@ -3,6 +3,15 @@ import {Suspense, useEffect} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {ProductImage} from '~/components/ProductImage';
+import {
+  filterPlantImagesByHandle,
+  addImageMetadata,
+  sortImagesWithMetadata,
+  returnCarouselImages,
+  getLatestCarouselDate,
+  getLatestCarouselImages,
+  extractMetafieldValues,
+} from '~/lib/plantPageUtils';
 
 // =========================
 // Loader Function
@@ -40,11 +49,11 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   const variables = {
     handle,
     metafieldIdentifiers: [
-      {namespace: 'plant', key: 'purchase-origin'},
-      {namespace: 'plant', key: 'llifle-link'},
-      {namespace: 'plant', key: 'receive-date'},
-      {namespace: 'plant', key: 'last watered'},
-      {namespace: 'plant', key: 'growing conditions'},
+      {namespace: 'plant', key: 'acquired-from'},
+      {namespace: 'plant', key: 'llifle-database-link'},
+      {namespace: 'plant', key: 'date-brought-home'},
+      {namespace: 'plant', key: 'growth-notes'},
+      {namespace: 'plant', key: 'care-routine'},
     ],
   };
 
@@ -59,26 +68,6 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   }
 
   return {product, adminImageData};
-}
-
-/**
- * Load data that is *optional* and can be deferred initial render.
- *
- * This runs in parallel with `loadCriticalData`, and will be awaited by <Await />.
- */
-function loadDeferredData({context, params}: LoaderFunctionArgs) {
-  const {handle} = params;
-  const {storefront} = context;
-
-  if (!handle) {
-    throw new Error('Expected handle to be defined in loadDeferredData');
-  }
-
-  const journalPromise = storefront.query(JOURNAL_QUERY, {
-    variables: {handle},
-  });
-
-  return {journalPromise};
 }
 
 /**
@@ -119,6 +108,34 @@ async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
   return json.data.files.edges.map((edge: any) => edge.node);
 }
 
+/**
+ * Load data that is *optional* and can be deferred initial render.
+ * This runs in parallel with `loadCriticalData`, and will be awaited by <Await />.
+ */
+function loadDeferredData({context, params}: LoaderFunctionArgs) {
+  const {handle} = params;
+  const {storefront} = context;
+
+  if (!handle) {
+    throw new Error('Expected handle to be defined in loadDeferredData');
+  }
+
+  const queryOptions = {
+    variables: {
+      handle,
+    },
+  };
+
+  const journalPromise = storefront.query(JOURNAL_QUERY, queryOptions);
+
+  const carouselCopyPromise = storefront.query(
+    CAROUSEL_COPY_QUERY,
+    queryOptions,
+  );
+
+  return {journalPromise, carouselCopyPromise};
+}
+
 // =========================
 // React Component
 // =========================
@@ -153,84 +170,25 @@ export default function Plant() {
     }
   }, [product.id, product.title]);
 
-  // Each plant image is a Shopify file object. Each object has a .image.url that must be named with the following structure
-  // `plants--${product.handle}--YYYY-MM-DD--${imageType}--${index}.${fileExtension}`
-  // For example: plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--001.webp
-  const unsortedPlantImages = adminImageData.filter((img) =>
-    img.image?.url?.includes(`plants--${product.handle}`),
+  const unsortedPlantImages = filterPlantImagesByHandle(
+    adminImageData,
+    product.handle,
   );
 
-  // Since unSortedPlantImages is only concerned about the first two parts of the shopify file object's url,
-  // the sorting logic will only be concerned about the latter 3 parts of the url:
-  //   - date
-  //   - image type
-  //   - index
-  // where imageType can be either
-  //   - carousel
-  //   - journal
-  //   - milestone
-  // fileExtension can be any file type, but in my comments I am assuming all images will be in .webp format.
-
-  // This function maps through all the plant images and uses regex to find a file match
-  // If there is a match, enter metadata based on the regex match
-  // If there isn't a match, use general defaults as fallback for metadata
   const sortedPlantImages = unsortedPlantImages
-    .map((img) => {
-      const regex = /--(\d{4}-\d{2}-\d{2})--([a-z]+)--(\d{3})\./;
-      const match = img.image.url.match(regex);
+    .map(addImageMetadata)
+    .sort(sortImagesWithMetadata);
 
-      if (!match) {
-        return {
-          ...img,
-          meta: {
-            date: new Date(0),
-            imageType: '',
-            index: 0,
-          },
-        };
-      }
+  const carouselImages = returnCarouselImages(sortedPlantImages);
 
-      const [, dateStr, imageType, indexStr] = match;
+  const latestCarouselDate = getLatestCarouselDate(carouselImages);
 
-      return {
-        ...img,
-        meta: {
-          date: new Date(dateStr),
-          imageType,
-          index: parseInt(indexStr, 10),
-        },
-      };
-    })
-    .sort((a, b) => {
-      const {date: aDate, imageType: aImageType, index: aIndex} = a.meta;
-      const {date: bDate, imageType: bImageType, index: bIndex} = b.meta;
-
-      // 1. Sort by date (most recent first)
-      if (bDate.getTime() !== aDate.getTime()) {
-        return bDate.getTime() - aDate.getTime();
-      }
-
-      // 2. Sort by imageType alphabetically
-      if (aImageType !== bImageType) {
-        return aImageType.localeCompare(bImageType);
-      }
-
-      // 3. Sort by index from lowest to highest
-      return aIndex - bIndex;
-    });
-
-  const carouselImages = sortedPlantImages.filter(
-    (img) => img.meta?.imageType === 'carousel',
+  const latestCarouselImages = getLatestCarouselImages(
+    carouselImages,
+    latestCarouselDate,
   );
 
-  const latestCarouselDate =
-    carouselImages.length > 0
-      ? carouselImages[0].meta.date.toISOString().split('T')[0]
-      : null;
-
-  const latestCarouselImages = carouselImages.filter(
-    (img) => img.meta.date.toISOString().split('T')[0] === latestCarouselDate,
-  );
+  const metafieldValues = extractMetafieldValues(product.metafields);
 
   /**
    * Simple HTML layout showing the plant title and description.
@@ -248,7 +206,11 @@ export default function Plant() {
           {latestCarouselImages.map((img, index) => (
             <ProductImage
               key={img.id ?? index}
-              image={{...img.image}}
+              id={img.id ?? index}
+              image={{
+                __typename: 'Image',
+                url: img.image.url,
+              }}
               alt={img.alt || `${product.title} image`}
             />
           ))}
@@ -352,6 +314,19 @@ const JOURNAL_QUERY = `#graphql
   query PlantJournal($handle: String!) {
     product(handle: $handle) {
       journal: metafield(namespace: "plant", key: "journal") {
+        namespace
+        key
+        value
+        type
+      }
+    }
+  }
+` as const;
+
+const CAROUSEL_COPY_QUERY = `#graphql
+  query PlantCarouselCopy($handle: String!) {
+    product(handle: $handle) {
+      journal: metafield(namespace: "plant", key: "carousel-copy") {
         namespace
         key
         value
