@@ -10,7 +10,7 @@ import {
   returnCarouselImages,
   getLatestCarouselDate,
   getLatestCarouselImages,
-  toCamelCase,
+  extractMetafieldValues,
 } from '~/lib/plantPageUtils';
 
 // =========================
@@ -110,7 +110,6 @@ async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
 
 /**
  * Load data that is *optional* and can be deferred initial render.
- *
  * This runs in parallel with `loadCriticalData`, and will be awaited by <Await />.
  */
 function loadDeferredData({context, params}: LoaderFunctionArgs) {
@@ -189,21 +188,12 @@ export default function Plant() {
     latestCarouselDate,
   );
 
+  const metafieldValues = extractMetafieldValues(product.metafields);
+
   /**
    * Simple HTML layout showing the plant title and description.
    * Uses Shopify's product.descriptionHtml (trusted, sanitized).
    */
-
-  const metafieldValues = product.metafields.reduce(
-    (acc: Record<string, string>, metafield: Record<string, string>) => {
-      if (metafield?.key && metafield?.value !== null) {
-        const key = toCamelCase(metafield.key);
-        acc[key] = metafield.value;
-      }
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
 
   return (
     <div className="plant-page">

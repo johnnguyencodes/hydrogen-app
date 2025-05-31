@@ -104,6 +104,21 @@ function getISODate(date: Date | string) {
   return new Date(date).toISOString().split('T')[0];
 }
 
-export function toCamelCase(str: string) {
+export function extractMetafieldValues(
+  metafields: PlantCriticalMetafield[],
+): Record<string, string> {
+  return metafields.reduce(
+    (acc: Record<string, string>, metafield: Record<string, string>) => {
+      if (metafield?.key && metafield.value !== null) {
+        const key = toCamelCase(metafield.key);
+        acc[key] = metafield.value;
+      }
+      return acc;
+    },
+    {},
+  );
+}
+
+function toCamelCase(str: string) {
   return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
 }
