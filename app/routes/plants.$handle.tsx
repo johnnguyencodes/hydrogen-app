@@ -170,6 +170,10 @@ export default function Plant() {
     }
   }, [product.id, product.title]);
 
+  /**
+   * Manipulating data from critical loader to be usable on the page
+   */
+
   const unsortedPlantImages = filterPlantImagesByHandle(
     adminImageData,
     product.handle,
@@ -190,9 +194,16 @@ export default function Plant() {
 
   const metafieldValues = extractMetafieldValues(product.metafields);
 
+  const {
+    acquiredFrom,
+    careRoutine,
+    dateBroughtHome,
+    growthNotes,
+    llifleDatabaseLink,
+  } = metafieldValues;
+
   /**
-   * Simple HTML layout showing the plant title and description.
-   * Uses Shopify's product.descriptionHtml (trusted, sanitized).
+   * HTML markup starts here
    */
 
   return (
@@ -217,20 +228,21 @@ export default function Plant() {
         </div>
       )}
 
-      {/* Display metafields like purchase origin, links, etc. */}
-      {Array.isArray(product.metafields) && product.metafields.length > 0 ? (
-        product.metafields
-          .filter(Boolean)
-          .map((field: PlantCriticalMetafield) =>
-            field ? (
-              <p key={field.key}>
-                <strong>{field.key.replace(/-/g, ' ')}:</strong> {field.value}
-              </p>
-            ) : null,
-          )
-      ) : (
-        <p>No extra details available.</p>
-      )}
+      <p>
+        <strong>Acquired From:</strong> {acquiredFrom}
+      </p>
+      <p>
+        <strong>Llifle Database Link:</strong> {llifleDatabaseLink}
+      </p>
+      <p>
+        <strong>Date Brought Home:</strong> {dateBroughtHome}
+      </p>
+      <p>
+        <strong>Growth Notes:</strong> {growthNotes}
+      </p>
+      <p>
+        <strong>Care Routine:</strong> {careRoutine}
+      </p>
 
       {/* Deferred journal entry block — Suspense + Await */}
       <Suspense fallback={<p> Loading journal...</p>}>
