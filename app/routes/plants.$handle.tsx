@@ -192,7 +192,9 @@ export default function Plant() {
     latestCarouselDate,
   );
 
-  const metafieldValues = extractMetafieldValues(product.metafields);
+  const metafieldValues = extractMetafieldValues(
+    product.metafields.filter(Boolean) as PlantCriticalMetafield[],
+  );
 
   const {
     acquiredFrom,
@@ -229,7 +231,9 @@ export default function Plant() {
           )}
         </div>
         <div className="col-span-1">
-          <h1>{product.title}</h1>
+          <h1 className="text-3xl font-bold leading-tight max-w-[30ch] text-balance">
+            {product.title}
+          </h1>
           <p>
             <strong>Acquired From:</strong> {acquiredFrom}
           </p>
