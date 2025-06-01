@@ -1,6 +1,7 @@
 import {Image} from '@shopify/hydrogen';
+import clsx from 'clsx';
 
-export function ProductImage({image, alt, id}: ProductImageProps) {
+export function ProductImage({image, alt, id, className}: ProductImageProps) {
   if (!image) {
     return <div className="product-image"></div>;
   }
@@ -13,6 +14,7 @@ export function ProductImage({image, alt, id}: ProductImageProps) {
         aspectRatio="1/1"
         data={image}
         sizes="(min-width: 45em) 50vw, 100vw"
+        className={clsx(className)}
       />
     </div>
   );

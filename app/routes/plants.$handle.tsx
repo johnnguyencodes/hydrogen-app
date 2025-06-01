@@ -208,40 +208,45 @@ export default function Plant() {
 
   return (
     <div className="plant-page">
-      {/* Render core product info immediately */}
-      <h1>{product.title}</h1>
-      {latestCarouselImages.length > 0 && (
-        <div>
-          {latestCarouselImages.map((img, index) => (
-            <ProductImage
-              key={img.id ?? index}
-              id={img.id ?? index}
-              image={{
-                __typename: 'Image',
-                url: img.image.url,
-              }}
-              alt={img.alt || `${product.title} image`}
-            />
-          ))}
+      <div className="grid grid-cols-3 gap-4">
+        {/* Render core product info immediately */}
+        <div className="col-span-2">
+          {latestCarouselImages.length > 0 && (
+            <div className="carousel-images grid gap-1 grid-cols-2">
+              {latestCarouselImages.map((img, index) => (
+                <ProductImage
+                  key={img.id ?? index}
+                  id={img.id ?? index}
+                  image={{
+                    __typename: 'Image',
+                    url: img.image.url,
+                  }}
+                  alt={img.alt || `${product.title} image`}
+                  className="col-span-1"
+                />
+              ))}
+            </div>
+          )}
         </div>
-      )}
-
-      <p>
-        <strong>Acquired From:</strong> {acquiredFrom}
-      </p>
-      <p>
-        <strong>Llifle Database Link:</strong> {llifleDatabaseLink}
-      </p>
-      <p>
-        <strong>Date Brought Home:</strong> {dateBroughtHome}
-      </p>
-      <p>
-        <strong>Growth Notes:</strong> {growthNotes}
-      </p>
-      <p>
-        <strong>Care Routine:</strong> {careRoutine}
-      </p>
-
+        <div className="col-span-1">
+          <h1>{product.title}</h1>
+          <p>
+            <strong>Acquired From:</strong> {acquiredFrom}
+          </p>
+          <p>
+            <strong>Llifle Database Link:</strong> {llifleDatabaseLink}
+          </p>
+          <p>
+            <strong>Date Brought Home:</strong> {dateBroughtHome}
+          </p>
+          <p>
+            <strong>Growth Notes:</strong> {growthNotes}
+          </p>
+          <p>
+            <strong>Care Routine:</strong> {careRoutine}
+          </p>
+        </div>
+      </div>
       <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
 
       {/* Deferred journal entry block — Suspense + Await */}
