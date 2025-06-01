@@ -210,8 +210,6 @@ export default function Plant() {
     <div className="plant-page">
       {/* Render core product info immediately */}
       <h1>{product.title}</h1>
-      <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
-
       {latestCarouselImages.length > 0 && (
         <div>
           {latestCarouselImages.map((img, index) => (
@@ -243,6 +241,8 @@ export default function Plant() {
       <p>
         <strong>Care Routine:</strong> {careRoutine}
       </p>
+
+      <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
 
       {/* Deferred journal entry block — Suspense + Await */}
       <Suspense fallback={<p> Loading journal...</p>}>
