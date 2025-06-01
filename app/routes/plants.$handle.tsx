@@ -208,7 +208,7 @@ export default function Plant() {
 
   return (
     <div className="plant-page">
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-10">
         {/* Render core product info immediately */}
         <div className="col-span-2">
           {latestCarouselImages.length > 0 && (
