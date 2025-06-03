@@ -36,6 +36,7 @@ declare global {
     key: string | number;
     alt: string;
     id: string;
+    className?: string;
   };
 
   // Type definition for individual journal entries
