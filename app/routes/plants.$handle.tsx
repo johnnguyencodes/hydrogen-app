@@ -1,5 +1,5 @@
 // React and Remix imports
-import {Suspense, useEffect} from 'react';
+import {Suspense, useEffect, useState} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {ProductImage} from '~/components/ProductImage';
@@ -13,7 +13,7 @@ import {
   extractMetafieldValues,
 } from '~/lib/plantPageUtils';
 import {Button} from '~/components/shadcn/button';
-import {Heart, Share} from 'lucide-react';
+import {Heart, MoonStar, Share, Sun} from 'lucide-react';
 
 // =========================
 // Loader Function
@@ -154,6 +154,56 @@ export default function Plant() {
   const {product, adminImageData, journalPromise} =
     useLoaderData<typeof loader>();
 
+  const saveToLocalStorage = (key: string, value: string | object) => {
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+    } catch (error) {
+      console.warn(`Unable to save to localStorage for key: ${key}`, error);
+    }
+  };
+
+  const loadFromLocalStorage = (key: string): string | null => {
+    try {
+      if (typeof window !== 'undefined') {
+        return localStorage.getItem(key);
+      }
+    } catch (error) {
+      console.warn(`Unable to access localStorage for key: ${key}`, error);
+    }
+    return null;
+  };
+
+  const {isDarkMode, toggleDarkMode} = useDarkMode();
+
+  function useDarkMode() {
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    useEffect(() => {
+      const savedTheme = loadFromLocalStorage('theme');
+
+      const prefersDark = window.matchMedia?.(
+        '(prefers-color-scheme: dark)',
+      ).matches;
+      const shouldUseDark =
+        savedTheme === 'dark' || (!savedTheme && prefersDark);
+
+      setIsDarkMode(shouldUseDark);
+      document.documentElement.classList.toggle('dark', shouldUseDark);
+    }, []);
+
+    const toggleDarkMode = () => {
+      setIsDarkMode((prev) => {
+        const nextMode = !prev;
+        document.documentElement.classList.toggle('dark', nextMode);
+        localStorage.setItem('theme', nextMode ? 'dark' : 'light');
+        return nextMode;
+      });
+    };
+
+    return {isDarkMode, toggleDarkMode};
+  }
   /**
    * Analytics: track page view when the plant page is viewed.
    * Uses window.analytics.track() if available; logs fallback if not.
@@ -211,7 +261,7 @@ export default function Plant() {
    */
 
   return (
-    <div className="plant-page">
+    <div className="plant-page bg-[var(--color-bg-dim)]">
       <div className="grid grid-cols-3 gap-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <div className="col-span-2">
@@ -244,6 +294,19 @@ export default function Plant() {
           <h1 className="text-3xl mb-1 font-medium leading-tight max-w-[30ch] text-balance">
             {product.title}
           </h1>
+          <Button
+            onClick={toggleDarkMode}
+            className="ml-2 w-[40px] p-0"
+            data-testid="themeToggle"
+            variant="default"
+          >
+            {isDarkMode ? (
+              <Sun className="h-4 w-4"></Sun>
+            ) : (
+              <MoonStar className="h-4 w-4"></MoonStar>
+            )}
+          </Button>
+
           <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md border border-black">
             <div
               className="prose prose-p:text-red-500 max-w-none text-base"

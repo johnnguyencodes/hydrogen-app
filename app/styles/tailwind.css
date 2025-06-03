@@ -17,6 +17,8 @@
 @plugin 'tailwindcss-debug-screens';
 @plugin 'tailwindcss-animate';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @layer base {
   *,
   *::before,
@@ -37,8 +39,6 @@
   /* --sh-entity: #e25a1c; */
 }
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
   --breakpoint-*: initial;
   --breakpoint-xs: 375px;
@@ -48,49 +48,39 @@
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
   --breakpoint-3xl: 1920px;
-
-  /* dark mode colors */
-  --color-darkmode-text: #fcfcfa;
-  --color-darkmode-background: #2d2a2e;
-  --color-darkmode-dark1: #221f22;
-  --color-darkmode-dark2: #19181a;
-  --color-darkmode-dimmed1: #c1c0c0;
-  --color-darkmode-dimmed2: #939293;
-  --color-darkmode-dimmed3: #727072;
-  --color-darkmode-dimmed4: #5b595c;
-  --color-darkmode-dimmed5: #403e41;
-  --color-darkmode-panel: #fdf7f3;
-  --color-darkmode-light: #fffcfa;
-  --color-darkmode-red: #ff6188;
-  --color-darkmode-orange: #fc9867;
-  --color-darkmode-yellow: #ffd866;
-  --color-darkmode-green: #aadc76;
-  --color-darkmode-blue: #78dce8;
-  --color-darkmode-purple: #ab9df2;
-  --color-darkmode-highlight: #cfe8e5;
-
-  /* lightmode colors */
-  --color-lightmode-text: #2c232e;
-  --color-lightmode-background: #f8efe7;
-  --color-lightmode-dark1: #eee5de;
-  --color-lightmode-dark2: #d2c9c4;
-  --color-lightmode-dimmed1: #72696d;
-  --color-lightmode-dimmed2: #92898a;
-  --color-lightmode-dimmed3: #a59c9c;
-  --color-lightmode-dimmed4: #beb5b3;
-  --color-lightmode-dimmed5: #d2c9c4;
-  --color-lightmode-panel: #fdf7f3;
-  --color-lightmode-light: #fffcfa;
-  --color-lightmode-red: #ce4770;
-  --color-lightmode-orange: #d4572b;
-  --color-lightmode-yellow: #b16803;
-  --color-lightmode-green: #218871;
-  --color-lightmode-blue: #2473b6;
-  --color-lightmode-purple: #6851a2;
-  --color-lightmode-highlight: #fee1cf;
 }
 
 :root {
+  /* light mode colors, taken from everforest, soft */
+  /* https://github.com/sainnhe/everforest */
+  --color-bg-dim: #e5dfc5; /* dimmed background */
+  --color-bg-0: #f3ead3; /* default background */
+  --color-bg-1: #eae4ca; /* */
+  --color-bg-2: #e5dfc5; /* card background, active */
+  --color-bg-3: #ddd8be; /* card background, inactive */
+  --color-bg-4: #d8d3ba; /* breaks */
+  --color-bg-5: #b9c0ab; /* */
+
+  --color-bg-visual: #e1e4bd; /* visual selection */
+  --color-bg-red: #f4dbd0; /* error highlight */
+  --color-bg-green: #e5e6c5; /* hint highlight */
+  --color-bg-blue: #e1e7dd; /* info highlight */
+  --color-bg-yellow: #f1e4c5; /* warning highlight */
+
+  --color-fg-text: #5c6a72; /* text color */
+
+  --color-fg-red: #f85552;
+  --color-fg-orange: #f57d26;
+  --color-fg-yellow: #dfa000;
+  --color-fg-green: #8da101;
+  --color-fg-blue: #3a94c5;
+  --color-fg-aqua: #35a77c;
+  --color-fg-purple: #df69ba;
+
+  --color-fg-gray-0: #a6b0a0;
+  --color-fg-gray-1: #939f91;
+  --color-fg-gray-2: #829181;
+
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -126,6 +116,36 @@
 }
 
 .dark {
+  /* dark mode colors, taken from everforest, soft */
+  /* https://github.com/sainnhe/everforest */
+  --color-bg-dim: #293136; /* dimmed background */
+  --color-bg-0: #333c43; /* default background */
+  --color-bg-1: #3a464c; /*  */
+  --color-bg-2: #434f55; /* card background, active */
+  --color-bg-3: #4d5960; /* card background, inactive */
+  --color-bg-4: #555f66; /* breaks */
+  --color-bg-5: #5d6b66; /* */
+
+  --color-bg-visual: #59464c; /* visual selection */
+  --color-bg-red: #5c3f4f; /* error highlight */
+  --color-bg-green: #48584e; /* hint highlight */
+  --color-bg-blue: #3f5865; /* info highlight */
+  --color-bg-yellow: #55544a; /* warning highlight */
+
+  --color-fg-text: #d3c6aa; /* text color */
+
+  --color-fg-red: #e67e80;
+  --color-fg-orange: #e69875;
+  --color-fg-yellow: #dbbc7f;
+  --color-fg-green: #a7c080;
+  --color-fg-aqua: #83c092;
+  --color-fg-blue: #7fbbb3;
+  --color-fg-purple: #d699b6;
+
+  --color-fg-gray-0: #7a8478;
+  --color-fg-gray-1: #859289;
+  --color-fg-gray-2: #9da9a0;
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
