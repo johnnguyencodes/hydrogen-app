@@ -13,6 +13,7 @@
 }
 
 @import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 @plugin 'tailwindcss-debug-screens';
 @plugin 'tailwindcss-animate';
 

@@ -12,6 +12,8 @@ import {
   getLatestCarouselImages,
   extractMetafieldValues,
 } from '~/lib/plantPageUtils';
+import {Button} from '~/components/shadcn/button';
+import {Heart, Share} from 'lucide-react';
 
 // =========================
 // Loader Function
@@ -210,7 +212,7 @@ export default function Plant() {
 
   return (
     <div className="plant-page">
-      <div className="grid grid-cols-3 gap-10">
+      <div className="grid grid-cols-3 gap-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <div className="col-span-2">
           {latestCarouselImages.length > 0 && (
@@ -231,27 +233,40 @@ export default function Plant() {
           )}
         </div>
         <div className="col-span-1">
-          <h1 className="text-3xl font-bold leading-tight max-w-[30ch] text-balance">
+          <div className="flex justify-end">
+            <Button size="sm" className="mr-3">
+              <Heart />
+            </Button>
+            <Button size="sm">
+              <Share />
+            </Button>
+          </div>
+          <h1 className="text-3xl mb-1 font-medium leading-tight max-w-[30ch] text-balance">
             {product.title}
           </h1>
-          <p>
-            <strong>Acquired From:</strong> {acquiredFrom}
-          </p>
-          <p>
-            <strong>Llifle Database Link:</strong> {llifleDatabaseLink}
-          </p>
-          <p>
-            <strong>Date Brought Home:</strong> {dateBroughtHome}
-          </p>
-          <p>
-            <strong>Growth Notes:</strong> {growthNotes}
-          </p>
-          <p>
-            <strong>Care Routine:</strong> {careRoutine}
-          </p>
+          <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md border border-black">
+            <div
+              className="prose prose-p:text-red-500 max-w-none text-base"
+              dangerouslySetInnerHTML={{__html: product.descriptionHtml}}
+            />
+            <p>
+              <strong>Acquired From:</strong> {acquiredFrom}
+            </p>
+            <p>
+              <strong>Llifle Database Link:</strong> {llifleDatabaseLink}
+            </p>
+            <p>
+              <strong>Date Brought Home:</strong> {dateBroughtHome}
+            </p>
+            <p>
+              <strong>Growth Notes:</strong> {growthNotes}
+            </p>
+            <p>
+              <strong>Care Routine:</strong> {careRoutine}
+            </p>
+          </div>
         </div>
       </div>
-      <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
 
       {/* Deferred journal entry block — Suspense + Await */}
       <Suspense fallback={<p> Loading journal...</p>}>
