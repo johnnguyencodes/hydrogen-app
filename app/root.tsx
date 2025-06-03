@@ -157,7 +157,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Meta />
         <Links />
       </head>
-      <body className="debug-screens">
+      <body className="debug-screens bg-[var(--color-bg-0)]">
         <div className="max-w-[1440px] mx-auto">
           {data ? (
             <Analytics.Provider

@@ -211,7 +211,7 @@ export default function Plant() {
    */
 
   return (
-    <div className="plant-page bg-[var(--color-bg-dim)]">
+    <div className="plant-page ">
       <div className="grid grid-cols-3 gap-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <div className="col-span-2">
@@ -241,7 +241,7 @@ export default function Plant() {
               <Share />
             </Button>
           </div>
-          <h1 className="text-3xl mb-1 font-medium leading-tight max-w-[30ch] text-balance">
+          <h1 className="text-3xl mb-1 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
             {product.title}
           </h1>
           <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md border border-black">
