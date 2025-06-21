@@ -1,5 +1,5 @@
 // React and Remix imports
-import {Suspense, useEffect, useState} from 'react';
+import {Suspense, useEffect} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {ProductImage} from '~/components/ProductImage';
@@ -11,9 +11,10 @@ import {
   getLatestCarouselDate,
   getLatestCarouselImages,
   extractMetafieldValues,
+  returnFormattedDate,
 } from '~/lib/plantPageUtils';
-import {Button} from '~/components/shadcn/button';
-import {Heart, MoonStar, Share, Sun} from 'lucide-react';
+import {Button} from '~/components/ui/button';
+import {Heart, Share, ExternalLink} from 'lucide-react';
 
 // =========================
 // Loader Function
@@ -206,6 +207,8 @@ export default function Plant() {
     llifleDatabaseLink,
   } = metafieldValues;
 
+  const datePlantBroughtHome = returnFormattedDate(dateBroughtHome);
+
   /**
    * HTML markup starts here
    */
@@ -241,29 +244,46 @@ export default function Plant() {
               <Share />
             </Button>
           </div>
-          <h1 className="text-3xl mb-1 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
+          <h1 className="text-3xl mb-5 mt-3 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
             {product.title}
           </h1>
-          <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md border border-black">
+          <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md border border-[var(--color-bg-3)] bg-[var(--color-bg-3)] prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-statusline-1)]">
             <div
-              className="prose prose-p:text-red-500 max-w-none text-base"
+              className="prose border-[var(--color-bg-5)] border-b-1 p-5"
               dangerouslySetInnerHTML={{__html: product.descriptionHtml}}
             />
-            <p>
-              <strong>Acquired From:</strong> {acquiredFrom}
-            </p>
-            <p>
-              <strong>Llifle Database Link:</strong> {llifleDatabaseLink}
-            </p>
-            <p>
-              <strong>Date Brought Home:</strong> {dateBroughtHome}
-            </p>
-            <p>
-              <strong>Growth Notes:</strong> {growthNotes}
-            </p>
-            <p>
-              <strong>Care Routine:</strong> {careRoutine}
-            </p>
+            <div className="prose prose-p:my-2 p-5">
+              <p className="inline-flex items-center gap-1">
+                <strong>Acquired From:</strong>
+                <a
+                  href={acquiredFrom}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {acquiredFrom}
+                </a>{' '}
+                <ExternalLink size="16" className="inline-block align-middle" />
+              </p>
+              <p className="inline-flex items-center gap-1">
+                <a
+                  href={llifleDatabaseLink}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  View species info on LLIFLE
+                </a>
+                <ExternalLink size="16" className="inline-block align-middle" />
+              </p>
+              <p>
+                <strong>Date Brought Home:</strong> {datePlantBroughtHome}
+              </p>
+              <p>
+                <strong>Growth Notes:</strong> {growthNotes}
+              </p>
+              <p>
+                <strong>Care Routine:</strong> {careRoutine}
+              </p>
+            </div>
           </div>
         </div>
       </div>

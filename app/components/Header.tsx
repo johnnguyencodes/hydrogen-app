@@ -27,7 +27,7 @@ export function Header({
 }: HeaderProps) {
   const {shop, menu} = header;
   return (
-    <header className="header">
+    <header className="header bg-[var(--color-bg-0)]">
       <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
         <strong>{shop.name}</strong>
       </NavLink>
@@ -53,7 +53,7 @@ export function HeaderMenu({
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
-  const className = `header-menu-${viewport}`;
+  const className = `header-menu-${viewport} `;
   const {close} = useAside();
 
   const loadFromLocalStorage = (key: string): string | null => {

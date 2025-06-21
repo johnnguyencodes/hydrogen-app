@@ -77,6 +77,10 @@
   --color-fg-aqua: #35a77c;
   --color-fg-purple: #df69ba;
 
+  --color-fg-statusline-1: #93b259;
+  --color-fg-statusline-2: #708089;
+  --color-fg-statusline-3: #e66868;
+
   --color-fg-gray-0: #a6b0a0;
   --color-fg-gray-1: #939f91;
   --color-fg-gray-2: #829181;
@@ -118,19 +122,19 @@
 .dark {
   /* dark mode colors, taken from everforest, soft */
   /* https://github.com/sainnhe/everforest */
-  --color-bg-dim: #293136; /* dimmed background */
-  --color-bg-0: #333c43; /* default background */
-  --color-bg-1: #3a464c; /*  */
-  --color-bg-2: #434f55; /* card background, active */
-  --color-bg-3: #4d5960; /* card background, inactive */
-  --color-bg-4: #555f66; /* breaks */
-  --color-bg-5: #5d6b66; /* */
+  --color-bg-dim: #1e2326; /* dimmed background */
+  --color-bg-0: #272e33; /* default background */
+  --color-bg-1: #2e383c; /*  */
+  --color-bg-2: #374145; /* card background, active */
+  --color-bg-3: #414b50; /* card background, inactive */
+  --color-bg-4: #495156; /* breaks */
+  --color-bg-5: #4f5b58; /* */
 
-  --color-bg-visual: #59464c; /* visual selection */
-  --color-bg-red: #5c3f4f; /* error highlight */
-  --color-bg-green: #48584e; /* hint highlight */
-  --color-bg-blue: #3f5865; /* info highlight */
-  --color-bg-yellow: #55544a; /* warning highlight */
+  --color-bg-visual: #493b40; /* visual selection */
+  --color-bg-red: #e67e80; /* error highlight */
+  --color-bg-green: #3c4841; /* hint highlight */
+  --color-bg-blue: #384b55; /* info highlight */
+  --color-bg-yellow: #45443c; /* warning highlight */
 
   --color-fg-text: #d3c6aa; /* text color */
 
@@ -141,6 +145,10 @@
   --color-fg-aqua: #83c092;
   --color-fg-blue: #7fbbb3;
   --color-fg-purple: #d699b6;
+
+  --color-fg-statusline-1: #a7c080;
+  --color-fg-statusline-2: #d3c6aa;
+  --color-fg-statusline-3: #e67e80;
 
   --color-fg-gray-0: #7a8478;
   --color-fg-gray-1: #859289;
