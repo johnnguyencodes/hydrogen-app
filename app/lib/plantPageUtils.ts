@@ -119,6 +119,18 @@ export function extractMetafieldValues(
   );
 }
 
+export function returnFormattedDate(dateBroughtHome: string): string {
+  const modifiedDateBroughtHome = new Date(`${dateBroughtHome}`);
+
+  const formattedDate = modifiedDateBroughtHome.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  return formattedDate;
+}
+
 function toCamelCase(str: string) {
   return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
 }

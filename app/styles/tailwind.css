@@ -1,6 +1,23 @@
+/* inter-latin-wght-normal */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url(https://cdn.jsdelivr.net/fontsource/fonts/inter:vf@latest/latin-wght-normal.woff2)
+    format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212,
+    U+2215, U+FEFF, U+FFFD;
+}
+
 @import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 @plugin 'tailwindcss-debug-screens';
 @plugin 'tailwindcss-animate';
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   *,
@@ -22,11 +39,7 @@
   /* --sh-entity: #e25a1c; */
 }
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 @theme {
-  --font-display: 'Inter var', 'Tahoma', 'sans';
-
   --breakpoint-*: initial;
   --breakpoint-xs: 375px;
   --breakpoint-sm: 640px;
@@ -35,49 +48,43 @@
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
   --breakpoint-3xl: 1920px;
-
-  /* dark mode colors */
-  --color-darkmode-text: #fcfcfa;
-  --color-darkmode-background: #2d2a2e;
-  --color-darkmode-dark1: #221f22;
-  --color-darkmode-dark2: #19181a;
-  --color-darkmode-dimmed1: #c1c0c0;
-  --color-darkmode-dimmed2: #939293;
-  --color-darkmode-dimmed3: #727072;
-  --color-darkmode-dimmed4: #5b595c;
-  --color-darkmode-dimmed5: #403e41;
-  --color-darkmode-panel: #fdf7f3;
-  --color-darkmode-light: #fffcfa;
-  --color-darkmode-red: #ff6188;
-  --color-darkmode-orange: #fc9867;
-  --color-darkmode-yellow: #ffd866;
-  --color-darkmode-green: #aadc76;
-  --color-darkmode-blue: #78dce8;
-  --color-darkmode-purple: #ab9df2;
-  --color-darkmode-highlight: #cfe8e5;
-
-  /* lightmode colors */
-  --color-lightmode-text: #2c232e;
-  --color-lightmode-background: #f8efe7;
-  --color-lightmode-dark1: #eee5de;
-  --color-lightmode-dark2: #d2c9c4;
-  --color-lightmode-dimmed1: #72696d;
-  --color-lightmode-dimmed2: #92898a;
-  --color-lightmode-dimmed3: #a59c9c;
-  --color-lightmode-dimmed4: #beb5b3;
-  --color-lightmode-dimmed5: #d2c9c4;
-  --color-lightmode-panel: #fdf7f3;
-  --color-lightmode-light: #fffcfa;
-  --color-lightmode-red: #ce4770;
-  --color-lightmode-orange: #d4572b;
-  --color-lightmode-yellow: #b16803;
-  --color-lightmode-green: #218871;
-  --color-lightmode-blue: #2473b6;
-  --color-lightmode-purple: #6851a2;
-  --color-lightmode-highlight: #fee1cf;
 }
 
 :root {
+  /* light mode colors, taken from everforest, soft */
+  /* https://github.com/sainnhe/everforest */
+  --color-bg-dim: #e5dfc5; /* dimmed background */
+  --color-bg-0: #f3ead3; /* default background */
+  --color-bg-1: #eae4ca; /* */
+  --color-bg-2: #e5dfc5; /* card background, active */
+  --color-bg-3: #ddd8be; /* card background, inactive */
+  --color-bg-4: #d8d3ba; /* breaks */
+  --color-bg-5: #b9c0ab; /* */
+
+  --color-bg-visual: #e1e4bd; /* visual selection */
+  --color-bg-red: #f4dbd0; /* error highlight */
+  --color-bg-green: #e5e6c5; /* hint highlight */
+  --color-bg-blue: #e1e7dd; /* info highlight */
+  --color-bg-yellow: #f1e4c5; /* warning highlight */
+
+  --color-fg-text: #5c6a72; /* text color */
+
+  --color-fg-red: #f85552;
+  --color-fg-orange: #f57d26;
+  --color-fg-yellow: #dfa000;
+  --color-fg-green: #8da101;
+  --color-fg-blue: #3a94c5;
+  --color-fg-aqua: #35a77c;
+  --color-fg-purple: #df69ba;
+
+  --color-fg-statusline-1: #93b259;
+  --color-fg-statusline-2: #708089;
+  --color-fg-statusline-3: #e66868;
+
+  --color-fg-gray-0: #a6b0a0;
+  --color-fg-gray-1: #939f91;
+  --color-fg-gray-2: #829181;
+
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -113,6 +120,40 @@
 }
 
 .dark {
+  /* dark mode colors, taken from everforest, soft */
+  /* https://github.com/sainnhe/everforest */
+  --color-bg-dim: #1e2326; /* dimmed background */
+  --color-bg-0: #272e33; /* default background */
+  --color-bg-1: #2e383c; /*  */
+  --color-bg-2: #374145; /* card background, active */
+  --color-bg-3: #414b50; /* card background, inactive */
+  --color-bg-4: #495156; /* breaks */
+  --color-bg-5: #4f5b58; /* */
+
+  --color-bg-visual: #493b40; /* visual selection */
+  --color-bg-red: #e67e80; /* error highlight */
+  --color-bg-green: #3c4841; /* hint highlight */
+  --color-bg-blue: #384b55; /* info highlight */
+  --color-bg-yellow: #45443c; /* warning highlight */
+
+  --color-fg-text: #d3c6aa; /* text color */
+
+  --color-fg-red: #e67e80;
+  --color-fg-orange: #e69875;
+  --color-fg-yellow: #dbbc7f;
+  --color-fg-green: #a7c080;
+  --color-fg-aqua: #83c092;
+  --color-fg-blue: #7fbbb3;
+  --color-fg-purple: #d699b6;
+
+  --color-fg-statusline-1: #a7c080;
+  --color-fg-statusline-2: #d3c6aa;
+  --color-fg-statusline-3: #e67e80;
+
+  --color-fg-gray-0: #7a8478;
+  --color-fg-gray-1: #859289;
+  --color-fg-gray-2: #9da9a0;
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);

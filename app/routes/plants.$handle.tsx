@@ -11,7 +11,10 @@ import {
   getLatestCarouselDate,
   getLatestCarouselImages,
   extractMetafieldValues,
+  returnFormattedDate,
 } from '~/lib/plantPageUtils';
+import {Button} from '~/components/ui/button';
+import {Heart, Share, ExternalLink} from 'lucide-react';
 
 // =========================
 // Loader Function
@@ -192,7 +195,9 @@ export default function Plant() {
     latestCarouselDate,
   );
 
-  const metafieldValues = extractMetafieldValues(product.metafields);
+  const metafieldValues = extractMetafieldValues(
+    product.metafields.filter(Boolean) as PlantCriticalMetafield[],
+  );
 
   const {
     acquiredFrom,
@@ -202,47 +207,86 @@ export default function Plant() {
     llifleDatabaseLink,
   } = metafieldValues;
 
+  const datePlantBroughtHome = returnFormattedDate(dateBroughtHome);
+
   /**
    * HTML markup starts here
    */
 
   return (
-    <div className="plant-page">
-      {/* Render core product info immediately */}
-      <h1>{product.title}</h1>
-      <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
-
-      {latestCarouselImages.length > 0 && (
-        <div>
-          {latestCarouselImages.map((img, index) => (
-            <ProductImage
-              key={img.id ?? index}
-              id={img.id ?? index}
-              image={{
-                __typename: 'Image',
-                url: img.image.url,
-              }}
-              alt={img.alt || `${product.title} image`}
-            />
-          ))}
+    <div className="plant-page ">
+      <div className="grid grid-cols-3 gap-10 relative min-h-screen">
+        {/* Render core product info immediately */}
+        <div className="col-span-2">
+          {latestCarouselImages.length > 0 && (
+            <div className="carousel-images grid gap-1 grid-cols-2">
+              {latestCarouselImages.map((img, index) => (
+                <ProductImage
+                  key={img.id ?? index}
+                  id={img.id ?? index}
+                  image={{
+                    __typename: 'Image',
+                    url: img.image.url,
+                  }}
+                  alt={img.alt || `${product.title} image`}
+                  className="col-span-1"
+                />
+              ))}
+            </div>
+          )}
         </div>
-      )}
-
-      <p>
-        <strong>Acquired From:</strong> {acquiredFrom}
-      </p>
-      <p>
-        <strong>Llifle Database Link:</strong> {llifleDatabaseLink}
-      </p>
-      <p>
-        <strong>Date Brought Home:</strong> {dateBroughtHome}
-      </p>
-      <p>
-        <strong>Growth Notes:</strong> {growthNotes}
-      </p>
-      <p>
-        <strong>Care Routine:</strong> {careRoutine}
-      </p>
+        <div className="col-span-1">
+          <div className="flex justify-end">
+            <Button size="sm" className="mr-3">
+              <Heart />
+            </Button>
+            <Button size="sm">
+              <Share />
+            </Button>
+          </div>
+          <h1 className="text-3xl mb-5 mt-3 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
+            {product.title}
+          </h1>
+          <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md border border-[var(--color-bg-3)] bg-[var(--color-bg-3)] prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-statusline-1)]">
+            <div
+              className="prose border-[var(--color-bg-5)] border-b-1 p-5"
+              dangerouslySetInnerHTML={{__html: product.descriptionHtml}}
+            />
+            <div className="prose prose-p:my-2 p-5">
+              <p className="inline-flex items-center gap-1">
+                <strong>Acquired From:</strong>
+                <a
+                  href={acquiredFrom}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {acquiredFrom}
+                </a>{' '}
+                <ExternalLink size="16" className="inline-block align-middle" />
+              </p>
+              <p className="inline-flex items-center gap-1">
+                <a
+                  href={llifleDatabaseLink}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  View species info on LLIFLE
+                </a>
+                <ExternalLink size="16" className="inline-block align-middle" />
+              </p>
+              <p>
+                <strong>Date Brought Home:</strong> {datePlantBroughtHome}
+              </p>
+              <p>
+                <strong>Growth Notes:</strong> {growthNotes}
+              </p>
+              <p>
+                <strong>Care Routine:</strong> {careRoutine}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Deferred journal entry block — Suspense + Await */}
       <Suspense fallback={<p> Loading journal...</p>}>

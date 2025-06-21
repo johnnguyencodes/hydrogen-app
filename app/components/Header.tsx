@@ -1,4 +1,4 @@
-import {Suspense} from 'react';
+import {Suspense, useEffect, useState} from 'react';
 import {Await, NavLink, useAsyncValue} from '@remix-run/react';
 import {
   type CartViewPayload,
@@ -7,6 +7,8 @@ import {
 } from '@shopify/hydrogen';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
+import {Button} from './ui/button';
+import {MoonStar, Sun} from 'lucide-react';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -25,7 +27,7 @@ export function Header({
 }: HeaderProps) {
   const {shop, menu} = header;
   return (
-    <header className="header">
+    <header className="header bg-[var(--color-bg-0)]">
       <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
         <strong>{shop.name}</strong>
       </NavLink>
@@ -51,9 +53,49 @@ export function HeaderMenu({
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
-  const className = `header-menu-${viewport}`;
+  const className = `header-menu-${viewport} `;
   const {close} = useAside();
 
+  const loadFromLocalStorage = (key: string): string | null => {
+    try {
+      if (typeof window !== 'undefined') {
+        return localStorage.getItem(key);
+      }
+    } catch (error) {
+      console.warn(`Unable to access localStorage for key: ${key}`, error);
+    }
+    return null;
+  };
+
+  const {isDarkMode, toggleDarkMode} = useDarkMode();
+
+  function useDarkMode() {
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    useEffect(() => {
+      const savedTheme = loadFromLocalStorage('theme');
+
+      const prefersDark = window.matchMedia?.(
+        '(prefers-color-scheme: dark)',
+      ).matches;
+      const shouldUseDark =
+        savedTheme === 'dark' || (!savedTheme && prefersDark);
+
+      setIsDarkMode(shouldUseDark);
+      document.documentElement.classList.toggle('dark', shouldUseDark);
+    }, []);
+
+    const toggleDarkMode = () => {
+      setIsDarkMode((prev) => {
+        const nextMode = !prev;
+        document.documentElement.classList.toggle('dark', nextMode);
+        localStorage.setItem('theme', nextMode ? 'dark' : 'light');
+        return nextMode;
+      });
+    };
+
+    return {isDarkMode, toggleDarkMode};
+  }
   return (
     <nav className={className} role="navigation">
       {viewport === 'mobile' && (
@@ -91,6 +133,19 @@ export function HeaderMenu({
           </NavLink>
         );
       })}
+
+      <Button
+        onClick={toggleDarkMode}
+        className="ml-2 w-[40px] p-0"
+        data-testid="themeToggle"
+        variant="default"
+      >
+        {isDarkMode ? (
+          <Sun className="h-4 w-4"></Sun>
+        ) : (
+          <MoonStar className="h-4 w-4"></MoonStar>
+        )}
+      </Button>
     </nav>
   );
 }
