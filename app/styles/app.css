@@ -178,6 +178,7 @@ button.reset:hover:not(:has(> *)) {
 .header-menu-desktop {
   display: none;
   grid-gap: 1rem;
+  align-items: center;
   @media (min-width: 45em) {
     display: flex;
     grid-gap: 1rem;

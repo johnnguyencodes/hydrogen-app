@@ -14,7 +14,14 @@ import {
   returnFormattedDate,
 } from '~/lib/plantPageUtils';
 import {Button} from '~/components/ui/button';
-import {Heart, Share, ExternalLink} from 'lucide-react';
+import {
+  Heart,
+  Share,
+  ExternalLink,
+  Sprout,
+  BadgeDollarSign,
+  ScissorsLineDashed,
+} from 'lucide-react';
 
 // =========================
 // Loader Function
@@ -52,9 +59,44 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   const variables = {
     handle,
     metafieldIdentifiers: [
-      {namespace: 'plant', key: 'acquired-from'},
       {namespace: 'plant', key: 'llifle-database-link'},
-      {namespace: 'plant', key: 'date-brought-home'},
+      // Metafield definition
+      // Namespace and key: "plant.acquisition"
+      // Data type: JSON
+      // Examples:
+      //
+      //   {
+      //     "method": "seed-grown",
+      //     "date": "2025-01-01"
+      //   }
+      //
+      //  OR
+      //
+      // {
+      //   "method": "purchased",
+      //   "supplier": "Cactus exchange community on Reddit",
+      //   "date": "2025-01-01"
+      // }
+      //
+      // OR
+      //
+      //   {
+      //     "method": "cutting",
+      //     "date": "2025-01-01"
+      //   }
+      {namespace: 'plant', key: 'acquisition'},
+      // Metafield definition
+      // Namespace and key: "plant.measurement"
+      // Data type: JSON
+      // Examples:
+      //
+      // [{
+      //   "height": "24 cm",
+      //    "width": "24 cm",
+      //    "pot": "2.5 in/\" plastic pot",
+      //    "date": "2025-01-01"
+      //  }]
+      {namespace: 'plant', key: 'measurement'},
       {namespace: 'plant', key: 'growth-notes'},
       {namespace: 'plant', key: 'care-routine'},
     ],
@@ -148,7 +190,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  * Uses the `product` returned from the loader.
  *
  * The component receives the critical product data and deferred journalPromise from useLoaderData().
- * Hydrated client-side after SSR.
+ * Hydrated client-side after SSR
  */
 
 export default function Plant() {
@@ -188,33 +230,49 @@ export default function Plant() {
 
   const carouselImages = returnCarouselImages(sortedPlantImages);
 
-  const latestCarouselDate = getLatestCarouselDate(carouselImages);
+  const latestCarouselDateString = getLatestCarouselDate(
+    carouselImages,
+  ) as string;
+
+  const carouselImagesDate = new Date(latestCarouselDateString);
+
+  const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
+    'en-US',
+    {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    },
+  );
+
+  const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
+
+  const modifiedProductDescription =
+    product.descriptionHtml + additonalDescription;
 
   const latestCarouselImages = getLatestCarouselImages(
     carouselImages,
-    latestCarouselDate,
+    latestCarouselDateString,
   );
 
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
 
-  const {
-    acquiredFrom,
-    careRoutine,
-    dateBroughtHome,
-    growthNotes,
-    llifleDatabaseLink,
-  } = metafieldValues;
+  const {acquisition, measurement, llifleDatabaseLink} = metafieldValues;
 
-  const datePlantBroughtHome = returnFormattedDate(dateBroughtHome);
+  const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
+
+  const parsedMeasurement = JSON.parse(measurement) as MeasurementData;
+
+  const datePlantAcquired = returnFormattedDate(parsedAcquisition.date);
 
   /**
    * HTML markup starts here
    */
 
   return (
-    <div className="plant-page ">
+    <div className="plant-page">
       <div className="grid grid-cols-3 gap-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <div className="col-span-2">
@@ -250,39 +308,137 @@ export default function Plant() {
           <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md bg-[var(--color-bg-3)] prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)]">
             <div
               className="prose p-5"
-              dangerouslySetInnerHTML={{__html: product.descriptionHtml}}
-            />
+              id="plant-description"
+              dangerouslySetInnerHTML={{__html: modifiedProductDescription}}
+            ></div>
           </div>
         </div>
       </div>
-
-      <div className="prose prose-p:my-2 p-5">
-        <p className="inline-flex items-center gap-1">
-          <strong>Acquired From:</strong>
-          <a href={acquiredFrom} target="_blank" rel="noreferrer noopener">
-            {acquiredFrom}
-          </a>{' '}
-          <ExternalLink size="16" className="inline-block align-middle" />
-        </p>
-        <p className="inline-flex items-center gap-1">
-          <a
-            href={llifleDatabaseLink}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            View species info on LLIFLE
-          </a>
-          <ExternalLink size="16" className="inline-block align-middle" />
-        </p>
-        <p className="inline-flex items-center gap-1">
-          <strong>Date Brought Home:</strong> {datePlantBroughtHome}
-        </p>
-        <p className="inline-flex items-center gap-1">
-          <strong>Growth Notes:</strong> {growthNotes}
-        </p>
-        <p className="inline-flex items-center gap-1">
-          <strong>Care Routine:</strong> {careRoutine}
-        </p>
+      <div className="block border border-[var(--color-fg-text)] my-10"></div>
+      <div className="">
+        <div className="grid grid-cols-3 gap-10">
+          <div className="cols-span-1">
+            <h2 className="text-balance text-5xl font-medium text-[var(--color-fg-green)]">
+              {product.title}
+            </h2>
+            <p className="mt-5">
+              <a
+                href={llifleDatabaseLink}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                View species info on LLIFLE
+              </a>
+              <ExternalLink size="16" className="inline-block align-middle" />
+            </p>
+          </div>
+          {parsedAcquisition && (
+            <div className="col-span-1 rounded-md bg-[var(--color-bg-1)] flex flex-col items-center p-5">
+              {parsedAcquisition?.method === 'seed-grown' && (
+                <div className="flex flex-col items-center justify-center">
+                  <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                    <Sprout size={36} />
+                  </div>
+                  <p className="font-bold flex flex-col items-center text-[var(--color-fg-green)] mt-1">
+                    Seed-grown
+                  </p>
+                  <p className="text-[var(--color-fg-text)]">
+                    {parsedAcquisition.date}
+                  </p>
+                </div>
+              )}
+              {parsedAcquisition?.method === 'purchased' && (
+                <div className="flex flex-col items-center justify-center">
+                  <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                    <BadgeDollarSign size={36} />
+                  </div>
+                  <p className="font-bold flex flex-col items-center text-[var(--color-fg-green)] mt-1">
+                    Purchased from:
+                  </p>
+                  <p className="text-[var(--color-fg-text)]">
+                    {parsedAcquisition.supplier}
+                  </p>
+                  <p className="text-[var(--color-fg-text)]">
+                    {datePlantAcquired}
+                  </p>
+                </div>
+              )}
+              {parsedAcquisition?.method === 'cutting' && (
+                <div className="flex flex-col items-center justify-center">
+                  <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                    <ScissorsLineDashed size={36} />
+                  </div>
+                  <p className="font-bold flex flex-col items-center text-[var(--color-fg-green)] mt-1">
+                    Acquired from a cutting:
+                  </p>
+                  <p className="text-[var(--color-fg-text)]">
+                    {parsedAcquisition.date}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+          {parsedMeasurement && (
+            <div className="col-span-1 rounded-md bg-[var(--color-bg-2)] p-5">
+              <div className="flex flex-col items-center justify-center">
+                <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                  <BadgeDollarSign size={36} />
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="col-span-1 rounded-md bg-[var(--color-bg-3)]">
+            {parsedAcquisition?.method === 'seed-grown' && (
+              <p className="text-[var(--color-fg-text)]">
+                <Sprout /> I am seed-grown
+              </p>
+            )}
+            {parsedAcquisition?.method === 'purchased' && (
+              <p className="text-[var(--color-fg-text)]">
+                <BadgeDollarSign />I am purchased
+              </p>
+            )}
+            {parsedAcquisition?.method === 'cutting' && (
+              <p className="text-[var(--color-fg-text)]">
+                <ScissorsLineDashed />I am a cutting
+              </p>
+            )}
+          </div>
+          <div className="col-span-1 rounded-md bg-[var(--color-bg-4)]">
+            {parsedAcquisition?.method === 'seed-grown' && (
+              <p className="text-[var(--color-fg-text)]">
+                <Sprout /> I am seed-grown
+              </p>
+            )}
+            {parsedAcquisition?.method === 'purchased' && (
+              <p className="text-[var(--color-fg-text)]">
+                <BadgeDollarSign />I am purchased
+              </p>
+            )}
+            {parsedAcquisition?.method === 'cutting' && (
+              <p className="text-[var(--color-fg-text)]">
+                <ScissorsLineDashed />I am a cutting
+              </p>
+            )}
+          </div>
+          <div className="col-span-1 rounded-md bg-[var(--color-bg-5)]">
+            {parsedAcquisition?.method === 'seed-grown' && (
+              <p className="text-[var(--color-fg-text)]">
+                <Sprout /> I am seed-grown
+              </p>
+            )}
+            {parsedAcquisition?.method === 'purchased' && (
+              <p className="text-[var(--color-fg-text)]">
+                <BadgeDollarSign />I am purchased
+              </p>
+            )}
+            {parsedAcquisition?.method === 'cutting' && (
+              <p className="text-[var(--color-fg-text)]">
+                <ScissorsLineDashed />I am a cutting
+              </p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Deferred journal entry block — Suspense + Await */}

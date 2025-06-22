@@ -54,6 +54,18 @@ declare global {
     type: string;
   };
 
+  type AcquisitionData =
+    | {method: 'seed-grown'; date: string}
+    | {method: 'cutting'; date: string}
+    | {method: 'purchased'; supplier: string; date: string};
+
+  type MeasurementData = {
+    height: string;
+    width: string;
+    pot: string;
+    date: string;
+  };
+
   type ShopifyFilesResponse = {
     data: {
       files: {

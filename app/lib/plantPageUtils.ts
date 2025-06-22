@@ -120,7 +120,10 @@ export function extractMetafieldValues(
 }
 
 export function returnFormattedDate(dateBroughtHome: string): string {
-  const modifiedDateBroughtHome = new Date(`${dateBroughtHome}`);
+  const [year, month, day] = dateBroughtHome.split('-').map(Number);
+
+  // Month is 0-based in JS Date
+  const modifiedDateBroughtHome = new Date(year, month - 1, day);
 
   const formattedDate = modifiedDateBroughtHome.toLocaleString('en-US', {
     year: 'numeric',
