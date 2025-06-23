@@ -308,11 +308,14 @@ export default function Plant() {
             {product.title}
           </h1>
           <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md bg-[var(--color-bg-3)] prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)]">
-            <div
-              className="prose p-5"
-              id="plant-description"
-              dangerouslySetInnerHTML={{__html: modifiedProductDescription}}
-            ></div>
+            <div className="prose p-5" id="plant-description">
+              <div
+                dangerouslySetInnerHTML={{__html: product.descriptionHtml}}
+              />
+              <p className="p1">
+                (Plant photos taken on {formattedCarousalImagesDate})
+              </p>
+            </div>
           </div>
         </div>
       </div>
