@@ -27,7 +27,7 @@ export function Header({
 }: HeaderProps) {
   const {shop, menu} = header;
   return (
-    <header className="header bg-[var(--color-bg-0)]">
+    <header className="header bg-[var(--color-bg-5)] text-[var(--color-fg-text)]">
       <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
         <strong>{shop.name}</strong>
       </NavLink>
@@ -121,7 +121,7 @@ export function HeaderMenu({
             : item.url;
         return (
           <NavLink
-            className="header-menu-item"
+            className="header-menu-item text-[var(--color-fg-text)]"
             end
             key={item.id}
             onClick={close}
@@ -281,6 +281,6 @@ function activeLinkStyle({
 }) {
   return {
     fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'black',
+    color: isPending ? 'grey' : '--color-fg-text',
   };
 }

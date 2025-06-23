@@ -68,6 +68,7 @@
   --color-bg-yellow: #f1e4c5; /* warning highlight */
 
   --color-fg-text: #5c6a72; /* text color */
+  --color-fg-text-hover: black;
 
   --color-fg-red: #f85552;
   --color-fg-orange: #f57d26;
@@ -131,12 +132,13 @@
   --color-bg-5: #4f5b58; /* */
 
   --color-bg-visual: #493b40; /* visual selection */
-  --color-bg-red: #e67e80; /* error highlight */
+  --color-bg-red: #5c3f4f; /* error highlight */
   --color-bg-green: #3c4841; /* hint highlight */
   --color-bg-blue: #384b55; /* info highlight */
   --color-bg-yellow: #45443c; /* warning highlight */
 
   --color-fg-text: #d3c6aa; /* text color */
+  --color-fg-text-hover: white;
 
   --color-fg-red: #e67e80;
   --color-fg-orange: #e69875;
