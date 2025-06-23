@@ -125,11 +125,7 @@ export function returnFormattedDate(dateBroughtHome: string): string {
   // Month is 0-based in JS Date
   const modifiedDateBroughtHome = new Date(year, month - 1, day);
 
-  const formattedDate = modifiedDateBroughtHome.toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
+  const formattedDate = formatDateSafe(modifiedDateBroughtHome);
 
   return formattedDate;
 }
