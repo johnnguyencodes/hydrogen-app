@@ -66,6 +66,8 @@ declare global {
     date: string;
   };
 
+  type MeasurementDataArray = MeasurementData[];
+
   type ShopifyFilesResponse = {
     data: {
       files: {

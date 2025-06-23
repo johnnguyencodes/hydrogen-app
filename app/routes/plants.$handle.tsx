@@ -21,6 +21,7 @@ import {
   Sprout,
   BadgeDollarSign,
   ScissorsLineDashed,
+  Ruler,
 } from 'lucide-react';
 
 // =========================
@@ -263,9 +264,11 @@ export default function Plant() {
 
   const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
 
-  const parsedMeasurement = JSON.parse(measurement) as MeasurementData;
+  const parsedMeasurement = JSON.parse(measurement) as MeasurementDataArray;
 
   const datePlantAcquired = returnFormattedDate(parsedAcquisition.date);
+
+  const dateMeasurementTaken = returnFormattedDate(parsedMeasurement[0].date);
 
   /**
    * HTML markup starts here
@@ -381,9 +384,19 @@ export default function Plant() {
           {parsedMeasurement && (
             <div className="col-span-1 rounded-md bg-[var(--color-bg-2)] p-5">
               <div className="flex flex-col items-center justify-center">
-                <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
-                  <BadgeDollarSign size={36} />
+                <div className="rounded-4xl bg-[var(--color-bg-green)] p-2 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                  <Ruler size={34} />
                 </div>
+                <p className="font-bold flex flex-col items-center text-[var(--color-fg-green)] mt-1">
+                  Measurements:
+                </p>
+                <p className="text-[var(--color-fg-text)]">
+                  {parsedMeasurement[0].height} x {parsedMeasurement[0].width}{' '}
+                  in a {parsedMeasurement[0].pot}
+                </p>
+                <p className="text-[var(--color-fg-text)]">
+                  {dateMeasurementTaken}
+                </p>
               </div>
             </div>
           )}
