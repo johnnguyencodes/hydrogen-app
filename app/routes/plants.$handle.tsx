@@ -244,7 +244,7 @@ export default function Plant() {
 
   const formattedCarousalImagesDate = formatDateSafe(carouselImagesDate);
 
-  const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
+  const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})</p>`;
 
   const modifiedProductDescription =
     product.descriptionHtml + additonalDescription;
@@ -257,8 +257,6 @@ export default function Plant() {
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
-
-  console.log('metafieldValues:', metafieldValues);
 
   const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
     metafieldValues;
