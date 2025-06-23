@@ -348,6 +348,71 @@ export default function Plant() {
               </a>
             )}
           </div>
+          {parsedAcquisition && (
+            <div className="col-span-1 rounded-md bg-[var(--color-bg-1)] flex flex-col items-center p-5">
+              {parsedAcquisition?.method === 'seed-grown' && (
+                <div className="flex flex-col items-center justify-center">
+                  <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                    <Sprout size={36} />
+                  </div>
+                  <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                    Seed-grown
+                  </p>
+                  <p className="text-[var(--color-fg-text)]">
+                    {formattedAcquisitionDate}
+                  </p>
+                </div>
+              )}
+              {parsedAcquisition?.method === 'purchased' && (
+                <div className="flex flex-col items-center justify-center">
+                  <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                    <BadgeDollarSign size={36} />
+                  </div>
+                  <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                    Purchased from
+                  </p>
+                  <p className="text-[var(--color-fg-text)]">
+                    {parsedAcquisition.supplier}
+                  </p>
+                  <p className="text-[var(--color-fg-text)]">
+                    {formattedAcquisitionDate}
+                  </p>
+                </div>
+              )}
+              {parsedAcquisition?.method === 'cutting' && (
+                <div className="flex flex-col items-center justify-center">
+                  <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                    <ScissorsLineDashed size={36} />
+                  </div>
+                  <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                    Acquired from a cutting:
+                  </p>
+                  <p className="text-[var(--color-fg-text)]">
+                    {formattedAcquisitionDate}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+          {parsedMeasurement && (
+            <div className="col-span-1 rounded-md bg-[var(--color-bg-2)] p-5">
+              <div className="flex flex-col items-center justify-center">
+                <div className="rounded-4xl bg-[var(--color-bg-green)] p-[5px] text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                  <Ruler size={34} />
+                </div>
+                <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                  Measurements
+                </p>
+                <p className="text-[var(--color-fg-text)]">
+                  {parsedMeasurement[0].height} x {parsedMeasurement[0].width}{' '}
+                  in a {parsedMeasurement[0].pot}
+                </p>
+                <p className="text-[var(--color-fg-text)]">
+                  {formattedMeasurementDate}
+                </p>
+              </div>
+            </div>
+          )}
           <div className="col-span-1 rounded-md bg-[var(--color-bg-3)] p-5">
             <div className="flex flex-col items-center justify-center">
               <div className="relative rounded-4xl bg-[var(--color-bg-green)] p-[7px] text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
@@ -411,6 +476,43 @@ export default function Plant() {
           </div>
         </div>
       </div>
+
+      {/* Deferred journal entry block — Suspense + Await */}
+      <Suspense fallback={<p> Loading journal...</p>}>
+        <Await resolve={journalPromise}>
+          {/* data is the resolved value of journalPromise */}
+          {(data) => {
+            // Await gives us the result of journalPromise when it's done
+            const metafield = data?.product?.journal;
+
+            let journal: PlantJournalEntry[] = [];
+
+            try {
+              // Parse the raw metafield JSON into a JS array
+              journal = metafield?.value
+                ? (JSON.parse(metafield.value) as PlantJournalEntry[])
+                : [];
+            } catch (error) {
+              console.error('Failed to parse journal JSON:', error);
+            }
+
+            // Render parsed journal entries
+            return journal.length > 0 ? (
+              <div className="mt-5">
+                <ul className="journal-entries">
+                  {journal.map((entry) => (
+                    <li key={entry.date}>
+                      <strong>{entry.date}</strong> - {entry.content}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p>No journal entries yet.</p>
+            );
+          }}
+        </Await>
+      </Suspense>
     </div>
   );
 }
