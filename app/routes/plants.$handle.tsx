@@ -22,6 +22,9 @@ import {
   BadgeDollarSign,
   ScissorsLineDashed,
   Ruler,
+  Shovel,
+  Pipette,
+  Leaf,
 } from 'lucide-react';
 
 // =========================
@@ -98,6 +101,7 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
       //    "date": "2025-01-01"
       //  }]
       {namespace: 'plant', key: 'measurement'},
+      {namespace: 'plant', key: 'watering-frequency'},
       {namespace: 'plant', key: 'growth-notes'},
       {namespace: 'plant', key: 'care-routine'},
     ],
@@ -260,7 +264,10 @@ export default function Plant() {
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
 
-  const {acquisition, measurement, llifleDatabaseLink} = metafieldValues;
+  console.log('metafieldValues:', metafieldValues);
+
+  const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
+    metafieldValues;
 
   const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
 
@@ -320,20 +327,21 @@ export default function Plant() {
       <div className="block border border-[var(--color-fg-text)] my-10"></div>
       <div className="">
         <div className="grid grid-cols-3 gap-10">
-          <div className="cols-span-1">
+          <div className="cols-span-1 flex flex-col justify-center">
             <h2 className="text-balance text-5xl font-medium text-[var(--color-fg-green)]">
               {product.title}
             </h2>
-            <p className="mt-5">
-              <a
-                href={llifleDatabaseLink}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
+            <a
+              href={llifleDatabaseLink}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="mt-3 flex items-center text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
+            >
+              <span className="inline-flex items-center border-b border-transparent hover:border-current">
                 View species info on LLIFLE
-              </a>
-              <ExternalLink size="16" className="inline-block align-middle" />
-            </p>
+                <ExternalLink size="16" className="ml-1" />
+              </span>
+            </a>
           </div>
           {parsedAcquisition && (
             <div className="col-span-1 rounded-md bg-[var(--color-bg-1)] flex flex-col items-center p-5">
@@ -342,7 +350,7 @@ export default function Plant() {
                   <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
                     <Sprout size={36} />
                   </div>
-                  <p className="font-bold flex flex-col items-center text-[var(--color-fg-green)] mt-1">
+                  <p className="font-bold text-[var(--color-fg-green)] mt-1">
                     Seed-grown
                   </p>
                   <p className="text-[var(--color-fg-text)]">
@@ -355,8 +363,8 @@ export default function Plant() {
                   <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
                     <BadgeDollarSign size={36} />
                   </div>
-                  <p className="font-bold flex flex-col items-center text-[var(--color-fg-green)] mt-1">
-                    Purchased from:
+                  <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                    Purchased from
                   </p>
                   <p className="text-[var(--color-fg-text)]">
                     {parsedAcquisition.supplier}
@@ -371,7 +379,7 @@ export default function Plant() {
                   <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
                     <ScissorsLineDashed size={36} />
                   </div>
-                  <p className="font-bold flex flex-col items-center text-[var(--color-fg-green)] mt-1">
+                  <p className="font-bold text-[var(--color-fg-green)] mt-1">
                     Acquired from a cutting:
                   </p>
                   <p className="text-[var(--color-fg-text)]">
@@ -384,11 +392,11 @@ export default function Plant() {
           {parsedMeasurement && (
             <div className="col-span-1 rounded-md bg-[var(--color-bg-2)] p-5">
               <div className="flex flex-col items-center justify-center">
-                <div className="rounded-4xl bg-[var(--color-bg-green)] p-2 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                <div className="rounded-4xl bg-[var(--color-bg-green)] p-[5px] text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
                   <Ruler size={34} />
                 </div>
-                <p className="font-bold flex flex-col items-center text-[var(--color-fg-green)] mt-1">
-                  Measurements:
+                <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                  Measurements
                 </p>
                 <p className="text-[var(--color-fg-text)]">
                   {parsedMeasurement[0].height} x {parsedMeasurement[0].width}{' '}
@@ -400,56 +408,66 @@ export default function Plant() {
               </div>
             </div>
           )}
-          <div className="col-span-1 rounded-md bg-[var(--color-bg-3)]">
-            {parsedAcquisition?.method === 'seed-grown' && (
-              <p className="text-[var(--color-fg-text)]">
-                <Sprout /> I am seed-grown
+          <div className="col-span-1 rounded-md bg-[var(--color-bg-3)] p-5">
+            <div className="flex flex-col items-center justify-center">
+              <div className="relative rounded-4xl bg-[var(--color-bg-green)] p-[7px] text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                <Shovel
+                  className="relative left-[1.25px] bottom-[1.25px]"
+                  size={30}
+                />
+              </div>
+              <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                Soil Mix
               </p>
-            )}
-            {parsedAcquisition?.method === 'purchased' && (
-              <p className="text-[var(--color-fg-text)]">
-                <BadgeDollarSign />I am purchased
+              <ul className="text-[var(--color-fg-text)] text-center text-pretty">
+                <li>8 parts pumice</li>
+                <li>1 part calcinated clay</li>
+                <li>1 part cactus soil</li>
+              </ul>
+              <p className="font-bold text-[var(--color-fg-green)] mt-3">
+                Top Dressing
               </p>
-            )}
-            {parsedAcquisition?.method === 'cutting' && (
-              <p className="text-[var(--color-fg-text)]">
-                <ScissorsLineDashed />I am a cutting
-              </p>
-            )}
+              <p className="text-[var(--color-fg-text)]"> calcinated clay</p>
+            </div>
           </div>
-          <div className="col-span-1 rounded-md bg-[var(--color-bg-4)]">
-            {parsedAcquisition?.method === 'seed-grown' && (
-              <p className="text-[var(--color-fg-text)]">
-                <Sprout /> I am seed-grown
+          <div className="col-span-1 rounded-md bg-[var(--color-bg-4)] p-5">
+            <div className="flex flex-col items-center justify-center">
+              <div className="relative rounded-4xl bg-[var(--color-bg-green)] p-[7px] text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                <Pipette
+                  className="relative left-[.25px] bottom-[.25px]"
+                  size={30}
+                />
+              </div>
+              <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                Fertilizer Regimen{' '}
               </p>
-            )}
-            {parsedAcquisition?.method === 'purchased' && (
-              <p className="text-[var(--color-fg-text)]">
-                <BadgeDollarSign />I am purchased
-              </p>
-            )}
-            {parsedAcquisition?.method === 'cutting' && (
-              <p className="text-[var(--color-fg-text)]">
-                <ScissorsLineDashed />I am a cutting
-              </p>
-            )}
+            </div>
+            <p className="text-[var(--color-fg-text)] mb-3">
+              Mix 67 μL Schultz Cactus Plus (2–2–7), 133 μL Grow More Cactus
+              Juice (1–7–6), 133 μL of espom salt stock solution (5 g/30 mL),
+              and 30 mg chelated micronutrients per 1 L reverse osmosis water.
+            </p>
+            <p className="text-[var(--color-fg-text)]">
+              Alternate with plain RO water to flush salts.
+            </p>
           </div>
-          <div className="col-span-1 rounded-md bg-[var(--color-bg-5)]">
-            {parsedAcquisition?.method === 'seed-grown' && (
-              <p className="text-[var(--color-fg-text)]">
-                <Sprout /> I am seed-grown
+          <div className="col-span-1 rounded-md bg-[var(--color-bg-5)] p-5">
+            <div className="flex flex-col items-center justify-center">
+              <div className="relative rounded-4xl bg-[var(--color-bg-green)] p-[7px] text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
+                <Leaf
+                  className="relative left-[1.25px] bottom-[1.25px]"
+                  size={30}
+                />
+              </div>
+              <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                Care Regimen
               </p>
-            )}
-            {parsedAcquisition?.method === 'purchased' && (
-              <p className="text-[var(--color-fg-text)]">
-                <BadgeDollarSign />I am purchased
-              </p>
-            )}
-            {parsedAcquisition?.method === 'cutting' && (
-              <p className="text-[var(--color-fg-text)]">
-                <ScissorsLineDashed />I am a cutting
-              </p>
-            )}
+              <ul className="text-[var(--color-fg-text)] text-center text-pretty">
+                <li>Grown indoors with 24/7 fan circulation</li>
+                <li>15 hours of light daily under T5 6500K LEDs</li>
+                <li>Deep watered every {wateringFrequency}</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
