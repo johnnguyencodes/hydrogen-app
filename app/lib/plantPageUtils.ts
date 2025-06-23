@@ -137,3 +137,12 @@ export function returnFormattedDate(dateBroughtHome: string): string {
 function toCamelCase(str: string) {
   return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
 }
+
+export function formatDateSafe(date: Date): string {
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: 'UTC',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+}

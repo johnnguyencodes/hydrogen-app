@@ -12,6 +12,7 @@ import {
   getLatestCarouselImages,
   extractMetafieldValues,
   returnFormattedDate,
+  formatDateSafe,
 } from '~/lib/plantPageUtils';
 import {Button} from '~/components/ui/button';
 import {
@@ -241,14 +242,7 @@ export default function Plant() {
 
   const carouselImagesDate = new Date(latestCarouselDateString);
 
-  const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
-    'en-US',
-    {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    },
-  );
+  const formattedCarousalImagesDate = formatDateSafe(carouselImagesDate);
 
   const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
 
