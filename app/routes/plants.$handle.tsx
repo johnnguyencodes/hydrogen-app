@@ -12,7 +12,7 @@ import {
   getLatestCarouselImages,
   extractMetafieldValues,
   returnFormattedDate,
-  formatDateSafe,
+  safeParseJson,
 } from '~/lib/plantPageUtils';
 import {Button} from '~/components/ui/button';
 import {
@@ -118,7 +118,33 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
     throw new Response(null, {status: 404});
   }
 
-  return {product, adminImageData};
+  const metafields = extractMetafieldValues(
+    product.metafields.filter(Boolean) as PlantCriticalMetafield[],
+  );
+
+  const parsedAcquisition = safeParseJson<AcquisitionData>(
+    metafields.acquisition,
+  );
+  const parsedMeasurement = safeParseJson<MeasurementDataArray>(
+    metafields.measurement,
+  );
+  const formattedAcquisitionDate = parsedAcquisition?.date
+    ? returnFormattedDate(parsedAcquisition.date)
+    : null;
+  const formattedMeasurementDate = parsedMeasurement?.[0]?.date
+    ? returnFormattedDate(parsedMeasurement[0].date)
+    : null;
+
+  return {
+    product,
+    adminImageData,
+    llifleDatabaseLink: metafields.llifleDatabaseLink || null,
+    wateringFrequency: metafields.wateringFrequency || null,
+    parsedAcquisition,
+    parsedMeasurement,
+    formattedAcquisitionDate,
+    formattedMeasurementDate,
+  };
 }
 
 /**
@@ -200,8 +226,17 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {product, adminImageData, journalPromise} =
-    useLoaderData<typeof loader>();
+  const {
+    product,
+    adminImageData,
+    journalPromise,
+    llifleDatabaseLink,
+    wateringFrequency,
+    parsedAcquisition,
+    parsedMeasurement,
+    formattedAcquisitionDate,
+    formattedMeasurementDate,
+  } = useLoaderData<typeof loader>();
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -240,29 +275,10 @@ export default function Plant() {
     carouselImages,
   ) as string;
 
-  const carouselImagesDate = new Date(latestCarouselDateString);
-
-  const formattedCarousalImagesDate = formatDateSafe(carouselImagesDate);
-
   const latestCarouselImages = getLatestCarouselImages(
     carouselImages,
     latestCarouselDateString,
   );
-
-  const metafieldValues = extractMetafieldValues(
-    product.metafields.filter(Boolean) as PlantCriticalMetafield[],
-  );
-
-  const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
-    metafieldValues;
-
-  const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
-
-  const parsedMeasurement = JSON.parse(measurement) as MeasurementDataArray;
-
-  const datePlantAcquired = returnFormattedDate(parsedAcquisition.date);
-
-  const dateMeasurementTaken = returnFormattedDate(parsedMeasurement[0].date);
 
   /**
    * HTML markup starts here
@@ -318,17 +334,19 @@ export default function Plant() {
             <h2 className="text-balance text-5xl font-medium text-[var(--color-fg-green)]">
               {product.title}
             </h2>
-            <a
-              href={llifleDatabaseLink}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="mt-3 flex items-center text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
-            >
-              <span className="inline-flex items-center border-b border-transparent hover:border-current">
-                View species info on LLIFLE
-                <ExternalLink size="16" className="ml-1" />
-              </span>
-            </a>
+            {llifleDatabaseLink && (
+              <a
+                href={llifleDatabaseLink}
+                target="_blank"
+                rel="noreferrer noopener"
+                className="mt-3 flex items-center text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
+              >
+                <span className="inline-flex items-center border-b border-transparent hover:border-current">
+                  View species info on LLIFLE
+                  <ExternalLink size="16" className="ml-1" />
+                </span>
+              </a>
+            )}
           </div>
           {parsedAcquisition && (
             <div className="col-span-1 rounded-md bg-[var(--color-bg-1)] flex flex-col items-center p-5">
@@ -341,7 +359,7 @@ export default function Plant() {
                     Seed-grown
                   </p>
                   <p className="text-[var(--color-fg-text)]">
-                    {parsedAcquisition.date}
+                    {formattedAcquisitionDate}
                   </p>
                 </div>
               )}
@@ -357,7 +375,7 @@ export default function Plant() {
                     {parsedAcquisition.supplier}
                   </p>
                   <p className="text-[var(--color-fg-text)]">
-                    {datePlantAcquired}
+                    {formattedAcquisitionDate}
                   </p>
                 </div>
               )}
@@ -370,7 +388,7 @@ export default function Plant() {
                     Acquired from a cutting:
                   </p>
                   <p className="text-[var(--color-fg-text)]">
-                    {parsedAcquisition.date}
+                    {formattedAcquisitionDate}
                   </p>
                 </div>
               )}
@@ -390,7 +408,7 @@ export default function Plant() {
                   in a {parsedMeasurement[0].pot}
                 </p>
                 <p className="text-[var(--color-fg-text)]">
-                  {dateMeasurementTaken}
+                  {formattedMeasurementDate}
                 </p>
               </div>
             </div>

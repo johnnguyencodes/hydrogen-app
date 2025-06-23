@@ -142,3 +142,11 @@ export function formatDateSafe(date: Date): string {
     day: 'numeric',
   }).format(date);
 }
+
+export function safeParseJson<T>(input: string | undefined): T | null {
+  try {
+    return input ? (JSON.parse(input) as T) : null;
+  } catch {
+    return null;
+  }
+}
