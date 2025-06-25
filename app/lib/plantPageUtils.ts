@@ -125,28 +125,15 @@ export function returnFormattedDate(dateBroughtHome: string): string {
   // Month is 0-based in JS Date
   const modifiedDateBroughtHome = new Date(year, month - 1, day);
 
-  const formattedDate = formatDateSafe(modifiedDateBroughtHome);
+  const formattedDate = modifiedDateBroughtHome.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return formattedDate;
 }
 
 function toCamelCase(str: string) {
   return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
-}
-
-export function formatDateSafe(date: Date): string {
-  return new Intl.DateTimeFormat('en-US', {
-    timeZone: 'UTC',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(date);
-}
-
-export function safeParseJson<T>(input: string | undefined): T | null {
-  try {
-    return input ? (JSON.parse(input) as T) : null;
-  } catch {
-    return null;
-  }
 }
