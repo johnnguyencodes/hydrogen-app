@@ -108,16 +108,22 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   };
 
   // Shopify storefront query using product handle
-  const [{product}, adminImageData] = await Promise.all([
+  const [
+    {product},
+    // adminImageData
+  ] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {variables}),
-    fetchImagesFromAdminAPI(args),
+    // fetchImagesFromAdminAPI(args),
   ]);
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
-  return {product, adminImageData};
+  return {
+    product,
+    // adminImageData
+  };
 }
 
 /**
@@ -215,8 +221,11 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {product, adminImageData, journalPromise} =
-    useLoaderData<typeof loader>();
+  const {
+    product,
+    // adminImageData,
+    journalPromise,
+  } = useLoaderData<typeof loader>();
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -279,8 +288,6 @@ export default function Plant() {
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
-
-  console.log('metafieldValues:', metafieldValues);
 
   const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
     metafieldValues;
