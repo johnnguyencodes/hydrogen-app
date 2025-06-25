@@ -110,7 +110,7 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   // Shopify storefront query using product handle
   const [{product}, adminImageData] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {variables}),
-    fetchImagesFromAdminAPI(args),
+    // fetchImagesFromAdminAPI(args),
   ]);
 
   if (!product?.id) {
@@ -124,39 +124,39 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
  * async function to fetch files uploaded to the Shopify store under Content > Files in the admin panel
  */
 
-async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
-  const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
-  const response = await fetch(ADMIN_API_URL, {
-    method: 'POST',
-    headers: {
-      'X-Shopify-Access-Token': context.env.FILES_ADMIN_API_ACCESS_TOKEN,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `
-        query Files {
-          files(first: 100) {
-            edges {
-              node {
-                ... on MediaImage {
-                  id
-                  alt
-                  image {
-                    url
-                  }
-                }
-              }  
-            }
-          }
-        }
-      `,
-    }),
-  });
+// async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
+//   const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
+//   const response = await fetch(ADMIN_API_URL, {
+//     method: 'POST',
+//     headers: {
+//       'X-Shopify-Access-Token': context.env.FILES_ADMIN_API_ACCESS_TOKEN,
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify({
+//       query: `
+//         query Files {
+//           files(first: 100) {
+//             edges {
+//               node {
+//                 ... on MediaImage {
+//                   id
+//                   alt
+//                   image {
+//                     url
+//                   }
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       `,
+//     }),
+//   });
 
-  const json = (await response.json()) as ShopifyFilesResponse;
+//   const json = (await response.json()) as ShopifyFilesResponse;
 
-  return json.data.files.edges.map((edge: any) => edge.node);
-}
+//   return json.data.files.edges.map((edge: any) => edge.node);
+// }
 
 /**
  * Load data that is *optional* and can be deferred initial render.
