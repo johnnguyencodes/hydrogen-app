@@ -37,12 +37,17 @@ import {
  * and deferred (optional, loaded later if needed).
  */
 export async function loader(args: LoaderFunctionArgs) {
-  const criticalData = await loadCriticalData(args); // Must-have data, required immediately to render
+  const [criticalData, adminImageData] = await Promise.all([
+    loadCriticalData(args),
+    fetchImagesFromAdminAPI(args),
+  ]); // Must-have data, required immediately to render
+
   const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
 
   // Return both, including the deferred data wrapped as a promise
   return {
     ...criticalData,
+    adminImageData,
     journalPromise: deferredData.journalPromise,
   };
 }
@@ -108,12 +113,8 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   };
 
   // Shopify storefront query using product handle
-  const [
-    {product},
-    // adminImageData
-  ] = await Promise.all([
+  const [{product}] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {variables}),
-    // fetchImagesFromAdminAPI(args),
   ]);
 
   if (!product?.id) {
@@ -122,7 +123,6 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
 
   return {
     product,
-    // adminImageData
   };
 }
 
@@ -221,11 +221,8 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {
-    product,
-    // adminImageData,
-    journalPromise,
-  } = useLoaderData<typeof loader>();
+  const {product, adminImageData, journalPromise} =
+    useLoaderData<typeof loader>();
 
   /**
    * Analytics: track page view when the plant page is viewed.
