@@ -126,6 +126,7 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
 
 async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
   const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
+
   const response = await fetch(ADMIN_API_URL, {
     method: 'POST',
     headers: {
@@ -155,7 +156,22 @@ async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
 
   const json = (await response.json()) as ShopifyFilesResponse;
 
-  return json.data.files.edges.map((edge: any) => edge.node);
+  function extractFilename(url: string): string {
+    return url.split('/').pop()?.split('?')[0] || '';
+  }
+
+  return json.data.files.edges
+    .map((edge: any) => {
+      const {alt, image} = edge.node;
+      const filename = extractFilename(image.url);
+      return {
+        ...edge.node,
+        filename,
+        image,
+        alt,
+      };
+    })
+    .sort((a, b) => a.filename.localeCompare(b.filename));
 }
 
 /**
