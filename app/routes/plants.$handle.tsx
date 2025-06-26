@@ -125,7 +125,7 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
  * async function to fetch files uploaded to the Shopify store under Content > Files in the admin panel
  */
 
-async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
+async function fetchImagesFromAdminAPI(context: LoaderFunctionArgs['context']) {
   const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
 
   const query = `
@@ -159,7 +159,7 @@ async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
     body: JSON.stringify({
       query,
       variables: {
-        after: null, // or pass in a real cursor if paginating
+        after: null,
       },
     }),
   });
@@ -168,10 +168,6 @@ async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
 
   if (!json.data?.files) {
     console.error('Shopify Admin API error:', JSON.stringify(json, null, 2));
-    throw new Error('Failed to fetch files from Shopify Admin API');
-  }
-
-  if (!json.data?.files) {
     throw new Error('Failed to fetch files from Shopify Admin API');
   }
 
@@ -214,7 +210,7 @@ async function loadDeferredData({context, params}: LoaderFunctionArgs) {
     CAROUSEL_COPY_QUERY,
     queryOptions,
   );
-  const adminImagePromise = fetchImagesFromAdminAPI({context, params});
+  const adminImagePromise = fetchImagesFromAdminAPI(context);
 
   return {journalPromise, carouselCopyPromise, adminImagePromise};
 }
