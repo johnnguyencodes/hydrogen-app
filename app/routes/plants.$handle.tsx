@@ -1,7 +1,7 @@
 // React and Remix imports
 import {Suspense, useEffect} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
-import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {ProductImage} from '~/components/ProductImage';
 import {
   filterPlantImagesByHandle,
@@ -37,14 +37,14 @@ import {
  * and deferred (optional, loaded later if needed).
  */
 export async function loader(args: LoaderFunctionArgs) {
-  const criticalData = await loadCriticalData(args);
-  const deferredData = await loadDeferredData(args);
+  const criticalData = await loadCriticalData(args); // Must-have data, required immediately to render
+  const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
 
   // Return both, including the deferred data wrapped as a promise
-  return defer({
+  return {
     ...criticalData,
-    ...deferredData,
-  });
+    journalPromise: deferredData.journalPromise,
+  };
 }
 
 /**
@@ -108,48 +108,24 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   };
 
   // Shopify storefront query using product handle
-  const {product} = await storefront.query(PRODUCT_QUERY, {
-    variables,
-  });
+  const [{product}, adminImageData] = await Promise.all([
+    storefront.query(PRODUCT_QUERY, {variables}),
+    fetchImagesFromAdminAPI(args),
+  ]);
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
-  return {
-    product,
-  };
+  return {product, adminImageData};
 }
 
 /**
  * async function to fetch files uploaded to the Shopify store under Content > Files in the admin panel
  */
 
-async function fetchImagesFromAdminAPI(context: LoaderFunctionArgs['context']) {
+async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
   const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
-
-  const query = `
-    query Files($after: String) {
-      files(first: 100, sortKey: FILENAME, after: $after) {
-        pageInfo {
-          hasNextPage
-          endCursor
-        }
-        edges {
-          cursor
-          node {
-            ... on MediaImage {
-              alt
-              image {
-                url
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-
   const response = await fetch(ADMIN_API_URL, {
     method: 'POST',
     headers: {
@@ -157,41 +133,36 @@ async function fetchImagesFromAdminAPI(context: LoaderFunctionArgs['context']) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      query,
-      variables: {
-        after: null,
-      },
+      query: `
+        query Files {
+          files(first: 100) {
+            edges {
+              node {
+                ... on MediaImage {
+                  id
+                  alt
+                  image {
+                    url
+                  }
+                }
+              }  
+            }
+          }
+        }
+      `,
     }),
   });
 
-  const json = await response.json();
+  const json = (await response.json()) as ShopifyFilesResponse;
 
-  if (!json.data?.files) {
-    console.error('Shopify Admin API error:', JSON.stringify(json, null, 2));
-    throw new Error('Failed to fetch files from Shopify Admin API');
-  }
-
-  function extractFilename(url: string): string {
-    return url.split('/').pop()?.split('?')[0] || '';
-  }
-
-  return json.data.files.edges.map((edge: any) => {
-    const {alt, image} = edge.node;
-    const filename = extractFilename(image.url);
-    return {
-      ...edge.node,
-      filename,
-      image,
-      alt,
-    };
-  });
+  return json.data.files.edges.map((edge: any) => edge.node);
 }
 
 /**
  * Load data that is *optional* and can be deferred initial render.
  * This runs in parallel with `loadCriticalData`, and will be awaited by <Await />.
  */
-async function loadDeferredData({context, params}: LoaderFunctionArgs) {
+function loadDeferredData({context, params}: LoaderFunctionArgs) {
   const {handle} = params;
   const {storefront} = context;
 
@@ -206,13 +177,13 @@ async function loadDeferredData({context, params}: LoaderFunctionArgs) {
   };
 
   const journalPromise = storefront.query(JOURNAL_QUERY, queryOptions);
+
   const carouselCopyPromise = storefront.query(
     CAROUSEL_COPY_QUERY,
     queryOptions,
   );
-  const adminImagePromise = fetchImagesFromAdminAPI(context);
 
-  return {journalPromise, carouselCopyPromise, adminImagePromise};
+  return {journalPromise, carouselCopyPromise};
 }
 
 // =========================
@@ -228,29 +199,88 @@ async function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const data = useLoaderData<typeof loader>();
+  const {product, adminImageData, journalPromise} =
+    useLoaderData<typeof loader>();
 
-  // /**
-  //  * Analytics: track page view when the plant page is viewed.
-  //  * Uses window.analytics.track() if available; logs fallback if not.
-  //  */
-  // useEffect(() => {
-  //   if (typeof window !== 'undefined' && window?.analytics?.track) {
-  //     window.analytics.track('plant_view', {
-  //       id: product.id,
-  //       title: product.title,
-  //     });
-  //   } else {
-  //     console.warn('[Analytics Fallback] plant_view', {
-  //       id: product.id,
-  //       title: product.title,
-  //     });
-  //   }
-  // }, [product.id, product.title]);
+  /**
+   * Analytics: track page view when the plant page is viewed.
+   * Uses window.analytics.track() if available; logs fallback if not.
+   */
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window?.analytics?.track) {
+      window.analytics.track('plant_view', {
+        id: product.id,
+        title: product.title,
+      });
+    } else {
+      console.warn('[Analytics Fallback] plant_view', {
+        id: product.id,
+        title: product.title,
+      });
+    }
+  }, [product.id, product.title]);
+
+  /**
+   * Manipulating data from critical loader to be usable on the page
+   */
+
+  const unsortedPlantImages = filterPlantImagesByHandle(
+    adminImageData,
+    product.handle,
+  );
+
+  const sortedPlantImages = unsortedPlantImages
+    .map(addImageMetadata)
+    .sort(sortImagesWithMetadata);
+
+  const carouselImages = returnCarouselImages(sortedPlantImages);
+
+  const latestCarouselDateString = getLatestCarouselDate(
+    carouselImages,
+  ) as string;
+
+  const MONTH_NAMES = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ] as const;
+
+  const carouselImagesDate = new Date(latestCarouselDateString);
+
+  const [yearStr, monthStr, dayStr] = latestCarouselDateString.split('-');
+  const year = yearStr;
+  const month = parseInt(monthStr, 10) - 1;
+  const day = parseInt(dayStr, 10);
+
+  // guard in case monthStr is malformed:
+  const monthName = MONTH_NAMES[month] ?? monthStr;
+
+  const formattedCarousalImagesDate = `${monthName} ${day}, ${year}`;
+
+  const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
+
+  const modifiedProductDescription =
+    product.descriptionHtml + additonalDescription;
+
+  const latestCarouselImages = getLatestCarouselImages(
+    carouselImages,
+    latestCarouselDateString,
+  );
 
   const metafieldValues = extractMetafieldValues(
-    data.product.metafields.filter(Boolean) as PlantCriticalMetafield[],
+    product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
+
+  console.log('metafieldValues:', metafieldValues);
 
   const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
     metafieldValues;
@@ -272,47 +302,22 @@ export default function Plant() {
       <div className="grid grid-cols-3 gap-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <div className="col-span-2">
-          <div className="col-span-2">
-            <Suspense fallback={<p>Loading images...</p>}>
-              <Await resolve={data.adminImagePromise}>
-                {(rawImageData) => {
-                  const unsortedPlantImages = filterPlantImagesByHandle(
-                    rawImageData,
-                    data.product.handle,
-                  );
-                  const sortedPlantImages = unsortedPlantImages
-                    .map(addImageMetadata)
-                    .sort(sortImagesWithMetadata);
-                  const carouselImages =
-                    returnCarouselImages(sortedPlantImages);
-                  const latestCarouselDateString = getLatestCarouselDate(
-                    carouselImages,
-                  ) as string;
-                  const latestCarouselImages = getLatestCarouselImages(
-                    carouselImages,
-                    latestCarouselDateString,
-                  );
-
-                  return (
-                    <div className="carousel-images grid gap-1 grid-cols-2">
-                      {latestCarouselImages.map((img, index) => (
-                        <ProductImage
-                          key={img.id ?? index}
-                          id={img.id ?? index}
-                          image={{
-                            __typename: 'Image',
-                            url: img.image.url,
-                          }}
-                          alt={img.alt || `${data.product.title} image`}
-                          className="col-span-1"
-                        />
-                      ))}
-                    </div>
-                  );
-                }}
-              </Await>
-            </Suspense>
-          </div>
+          {latestCarouselImages.length > 0 && (
+            <div className="carousel-images grid gap-1 grid-cols-2">
+              {latestCarouselImages.map((img, index) => (
+                <ProductImage
+                  key={img.id ?? index}
+                  id={img.id ?? index}
+                  image={{
+                    __typename: 'Image',
+                    url: img.image.url,
+                  }}
+                  alt={img.alt || `${product.title} image`}
+                  className="col-span-1"
+                />
+              ))}
+            </div>
+          )}
         </div>
         <div className="col-span-1">
           <div className="flex justify-end">
@@ -324,14 +329,14 @@ export default function Plant() {
             </Button>
           </div>
           <h1 className="text-3xl mb-5 mt-3 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
-            {data.product.title}
+            {product.title}
           </h1>
           <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md bg-[var(--color-bg-3)] prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)]">
             <div
               className="prose p-5"
               id="plant-description"
-              dangerouslySetInnerHTML={{__html: data.product.descriptionHtml}}
-            />
+              dangerouslySetInnerHTML={{__html: modifiedProductDescription}}
+            ></div>
           </div>
         </div>
       </div>
@@ -340,21 +345,19 @@ export default function Plant() {
         <div className="grid grid-cols-3 gap-10">
           <div className="cols-span-1 flex flex-col justify-center">
             <h2 className="text-balance text-5xl font-medium text-[var(--color-fg-green)]">
-              {data.product.title}
+              {product.title}
             </h2>
-            {llifleDatabaseLink && (
-              <a
-                href={llifleDatabaseLink}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="mt-3 flex items-center text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
-              >
-                <span className="inline-flex items-center border-b border-transparent hover:border-current">
-                  View species info on LLIFLE
-                  <ExternalLink size="16" className="ml-1" />
-                </span>
-              </a>
-            )}
+            <a
+              href={llifleDatabaseLink}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="mt-3 flex items-center text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
+            >
+              <span className="inline-flex items-center border-b border-transparent hover:border-current">
+                View species info on LLIFLE
+                <ExternalLink size="16" className="ml-1" />
+              </span>
+            </a>
           </div>
           {parsedAcquisition && (
             <div className="col-span-1 rounded-md bg-[var(--color-bg-1)] flex flex-col items-center p-5">
@@ -367,7 +370,7 @@ export default function Plant() {
                     Seed-grown
                   </p>
                   <p className="text-[var(--color-fg-text)]">
-                    {datePlantAcquired}
+                    {parsedAcquisition.date}
                   </p>
                 </div>
               )}
@@ -396,7 +399,7 @@ export default function Plant() {
                     Acquired from a cutting:
                   </p>
                   <p className="text-[var(--color-fg-text)]">
-                    {datePlantAcquired}
+                    {parsedAcquisition.date}
                   </p>
                 </div>
               )}
@@ -487,7 +490,7 @@ export default function Plant() {
 
       {/* Deferred journal entry block — Suspense + Await */}
       <Suspense fallback={<p> Loading journal...</p>}>
-        <Await resolve={data.journalPromise}>
+        <Await resolve={journalPromise}>
           {/* data is the resolved value of journalPromise */}
           {(data) => {
             // Await gives us the result of journalPromise when it's done
