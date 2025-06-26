@@ -233,8 +233,8 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {product, adminImagePromise, journalPromise} =
-    useLoaderData<typeof loader>();
+  const loaderData = useLoaderData<typeof loader>();
+  const {product} = loaderData;
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -280,7 +280,7 @@ export default function Plant() {
         <div className="col-span-2">
           <div className="col-span-2">
             <Suspense fallback={<p>Loading images...</p>}>
-              <Await resolve={adminImagePromise}>
+              <Await resolve={loaderData.adminImagePromise}>
                 {(rawImageData) => {
                   const unsortedPlantImages = filterPlantImagesByHandle(
                     rawImageData,
@@ -493,7 +493,7 @@ export default function Plant() {
 
       {/* Deferred journal entry block — Suspense + Await */}
       <Suspense fallback={<p> Loading journal...</p>}>
-        <Await resolve={journalPromise}>
+        <Await resolve={loaderData.journalPromise}>
           {/* data is the resolved value of journalPromise */}
           {(data) => {
             // Await gives us the result of journalPromise when it's done
