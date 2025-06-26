@@ -1,7 +1,7 @@
 // React and Remix imports
 import {Suspense, useEffect} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
-import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {ProductImage} from '~/components/ProductImage';
 import {
   filterPlantImagesByHandle,
@@ -39,16 +39,17 @@ import {
 export async function loader(args: LoaderFunctionArgs) {
   const [criticalData, adminImageData] = await Promise.all([
     loadCriticalData(args),
+    fetchImagesFromAdminAPI(args),
   ]); // Must-have data, required immediately to render
 
   const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
 
   // Return both, including the deferred data wrapped as a promise
-  return {
+  return defer({
     ...criticalData,
-    adminImageData,
+    adminImagePromise: deferredData.adminImagePromise,
     journalPromise: deferredData.journalPromise,
-  };
+  });
 }
 
 /**
@@ -112,54 +113,16 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   };
 
   // Shopify storefront query using product handle
-  const [{product}, rawImageData] = await Promise.all([
-    storefront.query(PRODUCT_QUERY, {variables}),
-    fetchImagesFromAdminAPI(args),
-  ]);
+  const {product} = await storefront.query(PRODUCT_QUERY, {
+    variables,
+  });
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
-  // Flatten and sort images related to this plant
-  const unsortedPlantImages = filterPlantImagesByHandle(
-    rawImageData,
-    product.handle,
-  );
-  const sortedPlantImages = unsortedPlantImages
-    .map(addImageMetadata)
-    .sort(sortImagesWithMetadata);
-
-  // Prepare carousel data
-  const carouselImages = returnCarouselImages(sortedPlantImages);
-  const latestCarouselDateString = getLatestCarouselDate(
-    carouselImages,
-  ) as string;
-  const latestCarouselImages = getLatestCarouselImages(
-    carouselImages,
-    latestCarouselDateString,
-  );
-
-  // Format the date for rendering
-  const formattedCarouselDate = new Date(
-    latestCarouselDateString,
-  ).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
-  // Create final description
-  const additionalDescription = `<p class="p1">(Plant photos taken on ${formattedCarouselDate})`;
-  const modifiedProductDescription =
-    product.descriptionHtml + additionalDescription;
-
   return {
-    product: {
-      ...product,
-      descriptionHtml: modifiedProductDescription,
-    },
-    carouselImages: latestCarouselImages,
+    product,
   };
 }
 
@@ -252,13 +215,13 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
   };
 
   const journalPromise = storefront.query(JOURNAL_QUERY, queryOptions);
-
   const carouselCopyPromise = storefront.query(
     CAROUSEL_COPY_QUERY,
     queryOptions,
   );
+  const adminImagePromise = fetchImagesFromAdminAPI({context, params});
 
-  return {journalPromise, carouselCopyPromise};
+  return {journalPromise, carouselCopyPromise, adminImagePromise};
 }
 
 // =========================
@@ -274,7 +237,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {product, carouselImages, journalPromise} =
+  const {product, adminImagePromise, journalPromise} =
     useLoaderData<typeof loader>();
 
   /**
@@ -319,22 +282,47 @@ export default function Plant() {
       <div className="grid grid-cols-3 gap-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <div className="col-span-2">
-          {carouselImages.length > 0 && (
-            <div className="carousel-images grid gap-1 grid-cols-2">
-              {carouselImages.map((img, index) => (
-                <ProductImage
-                  key={img.id ?? index}
-                  id={img.id ?? index}
-                  image={{
-                    __typename: 'Image',
-                    url: img.image.url,
-                  }}
-                  alt={img.alt || `${product.title} image`}
-                  className="col-span-1"
-                />
-              ))}
-            </div>
-          )}
+          <div className="col-span-2">
+            <Suspense fallback={<p>Loading images...</p>}>
+              <Await resolve={adminImagePromise}>
+                {(rawImageData) => {
+                  const unsortedPlantImages = filterPlantImagesByHandle(
+                    rawImageData,
+                    product.handle,
+                  );
+                  const sortedPlantImages = unsortedPlantImages
+                    .map(addImageMetadata)
+                    .sort(sortImagesWithMetadata);
+                  const carouselImages =
+                    returnCarouselImages(sortedPlantImages);
+                  const latestCarouselDateString = getLatestCarouselDate(
+                    carouselImages,
+                  ) as string;
+                  const latestCarouselImages = getLatestCarouselImages(
+                    carouselImages,
+                    latestCarouselDateString,
+                  );
+
+                  return (
+                    <div className="carousel-images grid gap-1 grid-cols-2">
+                      {latestCarouselImages.map((img, index) => (
+                        <ProductImage
+                          key={img.id ?? index}
+                          id={img.id ?? index}
+                          image={{
+                            __typename: 'Image',
+                            url: img.image.url,
+                          }}
+                          alt={img.alt || `${product.title} image`}
+                          className="col-span-1"
+                        />
+                      ))}
+                    </div>
+                  );
+                }}
+              </Await>
+            </Suspense>
+          </div>
         </div>
         <div className="col-span-1">
           <div className="flex justify-end">
