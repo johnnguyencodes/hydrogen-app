@@ -82,4 +82,13 @@ declare global {
       };
     };
   };
+
+  interface AdminImageWithMetadata {
+    image: {url: string};
+    meta: {
+      rawDate: string; // e.g. "2025-05-25"
+      imageType: string;
+      index: number;
+    };
+  }
 }
