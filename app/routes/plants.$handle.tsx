@@ -44,11 +44,6 @@ export async function loader(args: LoaderFunctionArgs) {
 
   const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
 
-  console.log(
-    'Server:',
-    adminImageData.map((f) => f.filename),
-  );
-
   // Return both, including the deferred data wrapped as a promise
   return {
     ...criticalData,
@@ -160,6 +155,11 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   const modifiedProductDescription =
     product.descriptionHtml + additionalDescription;
 
+  console.log(
+    'Server:',
+    latestCarouselImages.map((f) => f.filename),
+  );
+
   return {
     product: {
       ...product,
@@ -176,6 +176,28 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
 async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
   const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
 
+  const query = `
+    query Files($after: String) {
+      files(first: 100, sortKey: FILENAME, after: $after) {
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        edges {
+          cursor
+          node {
+            ... on MediaImage {
+              alt
+              image {
+                url
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
+
   const response = await fetch(ADMIN_API_URL, {
     method: 'POST',
     headers: {
@@ -183,45 +205,38 @@ async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      query: `
-        query Files {
-          files(first: 100) {
-            edges {
-              node {
-                ... on MediaImage {
-                  id
-                  alt
-                  image {
-                    url
-                  }
-                }
-              }
-            }
-          }
-        }
-      `,
+      query,
+      variables: {
+        after: null, // or pass in a real cursor if paginating
+      },
     }),
   });
 
-  const json = (await response.json()) as ShopifyFilesResponse;
+  const json = await response.json();
+
+  if (!json.data?.files) {
+    console.error('Shopify Admin API error:', JSON.stringify(json, null, 2));
+    throw new Error('Failed to fetch files from Shopify Admin API');
+  }
+
+  if (!json.data?.files) {
+    throw new Error('Failed to fetch files from Shopify Admin API');
+  }
 
   function extractFilename(url: string): string {
-    const parts = url.split('/');
     return url.split('/').pop()?.split('?')[0] || '';
   }
 
-  return json.data.files.edges
-    .map((edge: any) => {
-      const {alt, image} = edge.node;
-      const filename = extractFilename(image.url);
-      return {
-        ...edge.node,
-        filename,
-        image,
-        alt,
-      };
-    })
-    .sort((a, b) => a.filename.localeCompare(b.filename));
+  return json.data.files.edges.map((edge: any) => {
+    const {alt, image} = edge.node;
+    const filename = extractFilename(image.url);
+    return {
+      ...edge.node,
+      filename,
+      image,
+      alt,
+    };
+  });
 }
 
 /**
@@ -285,6 +300,13 @@ export default function Plant() {
       });
     }
   }, [product.id, product.title]);
+
+  useEffect(() => {
+    console.log(
+      'Client:',
+      carouselImages.map((img) => img.filename),
+    );
+  }, []);
 
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
