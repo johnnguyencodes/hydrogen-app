@@ -39,7 +39,6 @@ import {
 export async function loader(args: LoaderFunctionArgs) {
   const [criticalData, adminImageData] = await Promise.all([
     loadCriticalData(args),
-    fetchImagesFromAdminAPI(args),
   ]); // Must-have data, required immediately to render
 
   const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
@@ -154,11 +153,6 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   const additionalDescription = `<p class="p1">(Plant photos taken on ${formattedCarouselDate})`;
   const modifiedProductDescription =
     product.descriptionHtml + additionalDescription;
-
-  console.log(
-    'Server:',
-    latestCarouselImages.map((f) => f.filename),
-  );
 
   return {
     product: {
@@ -300,13 +294,6 @@ export default function Plant() {
       });
     }
   }, [product.id, product.title]);
-
-  useEffect(() => {
-    console.log(
-      'Client:',
-      carouselImages.map((img) => img.filename),
-    );
-  }, []);
 
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
