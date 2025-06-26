@@ -119,19 +119,33 @@ export function extractMetafieldValues(
   );
 }
 
-export function returnFormattedDate(dateBroughtHome: string): string {
-  const [year, month, day] = dateBroughtHome.split('-').map(Number);
+const MONTH_NAMES = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+] as const;
 
-  // Month is 0-based in JS Date
-  const modifiedDateBroughtHome = new Date(year, month - 1, day);
+/**
+ * Turn a YYYY-MM-DD string into e.g. "May 25, 2025"
+ * — consistent across server & client.
+ */
+export function returnFormattedDate(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-');
+  const m = parseInt(month, 10) - 1;
+  const d = parseInt(day, 10);
 
-  const formattedDate = modifiedDateBroughtHome.toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
-  return formattedDate;
+  // Fallback to the raw month if something odd slipped through
+  const monthName = MONTH_NAMES[m] ?? month;
+  return `${monthName} ${d}, ${year}`;
 }
 
 function toCamelCase(str: string) {

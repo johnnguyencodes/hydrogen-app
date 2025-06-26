@@ -239,16 +239,32 @@ export default function Plant() {
     carouselImages,
   ) as string;
 
+  const MONTH_NAMES = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ] as const;
+
   const carouselImagesDate = new Date(latestCarouselDateString);
 
-  const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
-    'en-US',
-    {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    },
-  );
+  const [yearStr, monthStr, dayStr] = latestCarouselDateString.split('-');
+  const year = yearStr;
+  const month = parseInt(monthStr, 10) - 1;
+  const day = parseInt(dayStr, 10);
+
+  // guard in case monthStr is malformed:
+  const monthName = MONTH_NAMES[month] ?? monthStr;
+
+  const formattedCarousalImagesDate = `${monthName} ${day}, ${year}`;
 
   const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
 
