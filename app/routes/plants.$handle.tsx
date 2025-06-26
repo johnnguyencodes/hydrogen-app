@@ -1,8 +1,6 @@
-// app/routes/plants/$handle.tsx
-
 import {Suspense, useEffect} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
-import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import type {LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {ProductImage} from '~/components/ProductImage';
 import {
   filterPlantImagesByHandle,
@@ -13,6 +11,7 @@ import {
   getLatestCarouselImages,
   extractMetafieldValues,
   returnFormattedDate,
+  formatYMDToLong,
 } from '~/lib/plantPageUtils';
 import {Button} from '~/components/ui/button';
 import {
@@ -28,42 +27,11 @@ import {
   Leaf,
 } from 'lucide-react';
 
-/**
- * Convert "YYYY-MM-DD" → "Month D, YYYY"
- */
-function formatYMDToLong(ymd: string): string {
-  const [year, month, day] = ymd.split('-').map(Number);
-  const MONTH_NAMES = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ] as const;
-  const m = month - 1;
-  const monthName = MONTH_NAMES[m] ?? String(month);
-  return `${monthName} ${day}, ${year}`;
-}
-
-// ─── Loader ───────────────────────────────────────────────────────────────────
-
-export async function loader(args: LoaderFunctionArgs) {
-  const {context, params} = args;
+export async function loader({context, params}: LoaderFunctionArgs) {
   const {handle} = params;
   const {storefront} = context;
+  if (!handle) throw new Error('Expected product handle');
 
-  if (!handle) {
-    throw new Error('Expected product handle');
-  }
-
-  // Step 1: critical Shopify query + admin‐files in parallel
   const variables = {
     handle,
     metafieldIdentifiers: [
@@ -76,30 +44,30 @@ export async function loader(args: LoaderFunctionArgs) {
     ],
   };
 
+  // fetch both at once on the server
   const [{product}, adminImageData] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {variables}),
-    fetchImagesFromAdminAPI(args),
+    fetchImagesFromAdminAPI(context),
   ]);
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
-  // Step 2: optional journal can wait until after hydrate
-  const journalPromise = storefront.query(JOURNAL_QUERY, {variables: {handle}});
+  // only journal is deferred to client/Hydration
+  const journalPromise = storefront.query(JOURNAL_QUERY, {
+    variables: {handle},
+  });
 
   return {product, adminImageData, journalPromise};
 }
 
-/**
- * Server‐side fetch of your Shopify Files → MediaImage[]
- */
-async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
-  const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
-  const response = await fetch(ADMIN_API_URL, {
+async function fetchImagesFromAdminAPI(ctx: LoaderFunctionArgs['context']) {
+  const ADMIN_API_URL = `https://${ctx.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
+  const res = await fetch(ADMIN_API_URL, {
     method: 'POST',
     headers: {
-      'X-Shopify-Access-Token': context.env.FILES_ADMIN_API_ACCESS_TOKEN,
+      'X-Shopify-Access-Token': ctx.env.FILES_ADMIN_API_ACCESS_TOKEN,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -120,22 +88,19 @@ async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
       `,
     }),
   });
-
-  const json = (await response.json()) as {
+  const {data} = (await res.json()) as {
     data: {files: {edges: Array<{node: any}>}};
   };
-  return json.data.files.edges.map((e) => e.node);
+  return data.files.edges.map((e) => e.node);
 }
-
-// ─── Component ─────────────────────────────────────────────────────────────────
 
 export default function Plant() {
   const {product, adminImageData, journalPromise} =
     useLoaderData<typeof loader>();
 
-  // Analytics on mount
+  // analytics on mount
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.analytics?.track) {
+    if (window.analytics?.track) {
       window.analytics.track('plant_view', {
         id: product.id,
         title: product.title,
@@ -143,7 +108,7 @@ export default function Plant() {
     }
   }, [product.id, product.title]);
 
-  // Extract & parse your metafields
+  // metafields
   const mf = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
@@ -153,14 +118,15 @@ export default function Plant() {
   const datePlantAcquired = returnFormattedDate(parsedAcq.date);
   const dateMeasurementTaken = returnFormattedDate(parsedMeas[0].date);
 
-  // Build your carousel
+  // build carousel
   const unsorted = filterPlantImagesByHandle(adminImageData, product.handle);
   const sorted = unsorted.map(addImageMetadata).sort(sortImagesWithMetadata);
   const carouselAll = returnCarouselImages(sorted);
-  const latestYMD = getLatestCarouselDate(carouselAll)!; // "2025-05-25"
-  const formattedCarousel = formatYMDToLong(latestYMD); // "May 25, 2025"
-  const snippet = `<p class="p1">(Plant photos taken on ${formattedCarousel})</p>`;
-  const modifiedDescription = product.descriptionHtml + snippet;
+  const latestYMD = getLatestCarouselDate(carouselAll)!; // e.g. "2025-05-25"
+  const formattedCarousel = formatYMDToLong(latestYMD);
+  const modifiedDescriptionSnippet = (
+    <p className="p1">(Plant photos taken on {formattedCarousel})</p>
+  );
   const latestImgs = getLatestCarouselImages(carouselAll, latestYMD);
 
   return (
@@ -194,18 +160,28 @@ export default function Plant() {
             </Button>
           </div>
           <h1 className="text-3xl mb-5 font-medium">{product.title}</h1>
-          <div
-            className="prose p-5"
-            id="plant-description"
-            dangerouslySetInnerHTML={{__html: modifiedDescription}}
-          />
+          {/* description + snippet */}
+          <div className="prose p-5" id="plant-description">
+            <div dangerouslySetInnerHTML={{__html: product.descriptionHtml}} />
+            {modifiedDescriptionSnippet}
+          </div>
+          {llifleDatabaseLink && (
+            <a
+              href={llifleDatabaseLink}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="inline-flex items-center mt-4 text-sm"
+            >
+              View species info on LLIFLE <ExternalLink className="ml-1" />
+            </a>
+          )}
         </div>
       </div>
 
-      {/* Info Grid (acquisition, measurement, care, &c.) */}
+      {/* Info Grid */}
       <div className="my-10 border-t" />
       <div className="grid grid-cols-3 gap-10">
-        {/* Acquisition card */}
+        {/* Acquisition */}
         {parsedAcq && (
           <div className="bg-[var(--color-bg-1)] p-5 rounded-md text-center">
             {parsedAcq.method === 'seed-grown' && <Sprout size={36} />}
@@ -222,7 +198,7 @@ export default function Plant() {
           </div>
         )}
 
-        {/* Measurement card */}
+        {/* Measurement */}
         {parsedMeas && (
           <div className="bg-[var(--color-bg-2)] p-5 rounded-md text-center">
             <Ruler size={36} />
@@ -235,11 +211,11 @@ export default function Plant() {
           </div>
         )}
 
-        {/* Care regimen card (soil, fertilizer, watering) */}
+        {/* Care (soil + watering) */}
         <div className="bg-[var(--color-bg-3)] p-5 rounded-md text-center">
           <Shovel size={36} />
           <p className="font-bold mt-2">Soil Mix</p>
-          <ul>
+          <ul className="list-disc list-inside">
             <li>8 parts pumice</li>
             <li>1 part calcinated clay</li>
             <li>1 part cactus soil</li>
@@ -248,7 +224,7 @@ export default function Plant() {
         </div>
       </div>
 
-      {/* Deferred journal entries */}
+      {/* Deferred journal */}
       <Suspense fallback={<p>Loading journal…</p>}>
         <Await resolve={journalPromise}>
           {(data) => {
@@ -277,7 +253,7 @@ export default function Plant() {
   );
 }
 
-// ─── GraphQL QUERY DEFINITIONS ─────────────────────────────────────────────────
+// ─── GraphQL ─────────────────────────────────────────────────────────────────
 
 const PRODUCT_QUERY = `#graphql
   query PlantProduct(
