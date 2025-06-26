@@ -44,6 +44,11 @@ export async function loader(args: LoaderFunctionArgs) {
 
   const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
 
+  console.log(
+    'Server:',
+    adminImageData.map((f) => f.filename),
+  );
+
   // Return both, including the deferred data wrapped as a promise
   return {
     ...criticalData,
@@ -113,16 +118,54 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   };
 
   // Shopify storefront query using product handle
-  const [{product}] = await Promise.all([
+  const [{product}, rawImageData] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {variables}),
+    fetchImagesFromAdminAPI(args),
   ]);
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
+  // Flatten and sort images related to this plant
+  const unsortedPlantImages = filterPlantImagesByHandle(
+    rawImageData,
+    product.handle,
+  );
+  const sortedPlantImages = unsortedPlantImages
+    .map(addImageMetadata)
+    .sort(sortImagesWithMetadata);
+
+  // Prepare carousel data
+  const carouselImages = returnCarouselImages(sortedPlantImages);
+  const latestCarouselDateString = getLatestCarouselDate(
+    carouselImages,
+  ) as string;
+  const latestCarouselImages = getLatestCarouselImages(
+    carouselImages,
+    latestCarouselDateString,
+  );
+
+  // Format the date for rendering
+  const formattedCarouselDate = new Date(
+    latestCarouselDateString,
+  ).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  // Create final description
+  const additionalDescription = `<p class="p1">(Plant photos taken on ${formattedCarouselDate})`;
+  const modifiedProductDescription =
+    product.descriptionHtml + additionalDescription;
+
   return {
-    product,
+    product: {
+      ...product,
+      descriptionHtml: modifiedProductDescription,
+    },
+    carouselImages: latestCarouselImages,
   };
 }
 
@@ -163,6 +206,7 @@ async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
   const json = (await response.json()) as ShopifyFilesResponse;
 
   function extractFilename(url: string): string {
+    const parts = url.split('/');
     return url.split('/').pop()?.split('?')[0] || '';
   }
 
@@ -221,7 +265,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {product, adminImageData, journalPromise} =
+  const {product, carouselImages, journalPromise} =
     useLoaderData<typeof loader>();
 
   /**
@@ -241,46 +285,6 @@ export default function Plant() {
       });
     }
   }, [product.id, product.title]);
-
-  /**
-   * Manipulating data from critical loader to be usable on the page
-   */
-
-  // const unsortedPlantImages = filterPlantImagesByHandle(
-  //   adminImageData,
-  //   product.handle,
-  // );
-
-  // const sortedPlantImages = unsortedPlantImages
-  //   .map(addImageMetadata)
-  //   .sort(sortImagesWithMetadata);
-
-  // const carouselImages = returnCarouselImages(sortedPlantImages);
-
-  // const latestCarouselDateString = getLatestCarouselDate(
-  //   carouselImages,
-  // ) as string;
-
-  // const carouselImagesDate = new Date(latestCarouselDateString);
-
-  // const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
-  //   'en-US',
-  //   {
-  //     year: 'numeric',
-  //     month: 'long',
-  //     day: 'numeric',
-  //   },
-  // );
-
-  // const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
-
-  // const modifiedProductDescription =
-  //   product.descriptionHtml + additonalDescription;
-
-  // const latestCarouselImages = getLatestCarouselImages(
-  //   carouselImages,
-  //   latestCarouselDateString,
-  // );
 
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
@@ -305,7 +309,24 @@ export default function Plant() {
     <div className="plant-page">
       <div className="grid grid-cols-3 gap-10 relative min-h-screen">
         {/* Render core product info immediately */}
-        <div className="col-span-2"></div>
+        <div className="col-span-2">
+          {carouselImages.length > 0 && (
+            <div className="carousel-images grid gap-1 grid-cols-2">
+              {carouselImages.map((img, index) => (
+                <ProductImage
+                  key={img.id ?? index}
+                  id={img.id ?? index}
+                  image={{
+                    __typename: 'Image',
+                    url: img.image.url,
+                  }}
+                  alt={img.alt || `${product.title} image`}
+                  className="col-span-1"
+                />
+              ))}
+            </div>
+          )}
+        </div>
         <div className="col-span-1">
           <div className="flex justify-end">
             <Button size="sm" className="mr-3">
