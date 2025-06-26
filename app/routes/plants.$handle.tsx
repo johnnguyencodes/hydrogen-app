@@ -38,13 +38,12 @@ import {
  */
 export async function loader(args: LoaderFunctionArgs) {
   const criticalData = await loadCriticalData(args);
-  const {adminImagePromise, journalPromise} = loadDeferredData(args);
+  const deferredData = await loadDeferredData(args);
 
   // Return both, including the deferred data wrapped as a promise
   return defer({
     ...criticalData,
-    adminImagePromise,
-    journalPromise,
+    ...deferredData,
   });
 }
 
@@ -196,7 +195,7 @@ async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
  * Load data that is *optional* and can be deferred initial render.
  * This runs in parallel with `loadCriticalData`, and will be awaited by <Await />.
  */
-function loadDeferredData({context, params}: LoaderFunctionArgs) {
+async function loadDeferredData({context, params}: LoaderFunctionArgs) {
   const {handle} = params;
   const {storefront} = context;
 
