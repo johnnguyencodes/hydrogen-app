@@ -141,7 +141,7 @@ export function HeaderMenu({
         variant="default"
       >
         {isDarkMode ? (
-          <Sun className="h-4 w-4"></Sun>
+          <MoonStar className="h-4 w-4"></MoonStar>
         ) : (
           <MoonStar className="h-4 w-4"></MoonStar>
         )}
