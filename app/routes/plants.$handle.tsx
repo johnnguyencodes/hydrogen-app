@@ -228,29 +228,28 @@ async function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {product, adminImagePromise, journalPromise} =
-    useLoaderData<typeof loader>();
+  const data = useLoaderData<typeof loader>();
 
-  /**
-   * Analytics: track page view when the plant page is viewed.
-   * Uses window.analytics.track() if available; logs fallback if not.
-   */
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window?.analytics?.track) {
-      window.analytics.track('plant_view', {
-        id: product.id,
-        title: product.title,
-      });
-    } else {
-      console.warn('[Analytics Fallback] plant_view', {
-        id: product.id,
-        title: product.title,
-      });
-    }
-  }, [product.id, product.title]);
+  // /**
+  //  * Analytics: track page view when the plant page is viewed.
+  //  * Uses window.analytics.track() if available; logs fallback if not.
+  //  */
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined' && window?.analytics?.track) {
+  //     window.analytics.track('plant_view', {
+  //       id: product.id,
+  //       title: product.title,
+  //     });
+  //   } else {
+  //     console.warn('[Analytics Fallback] plant_view', {
+  //       id: product.id,
+  //       title: product.title,
+  //     });
+  //   }
+  // }, [product.id, product.title]);
 
   const metafieldValues = extractMetafieldValues(
-    product.metafields.filter(Boolean) as PlantCriticalMetafield[],
+    data.product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
 
   const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
@@ -275,11 +274,11 @@ export default function Plant() {
         <div className="col-span-2">
           <div className="col-span-2">
             <Suspense fallback={<p>Loading images...</p>}>
-              <Await resolve={adminImagePromise}>
+              <Await resolve={data.adminImagePromise}>
                 {(rawImageData) => {
                   const unsortedPlantImages = filterPlantImagesByHandle(
                     rawImageData,
-                    product.handle,
+                    data.product.handle,
                   );
                   const sortedPlantImages = unsortedPlantImages
                     .map(addImageMetadata)
@@ -304,7 +303,7 @@ export default function Plant() {
                             __typename: 'Image',
                             url: img.image.url,
                           }}
-                          alt={img.alt || `${product.title} image`}
+                          alt={img.alt || `${data.product.title} image`}
                           className="col-span-1"
                         />
                       ))}
@@ -325,13 +324,13 @@ export default function Plant() {
             </Button>
           </div>
           <h1 className="text-3xl mb-5 mt-3 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
-            {product.title}
+            {data.product.title}
           </h1>
           <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md bg-[var(--color-bg-3)] prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)]">
             <div
               className="prose p-5"
               id="plant-description"
-              dangerouslySetInnerHTML={{__html: product.descriptionHtml}}
+              dangerouslySetInnerHTML={{__html: data.product.descriptionHtml}}
             />
           </div>
         </div>
@@ -341,7 +340,7 @@ export default function Plant() {
         <div className="grid grid-cols-3 gap-10">
           <div className="cols-span-1 flex flex-col justify-center">
             <h2 className="text-balance text-5xl font-medium text-[var(--color-fg-green)]">
-              {product.title}
+              {data.product.title}
             </h2>
             {llifleDatabaseLink && (
               <a
@@ -488,7 +487,7 @@ export default function Plant() {
 
       {/* Deferred journal entry block — Suspense + Await */}
       <Suspense fallback={<p> Loading journal...</p>}>
-        <Await resolve={journalPromise}>
+        <Await resolve={data.journalPromise}>
           {/* data is the resolved value of journalPromise */}
           {(data) => {
             // Await gives us the result of journalPromise when it's done
