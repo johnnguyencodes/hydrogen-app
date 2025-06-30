@@ -49,7 +49,7 @@ export async function loader(args: LoaderFunctionArgs) {
 
 /**
  * Critical data loader: fetches the Shopify product and core metafields.
- * If the product doesn't exist, throw a 404.
+ * If the product doesn't exist, throw a 404
  */
 async function loadCriticalData({context, params}: LoaderFunctionArgs) {
   const {storefront, admin} = context;
@@ -117,40 +117,47 @@ async function loadCriticalData({context, params}: LoaderFunctionArgs) {
     variables: {after: null},
   });
 
-  const adminImageData = adminFetchResult.files.edges.map((e: any) => e.node);
-
-  const unsortedPlantImages = filterPlantImagesByHandle(
-    adminImageData,
-    product.handle,
-  );
-
-  const sortedPlantImages = unsortedPlantImages
+  const carouselImages = adminFetchResult.files.edges
+    .map((e: any) => e.node)
+    .filter((img) => img.image.url.includes(`plants--${handle}`))
     .map(addImageMetadata)
-    .sort(sortImagesWithMetadata);
+    .sort(sortImagesWithMetadata)
+    .filter((i) => i.meta.imageType === 'carousel');
 
-  const carouselImages = returnCarouselImages(sortedPlantImages);
+  const MONTH_NAMES = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ] as const;
 
-  const latestCarouselDateString = getLatestCarouselDate(
-    sortedPlantImages,
-  ) as string;
+  function formatYMDToLong(ymd: string): string {
+    // ymd is expected in "YYYY-MM-DD" form
+    const [year, month, day] = ymd.split('-');
+    const mIndex = Number(month) - 1;
+    const monthName = MONTH_NAMES[mIndex] ?? month;
+    // strip any leading zero from the day
+    const d = day.startsWith('0') ? day.slice(1) : day;
+    return `${monthName} ${d}, ${year}`; // e.g. "May 25, 2025"
+  }
 
-  const carouselImagesDate = new Date(latestCarouselDateString);
-
-  const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
-    'en-US',
-    {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    },
-  );
+  const latestYMD = getLatestCarouselDate(carouselImages)!;
+  const formattedCarouselImagesDate = formatYMDToLong(latestYMD);
 
   const latestCarouselImages = getLatestCarouselImages(
     carouselImages,
-    latestCarouselDateString,
+    latestYMD,
   );
 
-  return {product, latestCarouselImages, formattedCarousalImagesDate};
+  return {product, latestCarouselImages, formattedCarouselImagesDate};
 }
 
 /**
