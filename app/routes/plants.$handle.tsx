@@ -119,11 +119,38 @@ async function loadCriticalData({context, params}: LoaderFunctionArgs) {
 
   const adminImageData = adminFetchResult.files.edges.map((e: any) => e.node);
 
-  //   const json = (await response.json()) as ShopifyFilesResponse;
+  const unsortedPlantImages = filterPlantImagesByHandle(
+    adminImageData,
+    product.handle,
+  );
 
-  //   return json.data.files.edges.map((edge: any) => edge.node);
+  const sortedPlantImages = unsortedPlantImages
+    .map(addImageMetadata)
+    .sort(sortImagesWithMetadata);
 
-  return {product, adminImageData};
+  const carouselImages = returnCarouselImages(sortedPlantImages);
+
+  const latestCarouselDateString = getLatestCarouselDate(
+    sortedPlantImages,
+  ) as string;
+
+  const carouselImagesDate = new Date(latestCarouselDateString);
+
+  const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
+    'en-US',
+    {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    },
+  );
+
+  const latestCarouselImages = getLatestCarouselImages(
+    carouselImages,
+    latestCarouselDateString,
+  );
+
+  return {product, latestCarouselImages, formattedCarousalImagesDate};
 }
 
 /**
@@ -168,8 +195,12 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {product, adminImageData, journalPromise} =
-    useLoaderData<typeof loader>();
+  const {
+    product,
+    latestCarouselImages,
+    formattedCarousalImagesDate,
+    journalPromise,
+  } = useLoaderData<typeof loader>();
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -193,17 +224,6 @@ export default function Plant() {
    * Manipulating data from critical loader to be usable on the page
    */
 
-  const unsortedPlantImages = filterPlantImagesByHandle(
-    adminImageData,
-    product.handle,
-  );
-
-  const sortedPlantImages = unsortedPlantImages
-    .map(addImageMetadata)
-    .sort(sortImagesWithMetadata);
-
-  const carouselImages = returnCarouselImages(sortedPlantImages);
-
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
@@ -211,30 +231,10 @@ export default function Plant() {
   const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
     metafieldValues;
 
-  const latestCarouselDateString = getLatestCarouselDate(
-    sortedPlantImages,
-  ) as string;
-
-  const carouselImagesDate = new Date(latestCarouselDateString);
-
-  const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
-    'en-US',
-    {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    },
-  );
-
   const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
 
   const modifiedProductDescription =
     product.descriptionHtml + additonalDescription;
-
-  const latestCarouselImages = getLatestCarouselImages(
-    carouselImages,
-    latestCarouselDateString,
-  );
 
   const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
 
