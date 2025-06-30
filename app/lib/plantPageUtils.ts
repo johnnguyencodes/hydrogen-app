@@ -74,10 +74,9 @@ export function sortImagesWithMetadata(
 // This function maps through all the plant images and uses regex to find a file match
 // If there is a match, enter metadata based on the regex match
 // If there isn't a match, use general defaults as fallback for metadata
-export function returnCarouselImages(
-  sortedPlantImages: AdminImageWithMetadata[],
-) {
-  return sortedPlantImages.filter((img) => img.meta?.imageType === 'carousel');
+
+export function returnCarouselImages(images: AdminImageWithMetadata[]) {
+  return images.filter((img) => img.meta?.imageType === 'carousel');
 }
 
 export function getLatestCarouselDate(
