@@ -1,7 +1,7 @@
 // React and Remix imports
 import {Suspense, useEffect} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
-import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {ProductImage} from '~/components/ProductImage';
 import {
   filterPlantImagesByHandle,
@@ -37,23 +37,24 @@ import {
  * and deferred (optional, loaded later if needed).
  */
 export async function loader(args: LoaderFunctionArgs) {
-  const criticalData = await loadCriticalData(args);
-  const deferredData = await loadDeferredData(args); // Optional data, can be loaded in parallel
+  const criticalData = await loadCriticalData(args); // Must-have data, required immediately to render
+  const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
 
   // Return both, including the deferred data wrapped as a promise
-  return defer({
+  return {
     ...criticalData,
     journalPromise: deferredData.journalPromise,
-  });
+  };
 }
 
 /**
  * Critical data loader: fetches the Shopify product and core metafields.
- * If the product doesn't exist, throw a 404
+ * If the product doesn't exist, throw a 404.
  */
-async function loadCriticalData({context, params}: LoaderFunctionArgs) {
-  const {storefront, admin} = context;
+async function loadCriticalData(args: LoaderFunctionArgs) {
+  const {context, params} = args;
   const {handle} = params;
+  const {storefront} = context;
 
   if (!handle) {
     throw new Error('Expected product handle to be defined');
@@ -62,6 +63,7 @@ async function loadCriticalData({context, params}: LoaderFunctionArgs) {
   const variables = {
     handle,
     metafieldIdentifiers: [
+      {namespace: 'plant', key: 'images'},
       {namespace: 'plant', key: 'llifle-database-link'},
       // Metafield definition
       // Namespace and key: "plant.acquisition"
@@ -107,64 +109,60 @@ async function loadCriticalData({context, params}: LoaderFunctionArgs) {
   };
 
   // Shopify storefront query using product handle
-  const {product} = await storefront.query(PRODUCT_QUERY, {variables});
+  const [{product}, adminImageData] = await Promise.all([
+    storefront.query(PRODUCT_QUERY, {variables}),
+    // fetchImagesFromAdminAPI(args),
+  ]);
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
-  const adminFetchResult = await admin(ADMIN_FILES_QUERY, {
-    variables: {after: null},
-  });
-
-  const carouselImages = adminFetchResult.files.edges
-    .map((e: any) => e.node)
-    .filter((img) => img.image.url.includes(`plants--${handle}`))
-    .map(addImageMetadata)
-    .sort(sortImagesWithMetadata)
-    .filter((i) => i.meta.imageType === 'carousel');
-
-  const MONTH_NAMES = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ] as const;
-
-  function formatYMDToLong(ymd: string): string {
-    // ymd is expected in "YYYY-MM-DD" form
-    const [year, month, day] = ymd.split('-');
-    const mIndex = Number(month) - 1;
-    const monthName = MONTH_NAMES[mIndex] ?? month;
-    // strip any leading zero from the day
-    const d = day.startsWith('0') ? day.slice(1) : day;
-    return `${monthName} ${d}, ${year}`; // e.g. "May 25, 2025"
-  }
-
-  const latestYMD = getLatestCarouselDate(carouselImages)!;
-  const formattedCarouselImagesDate = formatYMDToLong(latestYMD);
-
-  const latestCarouselImages = getLatestCarouselImages(
-    carouselImages,
-    latestYMD,
-  );
-
-  return {product, latestCarouselImages, formattedCarouselImagesDate};
+  return {product, adminImageData};
 }
+
+/**
+ * async function to fetch files uploaded to the Shopify store under Content > Files in the admin panel
+ */
+
+// async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
+//   const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
+//   const response = await fetch(ADMIN_API_URL, {
+//     method: 'POST',
+//     headers: {
+//       'X-Shopify-Access-Token': context.env.FILES_ADMIN_API_ACCESS_TOKEN,
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify({
+//       query: `
+//         query Files {
+//           files(first: 100) {
+//             edges {
+//               node {
+//                 ... on MediaImage {
+//                   id
+//                   alt
+//                   image {
+//                     url
+//                   }
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       `,
+//     }),
+//   });
+
+//   const json = (await response.json()) as ShopifyFilesResponse;
+
+//   return json.data.files.edges.map((edge: any) => edge.node);
+// }
 
 /**
  * Load data that is *optional* and can be deferred initial render.
  * This runs in parallel with `loadCriticalData`, and will be awaited by <Await />.
  */
-
 function loadDeferredData({context, params}: LoaderFunctionArgs) {
   const {handle} = params;
   const {storefront} = context;
@@ -204,8 +202,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Plant() {
   const {
     product,
-    latestCarouselImages,
-    formattedCarousalImagesDate,
+    // adminImageData,
     journalPromise,
   } = useLoaderData<typeof loader>();
 
@@ -213,23 +210,34 @@ export default function Plant() {
    * Analytics: track page view when the plant page is viewed.
    * Uses window.analytics.track() if available; logs fallback if not.
    */
-  // useEffect(() => {
-  //   if (typeof window !== 'undefined' && window?.analytics?.track) {
-  //     window.analytics.track('plant_view', {
-  //       id: product.id,
-  //       title: product.title,
-  //     });
-  //   } else {
-  //     console.warn('[Analytics Fallback] plant_view', {
-  //       id: product.id,
-  //       title: product.title,
-  //     });
-  //   }
-  // }, [product.id, product.title]);
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window?.analytics?.track) {
+      window.analytics.track('plant_view', {
+        id: product.id,
+        title: product.title,
+      });
+    } else {
+      console.warn('[Analytics Fallback] plant_view', {
+        id: product.id,
+        title: product.title,
+      });
+    }
+  }, [product.id, product.title]);
 
   /**
    * Manipulating data from critical loader to be usable on the page
    */
+
+  // const unsortedPlantImages = filterPlantImagesByHandle(
+  //   adminImageData,
+  //   product.handle,
+  // );
+
+  // const sortedPlantImages = unsortedPlantImages
+  //   .map(addImageMetadata)
+  //   .sort(sortImagesWithMetadata);
+
+  // console.log('sortedPlantImages:', sortedPlantImages);
 
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
@@ -238,10 +246,38 @@ export default function Plant() {
   const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
     metafieldValues;
 
-  // const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})</p>`;
+  const rawImageData = metafieldValues.images;
+  const parsedImageData = JSON.parse(rawImageData);
+  const carouselImages = returnCarouselImages(parsedImageData);
 
-  // const modifiedProductDescription =
-  //   product.descriptionHtml + additonalDescription;
+  const latestCarouselDateString = getLatestCarouselDate(
+    carouselImages,
+  ) as string;
+
+  const carouselImagesDate = new Date(latestCarouselDateString);
+
+  const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
+    'en-US',
+    {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    },
+  );
+
+  const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
+
+  const modifiedProductDescription =
+    product.descriptionHtml + additonalDescription;
+
+  const latestCarouselImages = getLatestCarouselImages(
+    carouselImages,
+    latestCarouselDateString,
+  );
+
+  console.log('latestCarouselImages:', latestCarouselImages);
+
+  console.log('metafieldValues:', metafieldValues);
 
   const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
 
@@ -293,7 +329,7 @@ export default function Plant() {
             <div
               className="prose p-5"
               id="plant-description"
-              dangerouslySetInnerHTML={{__html: product.descriptionHtml}}
+              dangerouslySetInnerHTML={{__html: modifiedProductDescription}}
             ></div>
           </div>
         </div>
@@ -551,25 +587,6 @@ const CAROUSEL_COPY_QUERY = `#graphql
         value
         type
       }
-    }
-  }
-` as const;
-
-const ADMIN_FILES_QUERY = `
-  query Files($after: String) {
-    files(first: 100, after: $after) {
-      edges {
-        node {
-          ... on MediaImage {
-            id
-            alt
-            image {
-              url
-            }
-          }
-        }
-      }
-    pageInfo { hasNextPage, endCursor}
     }
   }
 ` as const;
