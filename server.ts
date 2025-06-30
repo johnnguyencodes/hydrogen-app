@@ -41,9 +41,6 @@ import {createRequestHandler} from '@shopify/remix-oxygen';
 // You define this file — it sets up your app context (Shopify client, sessions, etc.)
 import {createAppLoadContext} from '~/lib/context';
 
-// Adding Admin API client to make fetches against Shopify's admin API endpoint
-import {createAdminClient} from '~/lib/createAdminAPIClient';
-
 /**
  * Export a fetch handler in module format.
  * Shopify Oxygen looks for this `fetch()` method when serving your app.
@@ -56,24 +53,12 @@ export default {
     executionContext: ExecutionContext, // Worker execution context (background tasks)
   ): Promise<Response> {
     try {
-      // 👇 Sets up the app’s base context: Shopify API client, session, provides custom logic or helpers to all Remix loaders, etc.
-      const baseContext = await createAppLoadContext(
+      // 👇 Sets up the app’s context: Shopify API client, session, provides custom logic or helpers to all Remix loaders, etc.
+      const appLoadContext = await createAppLoadContext(
         request,
         env,
         executionContext,
       );
-
-      const {admin} = createAdminClient({
-        privateAdminToken: env.FILES_ADMIN_API_ACCESS_TOKEN,
-        storeDomain: `https://${env.PUBLIC_STORE_DOMAIN}`,
-        adminApiVersion: env.FILES_ADMIN_API_VERSION || '2025-04',
-      });
-
-      // merge the admin client into the base load context
-      const appLoadContext = {
-        ...baseContext,
-        admin,
-      };
 
       /**
        * Create the Remix request handler and pass it:
@@ -88,7 +73,7 @@ export default {
       const handleRequest = createRequestHandler({
         build: remixBuild,
         mode: process.env.NODE_ENV,
-        getLoadContext: () => appLoadContext, // makes `context` available in Remix loaders, including `context.admin`
+        getLoadContext: () => appLoadContext, // makes `context` available in Remix loaders
       });
 
       // 👇 Call Remix to handle the request (routes, loaders, rendering, etc.)
