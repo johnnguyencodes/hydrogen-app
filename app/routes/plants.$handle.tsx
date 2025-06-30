@@ -238,10 +238,10 @@ export default function Plant() {
   const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
     metafieldValues;
 
-  const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
+  // const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})</p>`;
 
-  const modifiedProductDescription =
-    product.descriptionHtml + additonalDescription;
+  // const modifiedProductDescription =
+  //   product.descriptionHtml + additonalDescription;
 
   const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
 
@@ -293,7 +293,7 @@ export default function Plant() {
             <div
               className="prose p-5"
               id="plant-description"
-              dangerouslySetInnerHTML={{__html: modifiedProductDescription}}
+              dangerouslySetInnerHTML={{__html: product.descriptionHtml}}
             ></div>
           </div>
         </div>
