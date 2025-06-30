@@ -1,13 +1,13 @@
 // A basic Admin API fetch-based client
 
 export function createAdminClient({
-  adminApiVersion,
   privateAdminToken,
   storeDomain,
+  adminApiVersion,
 }: {
-  adminApiVersion: string;
   privateAdminToken: string;
   storeDomain: string;
+  adminApiVersion: string;
 }) {
   const admin: AdminClient = async function (
     query: string | null,
