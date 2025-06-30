@@ -1,37 +1,25 @@
-// app/lib/plantPageUtils.ts
-
-// Month names lookup for consistent formatting
-const MONTH_NAMES = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
-] as const;
-
-/**
- * Filters out only those admin images whose URL contains the plant handle.
- */
+// Each plant image is a Shopify file object. Each object has a .image.url that must be named with the following structure
+// `plants--${product.handle}--YYYY-MM-DD--${imageType}--${index}.${fileExtension}`
+// For example: plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--001.webp
 export function filterPlantImagesByHandle(
   adminImageData: AdminImage[],
   productHandle: string,
-): AdminImage[] {
+) {
   return adminImageData.filter((img) =>
     img.image?.url?.includes(`plants--${productHandle}`),
   );
 }
 
-/**
- * Adds metadata (rawDate, imageType, index) parsed from the filename.
- * Falls back to epoch date if naming doesn't match.
- */
+// Since unSortedPlantImages is only concerned about the first two parts of the shopify file object's url,
+// the sorting logic will only be concerned about the latter 3 parts of the url:
+//   - date
+//   - image type
+//   - index
+// where imageType can be either
+//   - carousel
+//   - journal
+//   - milestone
+// fileExtension can be any file type, but in my comments I am assuming all images will be in .webp format.
 export function addImageMetadata(img: AdminImage): AdminImageWithMetadata {
   const regex = /--(\d{4}-\d{2}-\d{2})--([a-z]+)--(\d{3})\./;
   const match = img.image.url.match(regex);
@@ -40,106 +28,112 @@ export function addImageMetadata(img: AdminImage): AdminImageWithMetadata {
     return {
       ...img,
       meta: {
-        rawDate: '1970-01-01',
+        date: new Date(0),
         imageType: '',
         index: 0,
       },
     };
   }
 
-  const [, rawDate, imageType, indexStr] = match;
+  const [, dateStr, imageType, indexStr] = match;
+
   return {
     ...img,
     meta: {
-      rawDate,
+      date: new Date(dateStr),
       imageType,
-      index: Number(indexStr),
+      index: parseInt(indexStr, 10),
     },
   };
 }
 
-/**
- * Sort by rawDate (newest first), then imageType, then index.
- */
 export function sortImagesWithMetadata(
   a: AdminImageWithMetadata,
   b: AdminImageWithMetadata,
 ): number {
-  const aTime = new Date(a.meta.rawDate).getTime();
-  const bTime = new Date(b.meta.rawDate).getTime();
-  if (bTime !== aTime) return bTime - aTime;
+  const {date: aDate, imageType: aImageType, index: aIndex} = a.meta;
+  const {date: bDate, imageType: bImageType, index: bIndex} = b.meta;
 
-  if (a.meta.imageType !== b.meta.imageType) {
-    return a.meta.imageType.localeCompare(b.meta.imageType);
+  // 1. Sort by date (most recent first)
+  const aDateObj = new Date(aDate);
+  const bDateObj = new Date(bDate);
+
+  if (bDateObj.getTime() !== aDateObj.getTime()) {
+    return bDateObj.getTime() - aDateObj.getTime();
   }
 
-  return a.meta.index - b.meta.index;
+  // 2. Sort by imageType alphabetically
+  if (aImageType !== bImageType) {
+    return aImageType.localeCompare(bImageType);
+  }
+
+  // 3. Sort by index from lowest to highest
+  return aIndex - bIndex;
 }
 
-/**
- * Returns only those images tagged as 'carousel'.
- */
+// This function maps through all the plant images and uses regex to find a file match
+// If there is a match, enter metadata based on the regex match
+// If there isn't a match, use general defaults as fallback for metadata
 export function returnCarouselImages(
   sortedPlantImages: AdminImageWithMetadata[],
-): AdminImageWithMetadata[] {
-  return sortedPlantImages.filter((img) => img.meta.imageType === 'carousel');
+) {
+  return sortedPlantImages.filter((img) => img.meta?.imageType === 'carousel');
 }
 
-/**
- * Returns the most recent rawDate from the carousel array, or null if empty.
- */
 export function getLatestCarouselDate(
   carouselImages: AdminImageWithMetadata[],
-): string | null {
-  return carouselImages.length > 0 ? carouselImages[0].meta.rawDate : null;
+) {
+  const carouselImageDateObj = new Date(carouselImages[0].meta.date);
+
+  return carouselImages.length > 0
+    ? carouselImageDateObj.toISOString().split('T')[0]
+    : null;
 }
 
-/**
- * Returns only the images whose rawDate matches the latest date.
- */
 export function getLatestCarouselImages(
   carouselImages: AdminImageWithMetadata[],
   latestCarouselDate: string | null,
-): AdminImageWithMetadata[] {
+) {
   if (!latestCarouselDate) return [];
   return carouselImages.filter(
-    (img) => img.meta.rawDate === latestCarouselDate,
+    (img) => getISODate(img.meta.date) === latestCarouselDate,
   );
 }
 
-/**
- * Converts a YYYY-MM-DD string into "Month D, YYYY".
- */
-export function formatYMDToLong(ymd: string): string {
-  const [year, month, day] = ymd.split('-');
-  const mIndex = Number(month) - 1;
-  const monthName = MONTH_NAMES[mIndex] ?? month;
-  const d = day.startsWith('0') ? day.slice(1) : day;
-  return `${monthName} ${d}, ${year}`;
+function getISODate(date: Date | string) {
+  return new Date(date).toISOString().split('T')[0];
 }
 
-/**
- * Turn a YYYY-MM-DD ISO string into a long format date.
- */
-export function returnFormattedDate(isoDate: string): string {
-  const [year, month, day] = isoDate.split('-');
-  const m = Number(month) - 1;
-  const d = Number(day);
-  const monthName = MONTH_NAMES[m] ?? month;
-  return `${monthName} ${d}, ${year}`;
-}
-
-/**
- * Pulls out key/value pairs from Shopify metafields into camelCased object.
- */
 export function extractMetafieldValues(
   metafields: PlantCriticalMetafield[],
 ): Record<string, string> {
-  return metafields.reduce<Record<string, string>>((acc, mf) => {
-    if (mf.key && mf.value != null) {
-      const camel = mf.key.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
-      acc[camel] = mf.value;
-    }
-    return acc;
-  }, {});
+  return metafields.reduce(
+    (acc: Record<string, string>, metafield: Record<string, string>) => {
+      if (metafield?.key && metafield.value !== null) {
+        const key = toCamelCase(metafield.key);
+        acc[key] = metafield.value;
+      }
+      return acc;
+    },
+    {},
+  );
+}
+
+export function returnFormattedDate(dateBroughtHome: string): string {
+  const [year, month, day] = dateBroughtHome.split('-').map(Number);
+
+  // Month is 0-based in JS Date
+  const modifiedDateBroughtHome = new Date(year, month - 1, day);
+
+  const formattedDate = modifiedDateBroughtHome.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
+  return formattedDate;
+}
+
+function toCamelCase(str: string) {
+  return str.replace(/-([a-z])/g, (_, char) => char.toUpperCase());
 }
