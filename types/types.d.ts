@@ -84,9 +84,10 @@ declare global {
   };
 
   interface AdminImageWithMetadata {
+    alt: string;
     image: {url: string};
     meta: {
-      rawDate: string; // e.g. "2025-05-25"
+      date: string; // e.g. "YYYY-MM-DD"
       imageType: string;
       index: number;
     };

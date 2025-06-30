@@ -63,6 +63,7 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   const variables = {
     handle,
     metafieldIdentifiers: [
+      {namespace: 'plant', key: 'images'},
       {namespace: 'plant', key: 'llifle-database-link'},
       // Metafield definition
       // Namespace and key: "plant.acquisition"
@@ -110,7 +111,7 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   // Shopify storefront query using product handle
   const [{product}, adminImageData] = await Promise.all([
     storefront.query(PRODUCT_QUERY, {variables}),
-    fetchImagesFromAdminAPI(args),
+    // fetchImagesFromAdminAPI(args),
   ]);
 
   if (!product?.id) {
@@ -124,39 +125,39 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
  * async function to fetch files uploaded to the Shopify store under Content > Files in the admin panel
  */
 
-async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
-  const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
-  const response = await fetch(ADMIN_API_URL, {
-    method: 'POST',
-    headers: {
-      'X-Shopify-Access-Token': context.env.FILES_ADMIN_API_ACCESS_TOKEN,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query: `
-        query Files {
-          files(first: 100) {
-            edges {
-              node {
-                ... on MediaImage {
-                  id
-                  alt
-                  image {
-                    url
-                  }
-                }
-              }  
-            }
-          }
-        }
-      `,
-    }),
-  });
+// async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
+//   const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
+//   const response = await fetch(ADMIN_API_URL, {
+//     method: 'POST',
+//     headers: {
+//       'X-Shopify-Access-Token': context.env.FILES_ADMIN_API_ACCESS_TOKEN,
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify({
+//       query: `
+//         query Files {
+//           files(first: 100) {
+//             edges {
+//               node {
+//                 ... on MediaImage {
+//                   id
+//                   alt
+//                   image {
+//                     url
+//                   }
+//                 }
+//               }
+//             }
+//           }
+//         }
+//       `,
+//     }),
+//   });
 
-  const json = (await response.json()) as ShopifyFilesResponse;
+//   const json = (await response.json()) as ShopifyFilesResponse;
 
-  return json.data.files.edges.map((edge: any) => edge.node);
-}
+//   return json.data.files.edges.map((edge: any) => edge.node);
+// }
 
 /**
  * Load data that is *optional* and can be deferred initial render.
@@ -199,8 +200,11 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {product, adminImageData, journalPromise} =
-    useLoaderData<typeof loader>();
+  const {
+    product,
+    // adminImageData,
+    journalPromise,
+  } = useLoaderData<typeof loader>();
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -224,16 +228,27 @@ export default function Plant() {
    * Manipulating data from critical loader to be usable on the page
    */
 
-  const unsortedPlantImages = filterPlantImagesByHandle(
-    adminImageData,
-    product.handle,
+  // const unsortedPlantImages = filterPlantImagesByHandle(
+  //   adminImageData,
+  //   product.handle,
+  // );
+
+  // const sortedPlantImages = unsortedPlantImages
+  //   .map(addImageMetadata)
+  //   .sort(sortImagesWithMetadata);
+
+  // console.log('sortedPlantImages:', sortedPlantImages);
+
+  const metafieldValues = extractMetafieldValues(
+    product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
 
-  const sortedPlantImages = unsortedPlantImages
-    .map(addImageMetadata)
-    .sort(sortImagesWithMetadata);
+  const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
+    metafieldValues;
 
-  const carouselImages = returnCarouselImages(sortedPlantImages);
+  const rawImageData = metafieldValues.images;
+  const parsedImageData = JSON.parse(rawImageData);
+  const carouselImages = returnCarouselImages(parsedImageData);
 
   const latestCarouselDateString = getLatestCarouselDate(
     carouselImages,
@@ -262,14 +277,7 @@ export default function Plant() {
 
   console.log('latestCarouselImages:', latestCarouselImages);
 
-  const metafieldValues = extractMetafieldValues(
-    product.metafields.filter(Boolean) as PlantCriticalMetafield[],
-  );
-
   console.log('metafieldValues:', metafieldValues);
-
-  const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
-    metafieldValues;
 
   const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
 
