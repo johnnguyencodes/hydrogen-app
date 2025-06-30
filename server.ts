@@ -66,7 +66,7 @@ export default {
       const {admin} = createAdminClient({
         privateAdminToken: env.FILES_ADMIN_API_ACCESS_TOKEN,
         storeDomain: `https://${env.PUBLIC_STORE_DOMAIN}`,
-        adminApiVerson: env.FILES_ADMIN_API_VERSION || '2025-04',
+        adminApiVersion: env.FILES_ADMIN_API_VERSION || '2025-04',
       });
 
       // merge the admin client into the base load context

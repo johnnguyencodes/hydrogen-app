@@ -13,6 +13,7 @@ declare global {
     FILES_ADMIN_API_ACCESS_TOKEN: string;
     FILES_ADMIN_API_KEY: string;
     FILES_ADMIN_API_SECRET_KEY: string;
+    FILES_ADMIN_API_VERSION: string;
   }
 
   type AdminImage = {
