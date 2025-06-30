@@ -1,7 +1,7 @@
 // React and Remix imports
 import {Suspense, useEffect} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
-import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import {defer, type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {ProductImage} from '~/components/ProductImage';
 import {
   filterPlantImagesByHandle,
@@ -37,24 +37,23 @@ import {
  * and deferred (optional, loaded later if needed).
  */
 export async function loader(args: LoaderFunctionArgs) {
-  const criticalData = await loadCriticalData(args); // Must-have data, required immediately to render
-  const deferredData = loadDeferredData(args); // Optional data, can be loaded in parallel
+  const criticalData = await loadCriticalData(args);
+  const deferredData = await loadDeferredData(args); // Optional data, can be loaded in parallel
 
   // Return both, including the deferred data wrapped as a promise
-  return {
+  return defer({
     ...criticalData,
     journalPromise: deferredData.journalPromise,
-  };
+  });
 }
 
 /**
  * Critical data loader: fetches the Shopify product and core metafields.
  * If the product doesn't exist, throw a 404.
  */
-async function loadCriticalData(args: LoaderFunctionArgs) {
-  const {context, params} = args;
+async function loadCriticalData({context, params}: LoaderFunctionArgs) {
+  const {storefront, admin} = context;
   const {handle} = params;
-  const {storefront} = context;
 
   if (!handle) {
     throw new Error('Expected product handle to be defined');
@@ -63,7 +62,6 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   const variables = {
     handle,
     metafieldIdentifiers: [
-      {namespace: 'plant', key: 'images'},
       {namespace: 'plant', key: 'llifle-database-link'},
       // Metafield definition
       // Namespace and key: "plant.acquisition"
@@ -109,60 +107,30 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   };
 
   // Shopify storefront query using product handle
-  const [{product}, adminImageData] = await Promise.all([
-    storefront.query(PRODUCT_QUERY, {variables}),
-    // fetchImagesFromAdminAPI(args),
-  ]);
+  const {product} = await storefront.query(PRODUCT_QUERY, {variables});
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
+  const adminFetchResult = await admin(ADMIN_FILES_QUERY, {
+    variables: {after: null},
+  });
+
+  const adminImageData = adminFetchResult.files.edges.map((e: any) => e.node);
+
+  //   const json = (await response.json()) as ShopifyFilesResponse;
+
+  //   return json.data.files.edges.map((edge: any) => edge.node);
+
   return {product, adminImageData};
 }
-
-/**
- * async function to fetch files uploaded to the Shopify store under Content > Files in the admin panel
- */
-
-// async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
-//   const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
-//   const response = await fetch(ADMIN_API_URL, {
-//     method: 'POST',
-//     headers: {
-//       'X-Shopify-Access-Token': context.env.FILES_ADMIN_API_ACCESS_TOKEN,
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify({
-//       query: `
-//         query Files {
-//           files(first: 100) {
-//             edges {
-//               node {
-//                 ... on MediaImage {
-//                   id
-//                   alt
-//                   image {
-//                     url
-//                   }
-//                 }
-//               }
-//             }
-//           }
-//         }
-//       `,
-//     }),
-//   });
-
-//   const json = (await response.json()) as ShopifyFilesResponse;
-
-//   return json.data.files.edges.map((edge: any) => edge.node);
-// }
 
 /**
  * Load data that is *optional* and can be deferred initial render.
  * This runs in parallel with `loadCriticalData`, and will be awaited by <Await />.
  */
+
 function loadDeferredData({context, params}: LoaderFunctionArgs) {
   const {handle} = params;
   const {storefront} = context;
@@ -200,44 +168,41 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {
-    product,
-    // adminImageData,
-    journalPromise,
-  } = useLoaderData<typeof loader>();
+  const {product, adminImageData, journalPromise} =
+    useLoaderData<typeof loader>();
 
   /**
    * Analytics: track page view when the plant page is viewed.
    * Uses window.analytics.track() if available; logs fallback if not.
    */
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window?.analytics?.track) {
-      window.analytics.track('plant_view', {
-        id: product.id,
-        title: product.title,
-      });
-    } else {
-      console.warn('[Analytics Fallback] plant_view', {
-        id: product.id,
-        title: product.title,
-      });
-    }
-  }, [product.id, product.title]);
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined' && window?.analytics?.track) {
+  //     window.analytics.track('plant_view', {
+  //       id: product.id,
+  //       title: product.title,
+  //     });
+  //   } else {
+  //     console.warn('[Analytics Fallback] plant_view', {
+  //       id: product.id,
+  //       title: product.title,
+  //     });
+  //   }
+  // }, [product.id, product.title]);
 
   /**
    * Manipulating data from critical loader to be usable on the page
    */
 
-  // const unsortedPlantImages = filterPlantImagesByHandle(
-  //   adminImageData,
-  //   product.handle,
-  // );
+  const unsortedPlantImages = filterPlantImagesByHandle(
+    adminImageData,
+    product.handle,
+  );
 
-  // const sortedPlantImages = unsortedPlantImages
-  //   .map(addImageMetadata)
-  //   .sort(sortImagesWithMetadata);
+  const sortedPlantImages = unsortedPlantImages
+    .map(addImageMetadata)
+    .sort(sortImagesWithMetadata);
 
-  // console.log('sortedPlantImages:', sortedPlantImages);
+  const carouselImages = returnCarouselImages(sortedPlantImages);
 
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
@@ -246,12 +211,8 @@ export default function Plant() {
   const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
     metafieldValues;
 
-  const rawImageData = metafieldValues.images;
-  const parsedImageData = JSON.parse(rawImageData);
-  const carouselImages = returnCarouselImages(parsedImageData);
-
   const latestCarouselDateString = getLatestCarouselDate(
-    carouselImages,
+    sortedPlantImages,
   ) as string;
 
   const carouselImagesDate = new Date(latestCarouselDateString);
@@ -274,10 +235,6 @@ export default function Plant() {
     carouselImages,
     latestCarouselDateString,
   );
-
-  console.log('latestCarouselImages:', latestCarouselImages);
-
-  console.log('metafieldValues:', metafieldValues);
 
   const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
 
@@ -587,6 +544,25 @@ const CAROUSEL_COPY_QUERY = `#graphql
         value
         type
       }
+    }
+  }
+` as const;
+
+const ADMIN_FILES_QUERY = `#graphql
+  query Files($after: String) {
+    files(first: 100, after: $after) {
+      edges {
+        node {
+          ... on MediaImage {
+            id
+            alt
+            image {
+              url
+            }
+          }
+        }
+      }
+    pageInfo { hasNextPage, endCursor}
     }
   }
 ` as const;

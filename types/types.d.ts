@@ -13,6 +13,7 @@ declare global {
     FILES_ADMIN_API_ACCESS_TOKEN: string;
     FILES_ADMIN_API_KEY: string;
     FILES_ADMIN_API_SECRET_KEY: string;
+    FILES_ADMIN_API_VERSION: string;
   }
 
   type AdminImage = {
@@ -92,4 +93,16 @@ declare global {
       index: number;
     };
   }
+
+  type AdminResponse = any | null;
+
+  type AdminAPIResponse = {
+    errors: Error[] | null;
+    data: object | null;
+  };
+
+  type AdminClient = (
+    query: string | null,
+    options: {variables: object | null},
+  ) => Promise<AdminResponse>;
 }
