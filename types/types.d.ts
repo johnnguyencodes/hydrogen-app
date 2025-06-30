@@ -92,4 +92,16 @@ declare global {
       index: number;
     };
   }
+
+  type AdminResponse = any | null;
+
+  type AdminAPIResponse = {
+    errors: Error[] | null;
+    data: object | null;
+  };
+
+  type AdminClient = (
+    query: string | null,
+    options: {variables: object | null},
+  ) => Promise<AdminResponse>;
 }
