@@ -339,7 +339,7 @@ export default function Plant() {
               rel="noreferrer noopener"
               className="mt-3 flex items-center text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
             >
-              <span className="inline-flex items-center border-b border-transparent hover:border-current">
+              <span className="inline-flex items-center border-b border-transparent hover:border-current text-sm">
                 View species info on LLIFLE
                 <ExternalLink size="16" className="ml-1" />
               </span>
@@ -352,10 +352,10 @@ export default function Plant() {
                   <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
                     <Sprout size={36} />
                   </div>
-                  <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                  <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
                     Seed-grown
                   </p>
-                  <p className="text-[var(--color-fg-text)]">
+                  <p className="text-[var(--color-fg-text)] text-sm">
                     {parsedAcquisition.date}
                   </p>
                 </div>
@@ -365,13 +365,13 @@ export default function Plant() {
                   <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
                     <BadgeDollarSign size={36} />
                   </div>
-                  <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                  <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
                     Purchased from
                   </p>
-                  <p className="text-[var(--color-fg-text)]">
+                  <p className="text-[var(--color-fg-text)] text-sm">
                     {parsedAcquisition.supplier}
                   </p>
-                  <p className="text-[var(--color-fg-text)]">
+                  <p className="text-[var(--color-fg-text)] text-sm">
                     {datePlantAcquired}
                   </p>
                 </div>
@@ -381,10 +381,10 @@ export default function Plant() {
                   <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
                     <ScissorsLineDashed size={36} />
                   </div>
-                  <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                  <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
                     Acquired from a cutting:
                   </p>
-                  <p className="text-[var(--color-fg-text)]">
+                  <p className="text-[var(--color-fg-text)] text-sm">
                     {parsedAcquisition.date}
                   </p>
                 </div>
@@ -397,14 +397,14 @@ export default function Plant() {
                 <div className="rounded-4xl bg-[var(--color-bg-green)] p-[5px] text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
                   <Ruler size={34} />
                 </div>
-                <p className="font-bold text-[var(--color-fg-green)] mt-1">
+                <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
                   Measurements
                 </p>
-                <p className="text-[var(--color-fg-text)]">
+                <p className="text-[var(--color-fg-text)] text-sm">
                   {parsedMeasurement[0].height} x {parsedMeasurement[0].width}{' '}
                   in a {parsedMeasurement[0].pot}
                 </p>
-                <p className="text-[var(--color-fg-text)]">
+                <p className="text-[var(--color-fg-text)] text-sm">
                   {dateMeasurementTaken}
                 </p>
               </div>
@@ -418,18 +418,21 @@ export default function Plant() {
                   size={30}
                 />
               </div>
-              <p className="font-bold text-[var(--color-fg-green)] mt-1">
+              <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
                 Soil Mix
               </p>
-              <ul className="text-[var(--color-fg-text)] text-center text-pretty">
+              <ul className="text-[var(--color-fg-text)] text-center text-pretty text-sm">
                 <li>8 parts pumice</li>
                 <li>1 part calcinated clay</li>
                 <li>1 part cactus soil</li>
               </ul>
-              <p className="font-bold text-[var(--color-fg-green)] mt-3">
+              <p className="font-bold text-[var(--color-fg-green)] mt-3 text-sm">
                 Top Dressing
               </p>
-              <p className="text-[var(--color-fg-text)]"> calcinated clay</p>
+              <p className="text-[var(--color-fg-text)] text-sm">
+                {' '}
+                calcinated clay
+              </p>
             </div>
           </div>
           <div className="col-span-1 rounded-md bg-[var(--color-bg-4)] p-5">
@@ -440,18 +443,20 @@ export default function Plant() {
                   size={30}
                 />
               </div>
-              <p className="font-bold text-[var(--color-fg-green)] mt-1">
+              <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
                 Fertilizer Regimen{' '}
               </p>
             </div>
-            <p className="text-[var(--color-fg-text)] mb-3">
-              Mix 67 μL Schultz Cactus Plus (2–2–7), 133 μL Grow More Cactus
-              Juice (1–7–6), 133 μL of espom salt stock solution (5 g/30 mL),
-              and 30 mg chelated micronutrients per 1 L reverse osmosis water.
+            <p className="text-[var(--color-fg-text)] mb-3 text-center text-sm">
+              Mix into 1 L reverse osmosis water:
             </p>
-            <p className="text-[var(--color-fg-text)]">
-              Alternate with plain RO water to flush salts.
-            </p>
+
+            <ul className="text-[var(--color-fg-text)] text-center text-pretty text-sm">
+              <li>67 μL Schultz Cactus Plus (2–2–7)</li>
+              <li>133 μL Grow More Cactus Juice (1–7–6)</li>
+              <li>133 μL epsom salt stock solution (5 g/30 mL)</li>
+              <li>30 mg chelated micronutrients</li>
+            </ul>
           </div>
           <div className="col-span-1 rounded-md bg-[var(--color-bg-5)] p-5">
             <div className="flex flex-col items-center justify-center">
@@ -461,10 +466,10 @@ export default function Plant() {
                   size={30}
                 />
               </div>
-              <p className="font-bold text-[var(--color-fg-green)] mt-1">
+              <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
                 Care Regimen
               </p>
-              <ul className="text-[var(--color-fg-text)] text-center text-pretty">
+              <ul className="text-[var(--color-fg-text)] text-center text-pretty text-sm">
                 <li>Grown indoors with 24/7 fan circulation</li>
                 <li>15 hours of light daily under T5 6500K LEDs</li>
                 <li>Deep watered every {wateringFrequency}</li>
