@@ -555,7 +555,7 @@ const CAROUSEL_COPY_QUERY = `#graphql
   }
 ` as const;
 
-const ADMIN_FILES_QUERY = `#graphql
+const ADMIN_FILES_QUERY = `
   query Files($after: String) {
     files(first: 100, after: $after) {
       edges {
