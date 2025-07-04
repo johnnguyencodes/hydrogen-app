@@ -239,8 +239,8 @@ export default function Plant() {
             <div className="carousel-images grid gap-1 grid-cols-2">
               {latestCarouselImages.map((img, index) => (
                 <ProductImage
-                  key={img.id ?? index}
-                  id={img.id ?? index}
+                  key={img.image.url ?? index}
+                  id={img.image.url ?? index}
                   image={{
                     __typename: 'Image',
                     url: img.image.url,

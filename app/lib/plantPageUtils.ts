@@ -8,8 +8,12 @@ export function returnCarouselImages(images: AdminImageWithMetadata[]) {
 
 export function getLatestCarouselDate(
   carouselImages: AdminImageWithMetadata[],
-) {
-  return carouselImages[0].meta.date;
+): string | null {
+  if (carouselImages.length === 0) return null;
+
+  return carouselImages.reduce((latest, img) => {
+    return img.meta.date > latest ? img.meta.date : latest;
+  }, carouselImages[0].meta.date);
 }
 
 export function getLatestCarouselImages(
