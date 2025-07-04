@@ -26,9 +26,10 @@ declare global {
 
   type AdminImageWithMetadata = AdminImage & {
     meta: {
+      category: string;
       date: Date;
-      imageType: string;
       index: number;
+      ext: string;
     };
   };
 
@@ -40,7 +41,6 @@ declare global {
     className?: string;
   };
 
-  // Type definition for individual journal entries
   type PlantJournalEntry = {
     date: string;
     title: string;

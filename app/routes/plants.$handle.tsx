@@ -4,9 +4,6 @@ import {Await, useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {ProductImage} from '~/components/ProductImage';
 import {
-  filterPlantImagesByHandle,
-  addImageMetadata,
-  sortImagesWithMetadata,
   returnCarouselImages,
   getLatestCarouselDate,
   getLatestCarouselImages,
@@ -109,55 +106,14 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
   };
 
   // Shopify storefront query using product handle
-  const [{product}, adminImageData] = await Promise.all([
-    storefront.query(PRODUCT_QUERY, {variables}),
-    // fetchImagesFromAdminAPI(args),
-  ]);
+  const {product} = await storefront.query(PRODUCT_QUERY, {variables});
 
   if (!product?.id) {
     throw new Response(null, {status: 404});
   }
 
-  return {product, adminImageData};
+  return {product};
 }
-
-/**
- * async function to fetch files uploaded to the Shopify store under Content > Files in the admin panel
- */
-
-// async function fetchImagesFromAdminAPI({context}: LoaderFunctionArgs) {
-//   const ADMIN_API_URL = `https://${context.env.PUBLIC_STORE_DOMAIN}/admin/api/2025-04/graphql.json`;
-//   const response = await fetch(ADMIN_API_URL, {
-//     method: 'POST',
-//     headers: {
-//       'X-Shopify-Access-Token': context.env.FILES_ADMIN_API_ACCESS_TOKEN,
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify({
-//       query: `
-//         query Files {
-//           files(first: 100) {
-//             edges {
-//               node {
-//                 ... on MediaImage {
-//                   id
-//                   alt
-//                   image {
-//                     url
-//                   }
-//                 }
-//               }
-//             }
-//           }
-//         }
-//       `,
-//     }),
-//   });
-
-//   const json = (await response.json()) as ShopifyFilesResponse;
-
-//   return json.data.files.edges.map((edge: any) => edge.node);
-// }
 
 /**
  * Load data that is *optional* and can be deferred initial render.
@@ -200,11 +156,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
-  const {
-    product,
-    // adminImageData,
-    journalPromise,
-  } = useLoaderData<typeof loader>();
+  const {product, journalPromise} = useLoaderData<typeof loader>();
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -224,21 +176,6 @@ export default function Plant() {
     }
   }, [product.id, product.title]);
 
-  /**
-   * Manipulating data from critical loader to be usable on the page
-   */
-
-  // const unsortedPlantImages = filterPlantImagesByHandle(
-  //   adminImageData,
-  //   product.handle,
-  // );
-
-  // const sortedPlantImages = unsortedPlantImages
-  //   .map(addImageMetadata)
-  //   .sort(sortImagesWithMetadata);
-
-  // console.log('sortedPlantImages:', sortedPlantImages);
-
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
@@ -247,12 +184,14 @@ export default function Plant() {
     metafieldValues;
 
   const rawImageData = metafieldValues.images;
-  const parsedImageData = JSON.parse(rawImageData);
+  const parsedImageData = JSON.parse(rawImageData) as AdminImageWithMetadata[];
   const carouselImages = returnCarouselImages(parsedImageData);
 
   const latestCarouselDateString = getLatestCarouselDate(
     carouselImages,
   ) as string;
+
+  console.log('latestCarouselDateString:', latestCarouselDateString);
 
   const carouselImagesDate = new Date(latestCarouselDateString);
 
