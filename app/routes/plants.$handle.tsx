@@ -448,13 +448,38 @@ export default function Plant() {
             // Render parsed journal entries
             return journal.length > 0 ? (
               <div className="mt-5">
-                <ul className="journal-entries">
+                <div className="journal-entries">
                   {journal.map((entry) => (
-                    <li key={entry.date}>
-                      <strong>{entry.date}</strong> - {entry.content}
-                    </li>
+                    <div key={entry.date}>
+                      <p>
+                        <strong>{entry.date}</strong>
+                      </p>
+                      <div
+                        dangerouslySetInnerHTML={{__html: entry.content}}
+                      ></div>
+                      <div className="journal-image grid gap-1 grid-cols-2">
+                        {carouselImages.map((image, index) =>
+                          image.meta.date === entry.date &&
+                          image.meta.date !== latestCarouselDateString ? (
+                            <ProductImage
+                              key={image.image.url ?? index}
+                              id={image.image.url ?? index}
+                              image={{
+                                __typename: 'Image',
+                                url: image.image.url,
+                              }}
+                              alt={
+                                image.alt ||
+                                `${product.title} journal image ${image.meta.index}`
+                              }
+                              className="col-span-1"
+                            />
+                          ) : null,
+                        )}
+                      </div>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             ) : (
               <p>No journal entries yet.</p>
