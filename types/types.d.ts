@@ -16,19 +16,60 @@ declare global {
     FILES_ADMIN_API_VERSION: string;
   }
 
+  export interface FilesResponse {
+    files: {
+      edges: Array<{
+        node: {
+          alt: string;
+          url?: string;
+          image?: {
+            url: string;
+            width: number;
+            height: number;
+          };
+          duration?: number;
+          preview?: {
+            status: string;
+            image: {
+              url: string;
+              width: number;
+              height: number;
+            };
+          };
+          originalSource?: {
+            url: string;
+            width: number;
+            height: number;
+            format: string;
+            mimeType: string;
+          };
+          sources?: Array<{
+            url: string;
+            width?: number;
+            height?: number;
+            format: string;
+            mimeType: string;
+          }>;
+        };
+      }>;
+    };
+  }
+
+  export type AdminFile = FilesResponse['files']['edges'][number]['node'];
+
   type AdminImage = {
-    id: string;
     alt: string;
     image: {
       url: string;
     };
   };
 
-  type AdminImageWithMetadata = AdminImage & {
+  type AdminImageWithMetadata = AdminFile & {
     meta: {
-      date: Date;
-      imageType: string;
+      category: string;
+      date: string;
       index: number;
+      ext: string;
     };
   };
 
@@ -40,7 +81,6 @@ declare global {
     className?: string;
   };
 
-  // Type definition for individual journal entries
   type PlantJournalEntry = {
     date: string;
     title: string;
