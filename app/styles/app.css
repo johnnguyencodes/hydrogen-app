@@ -420,8 +420,8 @@ button.reset:hover:not(:has(> *)) {
 }
 
 .product-image img {
-  height: auto;
-  width: 100%;
+  /* height: auto; */
+  /* width: 100%; */
 }
 
 .product-main {
