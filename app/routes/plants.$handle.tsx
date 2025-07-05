@@ -145,27 +145,6 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
   return {journalPromise, carouselCopyPromise};
 }
 
-const galleryImages = [
-  {
-    original:
-      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--001.webp?v=1748282238&width=1000&height=1000&crop=center',
-    thumbnail:
-      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--001.webp?v=1748282238&width=100&height=100&crop=center',
-  },
-  {
-    original:
-      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--002.webp?v=1748282238&width=1000&height=1000&crop=center',
-    thumbnail:
-      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--002.webp?v=1748282238&width=100&height=100&crop=center',
-  },
-  {
-    original:
-      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--003.webp?v=1748282238&width=1000&height=1000&crop=center',
-    thumbnail:
-      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--003.webp?v=1748282238&width=100&height=100&crop=center',
-  },
-];
-
 // =========================
 // React Component
 // =========================
@@ -180,10 +159,11 @@ const galleryImages = [
 
 export default function Plant() {
   const {product, journalPromise} = useLoaderData<typeof loader>();
-  const [isGalleryVisible, setIsGalleryVisible] = useState(false);
+  const [isImageGalleryVisible, setIsImageGalleryVisible] = useState(false);
+  const [imageGalleryArray, setImageGalleryArray] = useState<string[]>([]);
 
-  const handleGalleryClick = () => {
-    setIsGalleryVisible(!isGalleryVisible);
+  const handleImageGalleryClick = () => {
+    setIsImageGalleryVisible(!isImageGalleryVisible);
     console.log('click!');
   };
 
@@ -269,7 +249,7 @@ export default function Plant() {
                     url: img.image.url,
                   }}
                   alt={img.alt || `${product.title} image`}
-                  onClick={handleGalleryClick}
+                  onClick={handleImageGalleryClick}
                 />
               ))}
             </div>
@@ -449,12 +429,17 @@ export default function Plant() {
         </div>
       </div>
       <div>
-        <button className="border border-black" onClick={handleGalleryClick}>
+        <button
+          className="border border-black"
+          onClick={handleImageGalleryClick}
+        >
           Gallery Button
         </button>
       </div>
 
-      {isGalleryVisible ? <ImageGallery items={galleryImages} /> : null}
+      {isImageGalleryVisible ? (
+        <ImageGallery items={imageGalleryArray} />
+      ) : null}
       {/* Deferred journal entry block — Suspense + Await */}
       <Suspense fallback={<p> Loading journal...</p>}>
         <Await resolve={journalPromise}>
@@ -489,6 +474,8 @@ export default function Plant() {
                       parsedImageData={parsedImageData}
                       productTitle={product.title}
                       latestCarouselDateString={latestCarouselDateString}
+                      setImageGalleryArray={setImageGalleryArray}
+                      setIsImageGalleryVisible={setIsImageGalleryVisible}
                     />
                   ))}
                 </div>

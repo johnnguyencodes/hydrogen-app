@@ -88,11 +88,23 @@ declare global {
     journalType: string;
   };
 
+  type ImageGalleryItem = {
+    original: string;
+    thumbnail: string;
+  };
+
+  type ImageGalleryArray = ImageGalleryItem[];
+
   type JournalEntryComponentProps = {
     entry: JournalEntry;
     parsedImageData: AdminImageWithMetadata[];
     productTitle: string;
     latestCarouselDateString: string;
+    setImageGalleryArray: React.Dispatch<
+      React.SetStateAction<imageGalleryArray>
+    >;
+    setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    isImageGalleryVisible: boolean;
   };
 
   type PlantCriticalMetafield = {

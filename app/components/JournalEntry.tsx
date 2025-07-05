@@ -5,14 +5,26 @@ export function JournalEntry({
   parsedImageData,
   productTitle,
   latestCarouselDateString,
+  setImageGalleryArray,
+  setIsImageGalleryVisible,
+  isImageGalleryVisible,
 }: JournalEntryComponentProps) {
-  const imageGalleryArray = parsedImageData
-    .filter(
-      (image) =>
-        image.meta.date === entry.date &&
-        image.meta.date !== latestCarouselDateString,
-    )
-    .map((image) => image.image.url);
+  function handleJournalImageClick(): void {
+    const generatedImageGallery = parsedImageData
+      .filter(
+        (image) =>
+          image.meta.date === entry.date &&
+          image.meta.date !== latestCarouselDateString,
+      )
+      .map((image) => ({
+        original: `${image.image.url}&width=2048&height=2048&crop=center`,
+        thumbnail: `${image.image.url}&width=100&height=100&crop=center`,
+      }));
+
+    setImageGalleryArray(generatedImageGallery);
+    setIsImageGalleryVisible(!isImageGalleryVisible);
+  }
+
   return (
     <div
       className="journal-entry bg-[var(--color-bg-5)] rounded-md p-5 mb-10 "
@@ -40,12 +52,10 @@ export function JournalEntry({
         <div className="journal-image-container flex-shrink-0 max-w-full md:max-w-[720px]">
           <div className="flex gap-3 overflow-x-auto scrollbar-hide">
             {parsedImageData.map((image, idx) => {
-              const galleryImageArray = [];
               if (
                 image.meta.date === entry.date &&
                 image.meta.date !== latestCarouselDateString
               ) {
-                galleryImageArray.push(image.image.url);
                 return (
                   <div
                     className="overflow-hidden flex-shrink-0 w-48 h-48"
@@ -63,7 +73,7 @@ export function JournalEntry({
                       key={image.image?.url ?? idx}
                       id={image.image?.url ?? idx}
                       className="object-cover w-full h-full"
-                      onClick={() => console.log(imageGalleryArray)}
+                      onClick={handleJournalImageClick}
                     />
                   </div>
                 );
