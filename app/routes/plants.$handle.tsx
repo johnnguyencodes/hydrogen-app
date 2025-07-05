@@ -23,6 +23,7 @@ import {
   Pipette,
   Leaf,
 } from 'lucide-react';
+import {cn} from '~/lib/utils';
 
 // =========================
 // Loader Function
@@ -246,7 +247,6 @@ export default function Plant() {
                     url: img.image.url,
                   }}
                   alt={img.alt || `${product.title} image`}
-                  className="col-span-1"
                 />
               ))}
             </div>
@@ -266,7 +266,7 @@ export default function Plant() {
           </h1>
           <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md bg-[var(--color-bg-3)] prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)]">
             <div
-              className="prose p-5"
+              className="prose p-10"
               id="plant-description"
               dangerouslySetInnerHTML={{__html: modifiedProductDescription}}
             ></div>
@@ -447,14 +447,66 @@ export default function Plant() {
 
             // Render parsed journal entries
             return journal.length > 0 ? (
-              <div className="mt-5">
-                <ul className="journal-entries">
+              <div className="mt-10">
+                <h3 className="text-3xl mb-5 mt-3 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
+                  Journal Entries
+                </h3>
+                <div className="journal-entries">
                   {journal.map((entry) => (
-                    <li key={entry.date}>
-                      <strong>{entry.date}</strong> - {entry.content}
-                    </li>
+                    <div
+                      className="journal-entry bg-[var(--color-bg-5)] rounded-md p-5 mb-10 "
+                      key={entry.date}
+                    >
+                      <div className="flex flex-col md:flex-row md:items-start gap-4">
+                        <div className="flex-1">
+                          <div className="mb-3 flex justify-between items-center">
+                            <div className="flex items-center">
+                              <span className="text-sm font-medium text-[var(--color-fg-green)]">
+                                {entry.title}
+                              </span>
+                            </div>
+                            <div className="flex items-center">
+                              <span className="text-sm font-medium text-[var(--color-fg-green)]">
+                                {entry.date}
+                              </span>
+                            </div>
+                          </div>
+                          <div
+                            className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)]"
+                            dangerouslySetInnerHTML={{__html: entry.content}}
+                          ></div>
+                        </div>
+                        <div className="journal-image-container flex-shrink-0 max-w-full md:max-w-[720px]">
+                          <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+                            {parsedImageData.map((image, idx) =>
+                              image.meta.date === entry.date &&
+                              image.meta.date !== latestCarouselDateString ? (
+                                <div
+                                  className="overflow-hidden flex-shrink-0 w-48 h-48"
+                                  key={image.image?.url ?? idx}
+                                >
+                                  <ProductImage
+                                    image={{
+                                      __typename: 'Image',
+                                      url: image.image?.url,
+                                    }}
+                                    alt={
+                                      image.alt ||
+                                      `${product.title} journal image ${image.meta.index}`
+                                    }
+                                    key={image.image?.url ?? idx}
+                                    id={image.image?.url ?? idx}
+                                    className="object-cover w-full h-full"
+                                  />
+                                </div>
+                              ) : null,
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             ) : (
               <p>No journal entries yet.</p>

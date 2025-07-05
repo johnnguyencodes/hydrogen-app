@@ -13,7 +13,6 @@ export function ProductImage({image, alt, id, className}: ProductImageProps) {
         alt={alt}
         aspectRatio="1/1"
         data={image}
-        sizes="(min-width: 45em) 50vw, 100vw"
         className={clsx(className)}
       />
     </div>
