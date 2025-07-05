@@ -81,11 +81,18 @@ declare global {
     className?: string;
   };
 
-  type PlantJournalEntry = {
+  type JournalEntry = {
     date: string;
     title: string;
     content: string;
-    image?: string | null;
+    journalType: string;
+  };
+
+  type JournalEntryComponentProps = {
+    entry: JournalEntry;
+    parsedImageData: AdminImageWithMetadata[];
+    productTitle: string;
+    latestCarouselDateString: string;
   };
 
   type PlantCriticalMetafield = {

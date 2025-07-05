@@ -1,8 +1,10 @@
 // React and Remix imports
-import {Suspense, useEffect} from 'react';
+import {Suspense, useEffect, useState} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {ProductImage} from '~/components/ProductImage';
+import {JournalEntry} from '~/components/JournalEntry';
+import ImageGallery from 'react-image-gallery';
 import {
   returnCarouselImages,
   getLatestCarouselDate,
@@ -23,7 +25,6 @@ import {
   Pipette,
   Leaf,
 } from 'lucide-react';
-import {cn} from '~/lib/utils';
 
 // =========================
 // Loader Function
@@ -144,6 +145,27 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
   return {journalPromise, carouselCopyPromise};
 }
 
+const galleryImages = [
+  {
+    original:
+      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--001.webp?v=1748282238&width=1000&height=1000&crop=center',
+    thumbnail:
+      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--001.webp?v=1748282238&width=100&height=100&crop=center',
+  },
+  {
+    original:
+      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--002.webp?v=1748282238&width=1000&height=1000&crop=center',
+    thumbnail:
+      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--002.webp?v=1748282238&width=100&height=100&crop=center',
+  },
+  {
+    original:
+      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--003.webp?v=1748282238&width=1000&height=1000&crop=center',
+    thumbnail:
+      'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--003.webp?v=1748282238&width=100&height=100&crop=center',
+  },
+];
+
 // =========================
 // React Component
 // =========================
@@ -158,6 +180,12 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 
 export default function Plant() {
   const {product, journalPromise} = useLoaderData<typeof loader>();
+  const [isGalleryVisible, setIsGalleryVisible] = useState(false);
+
+  const handleGalleryClick = () => {
+    setIsGalleryVisible(!isGalleryVisible);
+    console.log('click!');
+  };
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -192,8 +220,6 @@ export default function Plant() {
     carouselImages,
   ) as string;
 
-  console.log('latestCarouselDateString:', latestCarouselDateString);
-
   const carouselImagesDate = new Date(latestCarouselDateString);
 
   const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
@@ -214,10 +240,6 @@ export default function Plant() {
     carouselImages,
     latestCarouselDateString,
   );
-
-  console.log('latestCarouselImages:', latestCarouselImages);
-
-  console.log('metafieldValues:', metafieldValues);
 
   const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
 
@@ -247,6 +269,7 @@ export default function Plant() {
                     url: img.image.url,
                   }}
                   alt={img.alt || `${product.title} image`}
+                  onClick={handleGalleryClick}
                 />
               ))}
             </div>
@@ -425,7 +448,13 @@ export default function Plant() {
           </div>
         </div>
       </div>
+      <div>
+        <button className="border border-black" onClick={handleGalleryClick}>
+          Gallery Button
+        </button>
+      </div>
 
+      {isGalleryVisible ? <ImageGallery items={galleryImages} /> : null}
       {/* Deferred journal entry block — Suspense + Await */}
       <Suspense fallback={<p> Loading journal...</p>}>
         <Await resolve={journalPromise}>
@@ -434,12 +463,12 @@ export default function Plant() {
             // Await gives us the result of journalPromise when it's done
             const metafield = data?.product?.journal;
 
-            let journal: PlantJournalEntry[] = [];
+            let journal: JournalEntry[] = [];
 
             try {
               // Parse the raw metafield JSON into a JS array
               journal = metafield?.value
-                ? (JSON.parse(metafield.value) as PlantJournalEntry[])
+                ? (JSON.parse(metafield.value) as JournalEntry[])
                 : [];
             } catch (error) {
               console.error('Failed to parse journal JSON:', error);
@@ -451,60 +480,16 @@ export default function Plant() {
                 <h3 className="text-3xl mb-5 mt-3 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
                   Journal Entries
                 </h3>
+
                 <div className="journal-entries">
                   {journal.map((entry) => (
-                    <div
-                      className="journal-entry bg-[var(--color-bg-5)] rounded-md p-5 mb-10 "
+                    <JournalEntry
                       key={entry.date}
-                    >
-                      <div className="flex flex-col md:flex-row md:items-start gap-4">
-                        <div className="flex-1">
-                          <div className="mb-3 flex justify-between items-center">
-                            <div className="flex items-center">
-                              <span className="text-sm font-medium text-[var(--color-fg-green)]">
-                                {entry.title}
-                              </span>
-                            </div>
-                            <div className="flex items-center">
-                              <span className="text-sm font-medium text-[var(--color-fg-green)]">
-                                {entry.date}
-                              </span>
-                            </div>
-                          </div>
-                          <div
-                            className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)]"
-                            dangerouslySetInnerHTML={{__html: entry.content}}
-                          ></div>
-                        </div>
-                        <div className="journal-image-container flex-shrink-0 max-w-full md:max-w-[720px]">
-                          <div className="flex gap-3 overflow-x-auto scrollbar-hide">
-                            {parsedImageData.map((image, idx) =>
-                              image.meta.date === entry.date &&
-                              image.meta.date !== latestCarouselDateString ? (
-                                <div
-                                  className="overflow-hidden flex-shrink-0 w-48 h-48"
-                                  key={image.image?.url ?? idx}
-                                >
-                                  <ProductImage
-                                    image={{
-                                      __typename: 'Image',
-                                      url: image.image?.url,
-                                    }}
-                                    alt={
-                                      image.alt ||
-                                      `${product.title} journal image ${image.meta.index}`
-                                    }
-                                    key={image.image?.url ?? idx}
-                                    id={image.image?.url ?? idx}
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                              ) : null,
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      entry={entry}
+                      parsedImageData={parsedImageData}
+                      productTitle={product.title}
+                      latestCarouselDateString={latestCarouselDateString}
+                    />
                   ))}
                 </div>
               </div>
