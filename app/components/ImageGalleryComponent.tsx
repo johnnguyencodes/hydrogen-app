@@ -1,6 +1,5 @@
 import ImageGallery from 'react-image-gallery';
 import {Button} from './ui/button';
-import {Dice1} from 'lucide-react';
 
 export function ImageGalleryComponent({
   images,
@@ -20,7 +19,7 @@ export function ImageGalleryComponent({
         onClick={(event) => event.stopPropagation()}
       >
         <Button
-          className="absolute top-4 right-4 z-10"
+          className="absolute top-2 -right-20 z-10"
           onClick={handleImageGalleryClick}
         >
           X
@@ -29,6 +28,23 @@ export function ImageGalleryComponent({
           items={images}
           showPlayButton={false}
           additionalClass="h-full"
+          showIndex={true}
+          slideOnThumbnailOver={true}
+          renderItem={(item) => (
+            <a
+              href={item.original}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{display: 'block', width: '100%', height: '100%'}}
+            >
+              <img
+                className="image-gallery-image"
+                src={item.original}
+                style={{width: '100%', height: '100%', objectFit: 'contain'}}
+                alt=""
+              />
+            </a>
+          )}
         />
       </div>
     </div>
