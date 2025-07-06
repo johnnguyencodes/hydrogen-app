@@ -97,12 +97,6 @@ declare global {
 
   type ImageGalleryComponentProps = {
     images: imageGalleryItem[];
-    // index: number;
-    // setImageGalleryArray: React.Dispatch<
-    //   React.SetStateAction<imageGalleryArray>
-    // >;
-    // setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
-    // isImageGalleryVisible: boolean;
     handleImageGalleryClick: () => void;
   };
 
