@@ -17,7 +17,7 @@ export function Footer({
     <Suspense>
       <Await resolve={footerPromise}>
         {(footer) => (
-          <footer className="footer bg-[var(--color-bg-5)]">
+          <footer className="footer bg-[var(--color-bg-5)] mt-10 rounded-tl-md rounded-tr-md">
             {footer?.menu && header.shop.primaryDomain?.url && (
               <FooterMenu
                 menu={footer.menu}
@@ -43,7 +43,7 @@ function FooterMenu({
 }) {
   return (
     <nav className="footer-menu text-[var(--color-fg-text)]" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
+      {FALLBACK_FOOTER_MENU.items.map((item) => {
         if (!item.url) return null;
         // if the url is internal, we strip the domain
         const url =
@@ -77,33 +77,6 @@ const FALLBACK_FOOTER_MENU = {
       title: 'Privacy Policy',
       type: 'SHOP_POLICY',
       url: '/policies/privacy-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633093688',
-      resourceId: 'gid://shopify/ShopPolicy/23358013496',
-      tags: [],
-      title: 'Refund Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/refund-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633126456',
-      resourceId: 'gid://shopify/ShopPolicy/23358111800',
-      tags: [],
-      title: 'Shipping Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/shipping-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633159224',
-      resourceId: 'gid://shopify/ShopPolicy/23358079032',
-      tags: [],
-      title: 'Terms of Service',
-      type: 'SHOP_POLICY',
-      url: '/policies/terms-of-service',
       items: [],
     },
   ],
