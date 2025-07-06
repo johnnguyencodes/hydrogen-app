@@ -27,7 +27,7 @@ export function Header({
 }: HeaderProps) {
   const {shop, menu} = header;
   return (
-    <header className="header bg-[var(--color-bg-5)] text-[var(--color-fg-text)] mb-10">
+    <header className="header bg-[var(--color-bg-5)] text-[var(--color-fg-text)] mb-10 rounded-bl-md rounded-br-md">
       <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
         <strong>{shop.name}</strong>
       </NavLink>
