@@ -1,14 +1,14 @@
 import {ProductImage} from './ProductImage';
 
 export function CarouselImages({
-  latestCarouselImages,
+  images,
   productTitle,
   setImageGalleryArray,
   setIsImageGalleryVisible,
   isImageGalleryVisible,
 }: CarouselImagesProps) {
   function handleImageClick(): void {
-    const generatedImageGallery = latestCarouselImages.map((image) => ({
+    const generatedImageGallery = images.map((image) => ({
       original: `${image.image.url}&width=2048&height=2048&crop=center`,
       thumbnail: `${image.image.url}&width=100&height=100&crop=center`,
     }));
@@ -19,9 +19,9 @@ export function CarouselImages({
 
   return (
     <div className="col-span-2">
-      {latestCarouselImages.length > 0 && (
+      {images.length > 0 && (
         <div className="carousel-images grid gap-1 grid-cols-2">
-          {latestCarouselImages.map((img, index) => (
+          {images.map((img: AdminImageWithMetadata, index: number) => (
             <ProductImage
               key={img.image.url ?? index}
               id={img.image.url ?? index}

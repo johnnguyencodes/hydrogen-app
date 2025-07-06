@@ -241,8 +241,8 @@ export default function Plant() {
         {/* Render core product info immediately */}
         <CarouselImages
           handleImageGalleryClick={handleImageGalleryClick}
+          images={latestCarouselImages}
           productTitle={product.title}
-          latestCarouselImages={latestCarouselImages}
           setImageGalleryArray={setImageGalleryArray}
           setIsImageGalleryVisible={setIsImageGalleryVisible}
           isImageGalleryVisible={isImageGalleryVisible}
@@ -423,7 +423,10 @@ export default function Plant() {
       <div></div>
 
       {isImageGalleryVisible ? (
-        <ImageGallery items={imageGalleryArray} />
+        <ImageGalleryComponent
+          images={imageGalleryArray}
+          handleImageGalleryClick={handleImageGalleryClick}
+        />
       ) : null}
       {/* Deferred journal entry block — Suspense + Await */}
       <Suspense fallback={<p> Loading journal...</p>}>

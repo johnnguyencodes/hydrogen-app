@@ -97,18 +97,18 @@ declare global {
 
   type ImageGalleryComponentProps = {
     images: imageGalleryItem[];
-    index: number;
-    setImageGalleryArray: React.Dispatch<
-      React.SetStateAction<imageGalleryArray>
-    >;
-    setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
-    isImageGalleryVisible: boolean;
+    // index: number;
+    // setImageGalleryArray: React.Dispatch<
+    //   React.SetStateAction<imageGalleryArray>
+    // >;
+    // setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    // isImageGalleryVisible: boolean;
     handleImageGalleryClick: () => void;
   };
 
   type CarouselImagesProps = {
-    // handleImageGalleryClick: () => void;
-    latestCarouselImages: AdminImageWithMetadata[];
+    handleImageGalleryClick: () => void;
+    images: AdminImageWithMetadata[];
     productTitle: string;
     setImageGalleryArray: React.Dispatch<
       React.SetStateAction<imageGalleryArray>
