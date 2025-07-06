@@ -1,8 +1,11 @@
 // React and Remix imports
-import {Suspense, useEffect} from 'react';
+import {Suspense, useEffect, useState} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {ProductImage} from '~/components/ProductImage';
+import {JournalEntry} from '~/components/JournalEntry';
+import {CarouselImages} from '~/components/CarouselImages';
+import {ImageGalleryComponent} from '~/components/ImageGalleryComponent';
+import ImageGallery from 'react-image-gallery';
 import {
   returnCarouselImages,
   getLatestCarouselDate,
@@ -23,7 +26,6 @@ import {
   Pipette,
   Leaf,
 } from 'lucide-react';
-import {cn} from '~/lib/utils';
 
 // =========================
 // Loader Function
@@ -158,6 +160,14 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 
 export default function Plant() {
   const {product, journalPromise} = useLoaderData<typeof loader>();
+  const [isImageGalleryVisible, setIsImageGalleryVisible] = useState(false);
+  const [imageGalleryArray, setImageGalleryArray] = useState<
+    ImageGalleryItem[]
+  >([]);
+
+  const handleImageGalleryClick = () => {
+    setIsImageGalleryVisible(!isImageGalleryVisible);
+  };
 
   /**
    * Analytics: track page view when the plant page is viewed.
@@ -192,8 +202,6 @@ export default function Plant() {
     carouselImages,
   ) as string;
 
-  console.log('latestCarouselDateString:', latestCarouselDateString);
-
   const carouselImagesDate = new Date(latestCarouselDateString);
 
   const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
@@ -215,10 +223,6 @@ export default function Plant() {
     latestCarouselDateString,
   );
 
-  console.log('latestCarouselImages:', latestCarouselImages);
-
-  console.log('metafieldValues:', metafieldValues);
-
   const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
 
   const parsedMeasurement = JSON.parse(measurement) as MeasurementDataArray;
@@ -235,23 +239,14 @@ export default function Plant() {
     <div className="plant-page">
       <div className="grid grid-cols-3 gap-10 relative min-h-screen">
         {/* Render core product info immediately */}
-        <div className="col-span-2">
-          {latestCarouselImages.length > 0 && (
-            <div className="carousel-images grid gap-1 grid-cols-2">
-              {latestCarouselImages.map((img, index) => (
-                <ProductImage
-                  key={img.image.url ?? index}
-                  id={img.image.url ?? index}
-                  image={{
-                    __typename: 'Image',
-                    url: img.image.url,
-                  }}
-                  alt={img.alt || `${product.title} image`}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        <CarouselImages
+          handleImageGalleryClick={handleImageGalleryClick}
+          images={latestCarouselImages}
+          productTitle={product.title}
+          setImageGalleryArray={setImageGalleryArray}
+          setIsImageGalleryVisible={setIsImageGalleryVisible}
+          isImageGalleryVisible={isImageGalleryVisible}
+        />
         <div className="col-span-1">
           <div className="flex justify-end">
             <Button size="sm" className="mr-3">
@@ -425,7 +420,14 @@ export default function Plant() {
           </div>
         </div>
       </div>
+      <div></div>
 
+      {isImageGalleryVisible ? (
+        <ImageGalleryComponent
+          images={imageGalleryArray}
+          handleImageGalleryClick={handleImageGalleryClick}
+        />
+      ) : null}
       {/* Deferred journal entry block — Suspense + Await */}
       <Suspense fallback={<p> Loading journal...</p>}>
         <Await resolve={journalPromise}>
@@ -434,12 +436,12 @@ export default function Plant() {
             // Await gives us the result of journalPromise when it's done
             const metafield = data?.product?.journal;
 
-            let journal: PlantJournalEntry[] = [];
+            let journal: JournalEntry[] = [];
 
             try {
               // Parse the raw metafield JSON into a JS array
               journal = metafield?.value
-                ? (JSON.parse(metafield.value) as PlantJournalEntry[])
+                ? (JSON.parse(metafield.value) as JournalEntry[])
                 : [];
             } catch (error) {
               console.error('Failed to parse journal JSON:', error);
@@ -451,60 +453,19 @@ export default function Plant() {
                 <h3 className="text-3xl mb-5 mt-3 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
                   Journal Entries
                 </h3>
+
                 <div className="journal-entries">
                   {journal.map((entry) => (
-                    <div
-                      className="journal-entry bg-[var(--color-bg-5)] rounded-md p-5 mb-10 "
+                    <JournalEntry
+                      entry={entry}
                       key={entry.date}
-                    >
-                      <div className="flex flex-col md:flex-row md:items-start gap-4">
-                        <div className="flex-1">
-                          <div className="mb-3 flex justify-between items-center">
-                            <div className="flex items-center">
-                              <span className="text-sm font-medium text-[var(--color-fg-green)]">
-                                {entry.title}
-                              </span>
-                            </div>
-                            <div className="flex items-center">
-                              <span className="text-sm font-medium text-[var(--color-fg-green)]">
-                                {entry.date}
-                              </span>
-                            </div>
-                          </div>
-                          <div
-                            className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)]"
-                            dangerouslySetInnerHTML={{__html: entry.content}}
-                          ></div>
-                        </div>
-                        <div className="journal-image-container flex-shrink-0 max-w-full md:max-w-[720px]">
-                          <div className="flex gap-3 overflow-x-auto scrollbar-hide">
-                            {parsedImageData.map((image, idx) =>
-                              image.meta.date === entry.date &&
-                              image.meta.date !== latestCarouselDateString ? (
-                                <div
-                                  className="overflow-hidden flex-shrink-0 w-48 h-48"
-                                  key={image.image?.url ?? idx}
-                                >
-                                  <ProductImage
-                                    image={{
-                                      __typename: 'Image',
-                                      url: image.image?.url,
-                                    }}
-                                    alt={
-                                      image.alt ||
-                                      `${product.title} journal image ${image.meta.index}`
-                                    }
-                                    key={image.image?.url ?? idx}
-                                    id={image.image?.url ?? idx}
-                                    className="object-cover w-full h-full"
-                                  />
-                                </div>
-                              ) : null,
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                      parsedImageData={parsedImageData}
+                      productTitle={product.title}
+                      latestCarouselDateString={latestCarouselDateString}
+                      setImageGalleryArray={setImageGalleryArray}
+                      setIsImageGalleryVisible={setIsImageGalleryVisible}
+                      isImageGalleryVisible={isImageGalleryVisible}
+                    />
                   ))}
                 </div>
               </div>

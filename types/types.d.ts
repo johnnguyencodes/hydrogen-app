@@ -81,11 +81,47 @@ declare global {
     className?: string;
   };
 
-  type PlantJournalEntry = {
+  type JournalEntry = {
     date: string;
     title: string;
     content: string;
-    image?: string | null;
+    journalType: string;
+  };
+
+  type ImageGalleryItem = {
+    original: string;
+    thumbnail: string;
+  };
+
+  type ImageGalleryArray = ImageGalleryItem[];
+
+  type ImageGalleryComponentProps = {
+    images: imageGalleryItem[];
+    handleImageGalleryClick: () => void;
+  };
+
+  type CarouselImagesProps = {
+    handleImageGalleryClick: () => void;
+    images: AdminImageWithMetadata[];
+    productTitle: string;
+    setImageGalleryArray: React.Dispatch<
+      React.SetStateAction<imageGalleryArray>
+    >;
+    setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    isImageGalleryVisible: boolean;
+  };
+
+  type JournalEntryComponentProps = {
+    entry: JournalEntry;
+    key: string;
+    parsedImageData: AdminImageWithMetadata[];
+    productTitle: string;
+    latestCarouselDateString: string;
+    setImageGalleryArray: React.Dispatch<
+      React.SetStateAction<imageGalleryArray>
+    >;
+    setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    isImageGalleryVisible: boolean;
   };
 
   type PlantCriticalMetafield = {
