@@ -95,7 +95,19 @@ declare global {
 
   type ImageGalleryArray = ImageGalleryItem[];
 
+  type ImageGalleryComponentProps = {
+    images: imageGalleryItem[];
+    index: number;
+    setImageGalleryArray: React.Dispatch<
+      React.SetStateAction<imageGalleryArray>
+    >;
+    setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    isImageGalleryVisible: boolean;
+    handleImageGalleryClick: () => void;
+  };
+
   type CarouselImagesProps = {
+    // handleImageGalleryClick: () => void;
     latestCarouselImages: AdminImageWithMetadata[];
     productTitle: string;
     setImageGalleryArray: React.Dispatch<
@@ -107,8 +119,10 @@ declare global {
 
   type JournalEntryComponentProps = {
     entry: JournalEntry;
+    key: string;
     parsedImageData: AdminImageWithMetadata[];
     productTitle: string;
+    latestCarouselDateString: string;
     setImageGalleryArray: React.Dispatch<
       React.SetStateAction<imageGalleryArray>
     >;

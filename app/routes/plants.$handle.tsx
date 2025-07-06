@@ -4,6 +4,7 @@ import {Await, useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {JournalEntry} from '~/components/JournalEntry';
 import {CarouselImages} from '~/components/CarouselImages';
+import {ImageGalleryComponent} from '~/components/ImageGalleryComponent';
 import ImageGallery from 'react-image-gallery';
 import {
   returnCarouselImages,
@@ -160,11 +161,12 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Plant() {
   const {product, journalPromise} = useLoaderData<typeof loader>();
   const [isImageGalleryVisible, setIsImageGalleryVisible] = useState(false);
-  const [imageGalleryArray, setImageGalleryArray] = useState<string[]>([]);
+  const [imageGalleryArray, setImageGalleryArray] = useState<
+    ImageGalleryItem[]
+  >([]);
 
   const handleImageGalleryClick = () => {
     setIsImageGalleryVisible(!isImageGalleryVisible);
-    console.log('click!');
   };
 
   /**
@@ -238,6 +240,8 @@ export default function Plant() {
       <div className="grid grid-cols-3 gap-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <CarouselImages
+          handleImageGalleryClick={handleImageGalleryClick}
+          productTitle={product.title}
           latestCarouselImages={latestCarouselImages}
           setImageGalleryArray={setImageGalleryArray}
           setIsImageGalleryVisible={setIsImageGalleryVisible}
@@ -416,14 +420,7 @@ export default function Plant() {
           </div>
         </div>
       </div>
-      <div>
-        <button
-          className="border border-black"
-          onClick={handleImageGalleryClick}
-        >
-          Gallery Button
-        </button>
-      </div>
+      <div></div>
 
       {isImageGalleryVisible ? (
         <ImageGallery items={imageGalleryArray} />
@@ -457,13 +454,14 @@ export default function Plant() {
                 <div className="journal-entries">
                   {journal.map((entry) => (
                     <JournalEntry
-                      key={entry.date}
                       entry={entry}
+                      key={entry.date}
                       parsedImageData={parsedImageData}
                       productTitle={product.title}
                       latestCarouselDateString={latestCarouselDateString}
                       setImageGalleryArray={setImageGalleryArray}
                       setIsImageGalleryVisible={setIsImageGalleryVisible}
+                      isImageGalleryVisible={isImageGalleryVisible}
                     />
                   ))}
                 </div>
