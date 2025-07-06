@@ -95,11 +95,20 @@ declare global {
 
   type ImageGalleryArray = ImageGalleryItem[];
 
+  type CarouselImagesProps = {
+    latestCarouselImages: AdminImageWithMetadata[];
+    productTitle: string;
+    setImageGalleryArray: React.Dispatch<
+      React.SetStateAction<imageGalleryArray>
+    >;
+    setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    isImageGalleryVisible: boolean;
+  };
+
   type JournalEntryComponentProps = {
     entry: JournalEntry;
     parsedImageData: AdminImageWithMetadata[];
     productTitle: string;
-    latestCarouselDateString: string;
     setImageGalleryArray: React.Dispatch<
       React.SetStateAction<imageGalleryArray>
     >;

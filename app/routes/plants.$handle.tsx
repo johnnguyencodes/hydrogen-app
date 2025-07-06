@@ -2,8 +2,8 @@
 import {Suspense, useEffect, useState} from 'react';
 import {Await, useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {ProductImage} from '~/components/ProductImage';
 import {JournalEntry} from '~/components/JournalEntry';
+import {CarouselImages} from '~/components/CarouselImages';
 import ImageGallery from 'react-image-gallery';
 import {
   returnCarouselImages,
@@ -237,24 +237,12 @@ export default function Plant() {
     <div className="plant-page">
       <div className="grid grid-cols-3 gap-10 relative min-h-screen">
         {/* Render core product info immediately */}
-        <div className="col-span-2">
-          {latestCarouselImages.length > 0 && (
-            <div className="carousel-images grid gap-1 grid-cols-2">
-              {latestCarouselImages.map((img, index) => (
-                <ProductImage
-                  key={img.image.url ?? index}
-                  id={img.image.url ?? index}
-                  image={{
-                    __typename: 'Image',
-                    url: img.image.url,
-                  }}
-                  alt={img.alt || `${product.title} image`}
-                  onClick={handleImageGalleryClick}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        <CarouselImages
+          latestCarouselImages={latestCarouselImages}
+          setImageGalleryArray={setImageGalleryArray}
+          setIsImageGalleryVisible={setIsImageGalleryVisible}
+          isImageGalleryVisible={isImageGalleryVisible}
+        />
         <div className="col-span-1">
           <div className="flex justify-end">
             <Button size="sm" className="mr-3">

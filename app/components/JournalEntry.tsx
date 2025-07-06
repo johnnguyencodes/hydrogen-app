@@ -4,18 +4,13 @@ export function JournalEntry({
   entry,
   parsedImageData,
   productTitle,
-  latestCarouselDateString,
   setImageGalleryArray,
   setIsImageGalleryVisible,
   isImageGalleryVisible,
 }: JournalEntryComponentProps) {
-  function handleJournalImageClick(): void {
+  function handleImageClick(): void {
     const generatedImageGallery = parsedImageData
-      .filter(
-        (image) =>
-          image.meta.date === entry.date &&
-          image.meta.date !== latestCarouselDateString,
-      )
+      .filter((image) => image.meta.date === entry.date)
       .map((image) => ({
         original: `${image.image.url}&width=2048&height=2048&crop=center`,
         thumbnail: `${image.image.url}&width=100&height=100&crop=center`,
@@ -52,10 +47,7 @@ export function JournalEntry({
         <div className="journal-image-container flex-shrink-0 max-w-full md:max-w-[720px]">
           <div className="flex gap-3 overflow-x-auto scrollbar-hide">
             {parsedImageData.map((image, idx) => {
-              if (
-                image.meta.date === entry.date &&
-                image.meta.date !== latestCarouselDateString
-              ) {
+              if (image.meta.date === entry.date) {
                 return (
                   <div
                     className="overflow-hidden flex-shrink-0 w-48 h-48"
@@ -73,7 +65,7 @@ export function JournalEntry({
                       key={image.image?.url ?? idx}
                       id={image.image?.url ?? idx}
                       className="object-cover w-full h-full"
-                      onClick={handleJournalImageClick}
+                      onClick={handleImageClick}
                     />
                   </div>
                 );
