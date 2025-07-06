@@ -104,7 +104,7 @@ function RecommendedProducts({
                     <Link
                       key={product.id}
                       className="recommended-product"
-                      to={`/products/${product.handle}`}
+                      to={`/${product.productType}/${product.handle}`}
                     >
                       <Image
                         data={product.images.nodes[0]}
@@ -170,6 +170,7 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
         height
       }
     }
+    productType
   }
   query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {

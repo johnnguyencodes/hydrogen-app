@@ -361,6 +361,7 @@ export type RecommendedProductsQuery = {
             >
           >;
         };
+        productType: string;
       }
     >;
   };
