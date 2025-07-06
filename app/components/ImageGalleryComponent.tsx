@@ -1,4 +1,5 @@
 import ImageGallery from 'react-image-gallery';
+import {Button} from './ui/button';
 
 export function ImageGalleryComponent({
   images,
@@ -13,9 +14,9 @@ export function ImageGalleryComponent({
 
   return (
     <div>
-      <button className="border border-black" onClick={handleImageGalleryClick}>
+      <Button className="border border-black" onClick={handleImageGalleryClick}>
         Gallery Button
-      </button>
+      </Button>
       <div>
         <ImageGallery items={images} />
       </div>
