@@ -104,7 +104,6 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
       {namespace: 'plant', key: 'measurement'},
       {namespace: 'plant', key: 'watering-frequency'},
       {namespace: 'plant', key: 'growth-notes'},
-      {namespace: 'plant', key: 'care-routine'},
     ],
   };
 
@@ -298,7 +297,7 @@ export default function Plant() {
                     Seed-grown
                   </p>
                   <p className="text-[var(--color-fg-text)] text-sm">
-                    {parsedAcquisition.date}
+                    {datePlantAcquired}
                   </p>
                 </div>
               )}
@@ -310,9 +309,23 @@ export default function Plant() {
                   <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
                     Purchased from
                   </p>
-                  <p className="text-[var(--color-fg-text)] text-sm">
-                    {parsedAcquisition.supplier}
-                  </p>
+                  {parsedAcquisition?.pText.length > 0 ? (
+                    <p className="text-[var(--color-fg-text)] text-sm">
+                      {parsedAcquisition.pText}
+                    </p>
+                  ) : (
+                    <a
+                      href={parsedAcquisition.aHref}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      className="flex items-center text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
+                    >
+                      <span className="inline-flex items-center border-b border-transparent hover:border-current text-sm">
+                        {parsedAcquisition.aText}
+                        <ExternalLink size="16" className="ml-1" />
+                      </span>
+                    </a>
+                  )}
                   <p className="text-[var(--color-fg-text)] text-sm">
                     {datePlantAcquired}
                   </p>
@@ -327,7 +340,7 @@ export default function Plant() {
                     Acquired from a cutting:
                   </p>
                   <p className="text-[var(--color-fg-text)] text-sm">
-                    {parsedAcquisition.date}
+                    {datePlantAcquired}
                   </p>
                 </div>
               )}

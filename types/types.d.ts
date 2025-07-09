@@ -134,7 +134,13 @@ declare global {
   type AcquisitionData =
     | {method: 'seed-grown'; date: string}
     | {method: 'cutting'; date: string}
-    | {method: 'purchased'; supplier: string; date: string};
+    | {
+        method: 'purchased';
+        pText: string;
+        aHref: string;
+        aText: string;
+        date: string;
+      };
 
   type MeasurementData = {
     height: string;
