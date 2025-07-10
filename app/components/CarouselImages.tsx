@@ -9,7 +9,7 @@ export function CarouselImages({
 }: CarouselImagesProps) {
   function handleImageClick(): void {
     const generatedImageGallery = images.map((image) => ({
-      original: `${image.image.url}&width=2048&height=2048&crop=center`,
+      original: `${image.image.url}&width=${image.image.width}&height=${image.image.height}&crop=center`,
       thumbnail: `${image.image.url}&width=100&height=100&crop=center`,
     }));
 
