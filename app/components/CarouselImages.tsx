@@ -6,6 +6,8 @@ export function CarouselImages({
   setImageGalleryArray,
   setIsImageGalleryVisible,
   isImageGalleryVisible,
+  width,
+  height,
 }: CarouselImagesProps) {
   function handleImageClick(): void {
     const generatedImageGallery = images.map((image) => ({
@@ -31,6 +33,8 @@ export function CarouselImages({
               }}
               alt={img.alt || `${productTitle} image`}
               onClick={handleImageClick}
+              width={width}
+              height={height}
             />
           ))}
         </div>

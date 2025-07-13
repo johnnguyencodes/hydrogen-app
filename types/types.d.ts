@@ -79,6 +79,8 @@ declare global {
     alt: string;
     id: string;
     className?: string;
+    width: number;
+    height: number;
   };
 
   type JournalEntry = {
@@ -109,6 +111,8 @@ declare global {
     >;
     setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
     isImageGalleryVisible: boolean;
+    width: number;
+    height: number;
   };
 
   type JournalEntryComponentProps = {

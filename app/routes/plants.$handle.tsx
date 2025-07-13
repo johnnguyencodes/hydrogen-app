@@ -245,6 +245,8 @@ export default function Plant() {
           setImageGalleryArray={setImageGalleryArray}
           setIsImageGalleryVisible={setIsImageGalleryVisible}
           isImageGalleryVisible={isImageGalleryVisible}
+          width={500}
+          height={500}
         />
         <div className="col-span-1">
           <div className="flex justify-end">
