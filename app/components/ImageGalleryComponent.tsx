@@ -3,12 +3,11 @@ import {Button} from './ui/button';
 
 export function ImageGalleryComponent({
   images,
+  startIndex,
+  setImageGalleryStartIndex,
   handleImageGalleryClick,
 }: ImageGalleryComponentProps) {
-  // if (index === null) {
-  //   index = 0;
-  // }
-
+  console.log('startIndex:', startIndex);
   return (
     <div
       className="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-90"
@@ -20,7 +19,10 @@ export function ImageGalleryComponent({
       >
         <Button
           className="absolute top-2 -right-20 z-10"
-          onClick={handleImageGalleryClick}
+          onClick={() => {
+            handleImageGalleryClick();
+            setImageGalleryStartIndex(0);
+          }}
         >
           X
         </Button>
@@ -30,6 +32,7 @@ export function ImageGalleryComponent({
           additionalClass="h-full"
           showIndex={true}
           slideOnThumbnailOver={true}
+          startIndex={startIndex}
           renderItem={(item) => (
             <a
               href={item.original}
@@ -39,7 +42,7 @@ export function ImageGalleryComponent({
             >
               <img
                 className="image-gallery-image"
-                src={item.original}
+                src={item.gallery}
                 style={{width: '100%', height: '100%', objectFit: 'contain'}}
                 alt=""
               />

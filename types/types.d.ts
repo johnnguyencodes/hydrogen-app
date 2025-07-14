@@ -57,12 +57,12 @@ declare global {
 
   export type AdminFile = FilesResponse['files']['edges'][number]['node'];
 
-  type AdminImage = {
-    alt: string;
-    image: {
-      url: string;
-    };
-  };
+  // type AdminImage = {
+  //   alt: string;
+  //   image: {
+  //     url: string;
+  //   };
+  // };
 
   type AdminImageWithMetadata = AdminFile & {
     meta: {
@@ -92,6 +92,7 @@ declare global {
 
   type ImageGalleryItem = {
     original: string;
+    gallery: string;
     thumbnail: string;
   };
 
@@ -99,6 +100,8 @@ declare global {
 
   type ImageGalleryComponentProps = {
     images: imageGalleryItem[];
+    startIndex: number;
+    setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
     handleImageGalleryClick: () => void;
   };
 
@@ -113,6 +116,8 @@ declare global {
     isImageGalleryVisible: boolean;
     width: number;
     height: number;
+    setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
+    imageGalleryStartIndex: number;
   };
 
   type JournalEntryComponentProps = {
@@ -169,16 +174,6 @@ declare global {
       };
     };
   };
-
-  interface AdminImageWithMetadata {
-    alt: string;
-    image: {url: string};
-    meta: {
-      date: string; // e.g. "YYYY-MM-DD"
-      imageType: string;
-      index: number;
-    };
-  }
 
   type AdminResponse = any | null;
 
