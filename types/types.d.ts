@@ -131,6 +131,10 @@ declare global {
     >;
     setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
     isImageGalleryVisible: boolean;
+    width: number;
+    height: number;
+    setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
+    imageGalleryStartIndex: number;
   };
 
   type PlantCriticalMetafield = {

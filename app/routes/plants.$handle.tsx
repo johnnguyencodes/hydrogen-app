@@ -486,6 +486,10 @@ export default function Plant() {
                       setImageGalleryArray={setImageGalleryArray}
                       setIsImageGalleryVisible={setIsImageGalleryVisible}
                       isImageGalleryVisible={isImageGalleryVisible}
+                      width={200}
+                      height={200}
+                      imageGalleryStartIndex={imageGalleryStartIndex}
+                      setImageGalleryStartIndex={setImageGalleryStartIndex}
                     />
                   ))}
                 </div>

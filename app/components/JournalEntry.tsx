@@ -6,13 +6,17 @@ export function JournalEntry({
   productTitle,
   setImageGalleryArray,
   setIsImageGalleryVisible,
+  setImageGalleryStartIndex,
   isImageGalleryVisible,
+  width,
+  height,
 }: JournalEntryComponentProps) {
   function handleImageClick(): void {
     const generatedImageGallery = parsedImageData
       .filter((image) => image.meta.date === entry.date)
       .map((image) => ({
-        original: `${image.image.url}&width=2048&height=2048&crop=center`,
+        original: `${image.image.url}&width=${image.image.width}&height=${image.image.height}&crop=center`,
+        gallery: `${image.image.url}&width=1000&height=1000&crop=center`,
         thumbnail: `${image.image.url}&width=100&height=100&crop=center`,
       }));
 
@@ -56,16 +60,21 @@ export function JournalEntry({
                     <ProductImage
                       image={{
                         __typename: 'Image',
-                        url: image.image?.url,
+                        url: image.image.url,
                       }}
                       alt={
                         image.alt ||
                         `${productTitle} journal image ${image.meta.index}`
                       }
-                      key={image.image?.url ?? idx}
-                      id={image.image?.url ?? idx}
+                      key={image.image.url ?? idx}
+                      id={image.image.url ?? idx}
                       className="object-cover w-full h-full"
-                      onClick={handleImageClick}
+                      onClick={() => {
+                        handleImageClick();
+                        setImageGalleryStartIndex(image.meta.index);
+                      }}
+                      width={width}
+                      height={height}
                     />
                   </div>
                 );
