@@ -163,6 +163,8 @@ export default function Plant() {
   const [imageGalleryArray, setImageGalleryArray] = useState<
     ImageGalleryItem[]
   >([]);
+  const [imageGalleryStartIndex, setImageGalleryStartIndex] =
+    useState<number>(0);
 
   const handleImageGalleryClick = () => {
     setIsImageGalleryVisible(!isImageGalleryVisible);
@@ -245,6 +247,10 @@ export default function Plant() {
           setImageGalleryArray={setImageGalleryArray}
           setIsImageGalleryVisible={setIsImageGalleryVisible}
           isImageGalleryVisible={isImageGalleryVisible}
+          width={500}
+          height={500}
+          imageGalleryStartIndex={imageGalleryStartIndex}
+          setImageGalleryStartIndex={setImageGalleryStartIndex}
         />
         <div className="col-span-1">
           <div className="flex justify-end">
@@ -438,7 +444,9 @@ export default function Plant() {
       {isImageGalleryVisible ? (
         <ImageGalleryComponent
           images={imageGalleryArray}
+          startIndex={imageGalleryStartIndex}
           handleImageGalleryClick={handleImageGalleryClick}
+          setImageGalleryStartIndex={setImageGalleryStartIndex}
         />
       ) : null}
       {/* Deferred journal entry block — Suspense + Await */}
@@ -478,6 +486,10 @@ export default function Plant() {
                       setImageGalleryArray={setImageGalleryArray}
                       setIsImageGalleryVisible={setIsImageGalleryVisible}
                       isImageGalleryVisible={isImageGalleryVisible}
+                      width={200}
+                      height={200}
+                      imageGalleryStartIndex={imageGalleryStartIndex}
+                      setImageGalleryStartIndex={setImageGalleryStartIndex}
                     />
                   ))}
                 </div>
