@@ -14,6 +14,7 @@ import {
 import {PlantPageDescription} from '~/components/PlantPageDescription';
 import {PlantPageSpecs} from '~/components/PlantPageSpecs';
 import {PlantPageJournalComponent} from '~/components/PlantPageJournalComponent';
+import {PlantPageTitle} from '~/components/PlantPageTitle';
 
 // =========================
 // Loader Function
@@ -208,7 +209,7 @@ export default function Plant() {
    */
 
   return (
-    <div className="plant-page">
+    <div className="plant-page xs:mx-5 2xl:mx-0">
       {isImageGalleryVisible ? (
         <ImageGalleryComponent
           images={imageGalleryArray}
@@ -217,8 +218,9 @@ export default function Plant() {
           setImageGalleryStartIndex={setImageGalleryStartIndex}
         />
       ) : null}
-      <div className="grid grid-cols-3 gap-10 relative min-h-screen">
+      <div className="grid lg:grid-cols-[1fr_400px] lg:grid-rows-[min-content_1fr] gap-5 gap-x-10 relative min-h-screen">
         {/* Render core product info immediately */}
+        <PlantPageTitle productTitle={product.title} />
         <CarouselImages
           handleImageGalleryClick={handleImageGalleryClick}
           images={latestCarouselImages}
@@ -232,7 +234,6 @@ export default function Plant() {
           setImageGalleryStartIndex={setImageGalleryStartIndex}
         />
         <PlantPageDescription
-          productTitle={product.title}
           modifiedProductDescription={modifiedProductDescription}
         />
       </div>
