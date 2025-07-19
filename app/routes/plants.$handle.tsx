@@ -71,23 +71,31 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
       // Examples:
       //
       //   {
-      //     "method": "seed-grown",
-      //     "date": "2025-01-01"
+      //     "method": "Seed Grown",
+      //     "pText": "Something about acquiring seeds",
+      //     "aText": "Text for link if needed",
+      //     "aHref": "URL for link if needed",
+      //     "date": "YYYY-MM-DD"
       //   }
       //
       //  OR
       //
       // {
-      //   "method": "purchased",
-      //   "supplier": "Cactus exchange community on Reddit",
-      //   "date": "2025-01-01"
+      //   "method": "Purchased from",
+      //   "pText": "something about the purchase",
+      //   "aText": "Name of store",
+      //   "aHret": "https://url.com",
+      //   "date": "YYYY-MM-DD"
       // }
       //
       // OR
       //
       //   {
-      //     "method": "cutting",
-      //     "date": "2025-01-01"
+      //     "method": "Cutting",
+      //     "pText": "Something about the cutting",
+      //     "aText": "Text for link if needed",
+      //     "aHref": "URL for link if needed",
+      //     "date": "YYYY-MM-DD"
       //   }
       {namespace: 'plant', key: 'acquisition'},
       // Metafield definition
@@ -96,9 +104,9 @@ async function loadCriticalData(args: LoaderFunctionArgs) {
       // Examples:
       //
       // [{
-      //   "height": "24 cm",
-      //    "width": "24 cm",
-      //    "pot": "2.5 in/\" plastic pot",
+      //   "height": "xx cm",
+      //    "width": "xx cm",
+      //    "pot": "x.x in/\" plastic pot",
       //    "date": "2025-01-01"
       //  }]
       {namespace: 'plant', key: 'measurement'},
@@ -196,6 +204,7 @@ export default function Plant() {
     metafieldValues;
 
   const rawImageData = metafieldValues.images;
+
   const parsedImageData = JSON.parse(rawImageData) as AdminImageWithMetadata[];
   const carouselImages = returnCarouselImages(parsedImageData);
 
@@ -294,32 +303,28 @@ export default function Plant() {
           </div>
           {parsedAcquisition && (
             <div className="col-span-1 rounded-md bg-[var(--color-bg-1)] flex flex-col items-center p-5">
-              {parsedAcquisition?.method === 'seed-grown' && (
+              {parsedAcquisition?.method && (
                 <div className="flex flex-col items-center justify-center">
                   <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
-                    <Sprout size={36} />
+                    {parsedAcquisition?.method === 'Seed Grown' ? (
+                      <Sprout size={36} />
+                    ) : parsedAcquisition?.method === 'Purchased from' ? (
+                      <BadgeDollarSign size={36} />
+                    ) : parsedAcquisition?.method === 'Cutting' ? (
+                      <ScissorsLineDashed size={36} />
+                    ) : null}
                   </div>
-                  <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
-                    Seed-grown
-                  </p>
-                  <p className="text-[var(--color-fg-text)] text-sm">
-                    {datePlantAcquired}
-                  </p>
-                </div>
-              )}
-              {parsedAcquisition?.method === 'purchased' && (
-                <div className="flex flex-col items-center justify-center">
-                  <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
-                    <BadgeDollarSign size={36} />
-                  </div>
-                  <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
-                    Purchased from
-                  </p>
-                  {parsedAcquisition?.pText.length > 0 ? (
+                  {parsedAcquisition?.method.length > 0 && (
+                    <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
+                      {parsedAcquisition.method}
+                    </p>
+                  )}
+                  {parsedAcquisition?.pText.length > 0 && (
                     <p className="text-[var(--color-fg-text)] text-sm">
                       {parsedAcquisition.pText}
                     </p>
-                  ) : (
+                  )}
+                  {parsedAcquisition?.aHref.length > 0 && (
                     <a
                       href={parsedAcquisition.aHref}
                       target="_blank"
@@ -332,22 +337,11 @@ export default function Plant() {
                       </span>
                     </a>
                   )}
-                  <p className="text-[var(--color-fg-text)] text-sm">
-                    {datePlantAcquired}
-                  </p>
-                </div>
-              )}
-              {parsedAcquisition?.method === 'cutting' && (
-                <div className="flex flex-col items-center justify-center">
-                  <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
-                    <ScissorsLineDashed size={36} />
-                  </div>
-                  <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
-                    Acquired from a cutting:
-                  </p>
-                  <p className="text-[var(--color-fg-text)] text-sm">
-                    {datePlantAcquired}
-                  </p>
+                  {parsedAcquisition?.date.length > 0 && (
+                    <p className="text-[var(--color-fg-text)] text-sm">
+                      {datePlantAcquired}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
