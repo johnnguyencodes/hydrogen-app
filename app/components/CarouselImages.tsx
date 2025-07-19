@@ -22,28 +22,30 @@ export function CarouselImages({
   }
 
   return (
-    <div className="col-span-2">
-      {images.length > 0 && (
-        <div className="carousel-images grid gap-1 grid-cols-2">
-          {images.map((image: AdminImageWithMetadata, index: number) => (
-            <ProductImage
-              key={image.image.url ?? index}
-              id={image.image.url ?? index}
-              image={{
-                __typename: 'Image',
-                url: image.image.url,
-              }}
-              alt={image.alt || `${productTitle} image`}
-              onClick={() => {
-                handleImageClick();
-                setImageGalleryStartIndex(image.meta.index);
-              }}
-              width={width}
-              height={height}
-            />
-          ))}
-        </div>
-      )}
+    <div className="lg:col-start-1 lg:row-span-full ">
+      <div className="lg:top-[var(--navbar-height)] lg:sticky">
+        {images.length > 0 && (
+          <div className="carousel-images grid gap-1 grid-cols-2">
+            {images.map((image: AdminImageWithMetadata, index: number) => (
+              <ProductImage
+                key={image.image.url ?? index}
+                id={image.image.url ?? index}
+                image={{
+                  __typename: 'Image',
+                  url: image.image.url,
+                }}
+                alt={image.alt || `${productTitle} image`}
+                onClick={() => {
+                  handleImageClick();
+                  setImageGalleryStartIndex(image.meta.index);
+                }}
+                width={width}
+                height={height}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -44,11 +44,11 @@ export function JournalEntry({
             </div>
           </div>
           <div
-            className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)]"
+            className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)] max-w-prose"
             dangerouslySetInnerHTML={{__html: entry.content}}
           ></div>
         </div>
-        <div className="journal-image-container flex-shrink-0 max-w-full md:max-w-[720px]">
+        <div className="journal-image-container flex-shrink-0 xs:max-w-[calc(100vw-5rem)] md:max-w-[250px] lg:max-w-[350px] xl:max-w-[650px]">
           <div className="flex gap-3 overflow-x-auto scrollbar-hide">
             {parsedImageData.map((image, idx) => {
               if (image.meta.date === entry.date) {

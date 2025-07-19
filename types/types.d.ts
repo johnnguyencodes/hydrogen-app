@@ -125,8 +125,11 @@ declare global {
     handleImageGalleryClick: () => void;
   };
 
-  type PlantPageDescriptionProps = {
+  type PlantPageTitleProps = {
     productTitle: string;
+  };
+
+  type PlantPageDescriptionProps = {
     modifiedProductDescription: string;
   };
 

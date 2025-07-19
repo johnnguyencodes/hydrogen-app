@@ -20,7 +20,7 @@ export function PlantPageSpecs({
 }: PlantPageSpecsProps) {
   return (
     <div>
-      <div className="grid grid-cols-3 gap-10">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
         <div className="cols-span-1 flex flex-col justify-center">
           <h2 className="text-balance text-5xl font-medium text-[var(--color-fg-green)]">
             {productTitle}
@@ -92,8 +92,11 @@ export function PlantPageSpecs({
                 Measurements
               </p>
               <p className="text-[var(--color-fg-text)] text-sm">
-                {parsedMeasurement[0].height} x {parsedMeasurement[0].width} in
-                a {parsedMeasurement[0].pot}
+                {parsedMeasurement[0].height} tall x{' '}
+                {parsedMeasurement[0].width} wide,
+              </p>
+              <p className="text-[var(--color-fg-text)] text-sm">
+                in a {parsedMeasurement[0].pot}
               </p>
               <p className="text-[var(--color-fg-text)] text-sm">
                 {dateMeasurementTaken}
