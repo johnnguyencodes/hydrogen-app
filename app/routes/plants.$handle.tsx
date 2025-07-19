@@ -26,6 +26,7 @@ import {
   Pipette,
   Leaf,
 } from 'lucide-react';
+import {PlantPageDescription} from '~/components/PlantPageDescription';
 
 // =========================
 // Loader Function
@@ -166,6 +167,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
+  // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
   const [isImageGalleryVisible, setIsImageGalleryVisible] = useState(false);
   const [imageGalleryArray, setImageGalleryArray] = useState<
@@ -178,42 +180,21 @@ export default function Plant() {
     setIsImageGalleryVisible(!isImageGalleryVisible);
   };
 
-  /**
-   * Analytics: track page view when the plant page is viewed.
-   * Uses window.analytics.track() if available; logs fallback if not.
-   */
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window?.analytics?.track) {
-      window.analytics.track('plant_view', {
-        id: product.id,
-        title: product.title,
-      });
-    } else {
-      console.warn('[Analytics Fallback] plant_view', {
-        id: product.id,
-        title: product.title,
-      });
-    }
-  }, [product.id, product.title]);
-
+  // preparing metafield data
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
-
   const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
     metafieldValues;
 
+  // image data manipulation
   const rawImageData = metafieldValues.images;
-
   const parsedImageData = JSON.parse(rawImageData) as AdminImageWithMetadata[];
   const carouselImages = returnCarouselImages(parsedImageData);
-
   const latestCarouselDateString = getLatestCarouselDate(
     carouselImages,
   ) as string;
-
   const carouselImagesDate = new Date(latestCarouselDateString);
-
   const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
     'en-US',
     {
@@ -222,23 +203,17 @@ export default function Plant() {
       day: 'numeric',
     },
   );
-
-  const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
-
-  const modifiedProductDescription =
-    product.descriptionHtml + additonalDescription;
-
   const latestCarouselImages = getLatestCarouselImages(
     carouselImages,
     latestCarouselDateString,
   );
 
+  const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
+  const modifiedProductDescription =
+    product.descriptionHtml + additonalDescription;
   const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
-
   const parsedMeasurement = JSON.parse(measurement) as MeasurementDataArray;
-
   const datePlantAcquired = returnFormattedDate(parsedAcquisition.date);
-
   const dateMeasurementTaken = returnFormattedDate(parsedMeasurement[0].date);
 
   /**
@@ -261,26 +236,10 @@ export default function Plant() {
           imageGalleryStartIndex={imageGalleryStartIndex}
           setImageGalleryStartIndex={setImageGalleryStartIndex}
         />
-        <div className="col-span-1">
-          <div className="flex justify-end">
-            <Button size="sm" className="mr-3">
-              <Heart />
-            </Button>
-            <Button size="sm">
-              <Share />
-            </Button>
-          </div>
-          <h1 className="text-3xl mb-5 mt-3 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
-            {product.title}
-          </h1>
-          <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md bg-[var(--color-bg-3)] prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)]">
-            <div
-              className="prose p-10"
-              id="plant-description"
-              dangerouslySetInnerHTML={{__html: modifiedProductDescription}}
-            ></div>
-          </div>
-        </div>
+        <PlantPageDescription
+          productTitle={product.title}
+          modifiedProductDescription={modifiedProductDescription}
+        />
       </div>
       <div className="block border border-[var(--color-fg-text)] my-10"></div>
       <div className="">
@@ -433,8 +392,6 @@ export default function Plant() {
           </div>
         </div>
       </div>
-      <div></div>
-
       {isImageGalleryVisible ? (
         <ImageGalleryComponent
           images={imageGalleryArray}

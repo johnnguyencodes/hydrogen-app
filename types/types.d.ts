@@ -105,6 +105,11 @@ declare global {
     handleImageGalleryClick: () => void;
   };
 
+  type PlantPageDescriptionProps = {
+    productTitle: string;
+    modifiedProductDescription: string;
+  };
+
   type CarouselImagesProps = {
     handleImageGalleryClick: () => void;
     images: AdminImageWithMetadata[];
