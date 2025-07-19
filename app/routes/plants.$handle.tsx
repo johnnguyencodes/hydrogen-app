@@ -1,11 +1,9 @@
 // React and Remix imports
-import {Suspense, useEffect, useState} from 'react';
-import {Await, useLoaderData} from '@remix-run/react';
+import {useState} from 'react';
+import {useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {JournalEntry} from '~/components/JournalEntry';
 import {CarouselImages} from '~/components/CarouselImages';
 import {ImageGalleryComponent} from '~/components/ImageGalleryComponent';
-import ImageGallery from 'react-image-gallery';
 import {
   returnCarouselImages,
   getLatestCarouselDate,
@@ -13,19 +11,9 @@ import {
   extractMetafieldValues,
   returnFormattedDate,
 } from '~/lib/plantPageUtils';
-import {Button} from '~/components/ui/button';
-import {
-  Heart,
-  Share,
-  ExternalLink,
-  Sprout,
-  BadgeDollarSign,
-  ScissorsLineDashed,
-  Ruler,
-  Shovel,
-  Pipette,
-  Leaf,
-} from 'lucide-react';
+import {PlantPageDescription} from '~/components/PlantPageDescription';
+import {PlantPageSpecs} from '~/components/PlantPageSpecs';
+import {PlantPageJournalComponent} from '~/components/PlantPageJournalComponent';
 
 // =========================
 // Loader Function
@@ -166,6 +154,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
  */
 
 export default function Plant() {
+  // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
   const [isImageGalleryVisible, setIsImageGalleryVisible] = useState(false);
   const [imageGalleryArray, setImageGalleryArray] = useState<
@@ -178,42 +167,21 @@ export default function Plant() {
     setIsImageGalleryVisible(!isImageGalleryVisible);
   };
 
-  /**
-   * Analytics: track page view when the plant page is viewed.
-   * Uses window.analytics.track() if available; logs fallback if not.
-   */
-  useEffect(() => {
-    if (typeof window !== 'undefined' && window?.analytics?.track) {
-      window.analytics.track('plant_view', {
-        id: product.id,
-        title: product.title,
-      });
-    } else {
-      console.warn('[Analytics Fallback] plant_view', {
-        id: product.id,
-        title: product.title,
-      });
-    }
-  }, [product.id, product.title]);
-
+  // preparing metafield data
   const metafieldValues = extractMetafieldValues(
     product.metafields.filter(Boolean) as PlantCriticalMetafield[],
   );
-
   const {acquisition, measurement, llifleDatabaseLink, wateringFrequency} =
     metafieldValues;
 
+  // image data manipulation
   const rawImageData = metafieldValues.images;
-
   const parsedImageData = JSON.parse(rawImageData) as AdminImageWithMetadata[];
   const carouselImages = returnCarouselImages(parsedImageData);
-
   const latestCarouselDateString = getLatestCarouselDate(
     carouselImages,
   ) as string;
-
   const carouselImagesDate = new Date(latestCarouselDateString);
-
   const formattedCarousalImagesDate = carouselImagesDate.toLocaleString(
     'en-US',
     {
@@ -222,23 +190,17 @@ export default function Plant() {
       day: 'numeric',
     },
   );
-
-  const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
-
-  const modifiedProductDescription =
-    product.descriptionHtml + additonalDescription;
-
   const latestCarouselImages = getLatestCarouselImages(
     carouselImages,
     latestCarouselDateString,
   );
 
+  const additonalDescription = `<p class="p1">(Plant photos taken on ${formattedCarousalImagesDate})`;
+  const modifiedProductDescription =
+    product.descriptionHtml + additonalDescription;
   const parsedAcquisition = JSON.parse(acquisition) as AcquisitionData;
-
   const parsedMeasurement = JSON.parse(measurement) as MeasurementDataArray;
-
   const datePlantAcquired = returnFormattedDate(parsedAcquisition.date);
-
   const dateMeasurementTaken = returnFormattedDate(parsedMeasurement[0].date);
 
   /**
@@ -247,6 +209,14 @@ export default function Plant() {
 
   return (
     <div className="plant-page">
+      {isImageGalleryVisible ? (
+        <ImageGalleryComponent
+          images={imageGalleryArray}
+          startIndex={imageGalleryStartIndex}
+          handleImageGalleryClick={handleImageGalleryClick}
+          setImageGalleryStartIndex={setImageGalleryStartIndex}
+        />
+      ) : null}
       <div className="grid grid-cols-3 gap-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <CarouselImages
@@ -261,239 +231,34 @@ export default function Plant() {
           imageGalleryStartIndex={imageGalleryStartIndex}
           setImageGalleryStartIndex={setImageGalleryStartIndex}
         />
-        <div className="col-span-1">
-          <div className="flex justify-end">
-            <Button size="sm" className="mr-3">
-              <Heart />
-            </Button>
-            <Button size="sm">
-              <Share />
-            </Button>
-          </div>
-          <h1 className="text-3xl mb-5 mt-3 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
-            {product.title}
-          </h1>
-          <div className="lg:sticky lg:top-[64px] lg:self-start rounded-md bg-[var(--color-bg-3)] prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)]">
-            <div
-              className="prose p-10"
-              id="plant-description"
-              dangerouslySetInnerHTML={{__html: modifiedProductDescription}}
-            ></div>
-          </div>
-        </div>
+        <PlantPageDescription
+          productTitle={product.title}
+          modifiedProductDescription={modifiedProductDescription}
+        />
       </div>
       <div className="block border border-[var(--color-fg-text)] my-10"></div>
-      <div className="">
-        <div className="grid grid-cols-3 gap-10">
-          <div className="cols-span-1 flex flex-col justify-center">
-            <h2 className="text-balance text-5xl font-medium text-[var(--color-fg-green)]">
-              {product.title}
-            </h2>
-            <a
-              href={llifleDatabaseLink}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="mt-3 flex items-center text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
-            >
-              <span className="inline-flex items-center border-b border-transparent hover:border-current text-sm">
-                View species info on LLIFLE
-                <ExternalLink size="16" className="ml-1" />
-              </span>
-            </a>
-          </div>
-          {parsedAcquisition && (
-            <div className="col-span-1 rounded-md bg-[var(--color-bg-1)] flex flex-col items-center p-5">
-              {parsedAcquisition?.method && (
-                <div className="flex flex-col items-center justify-center">
-                  <div className="rounded-4xl bg-[var(--color-bg-green)] p-1 text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
-                    {parsedAcquisition?.method === 'Seed Grown' ? (
-                      <Sprout size={36} />
-                    ) : parsedAcquisition?.method === 'Purchased from' ? (
-                      <BadgeDollarSign size={36} />
-                    ) : parsedAcquisition?.method === 'Cutting' ? (
-                      <ScissorsLineDashed size={36} />
-                    ) : null}
-                  </div>
-                  {parsedAcquisition?.method.length > 0 && (
-                    <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
-                      {parsedAcquisition.method}
-                    </p>
-                  )}
-                  {parsedAcquisition?.pText.length > 0 && (
-                    <p className="text-[var(--color-fg-text)] text-sm">
-                      {parsedAcquisition.pText}
-                    </p>
-                  )}
-                  {parsedAcquisition?.aHref.length > 0 && (
-                    <a
-                      href={parsedAcquisition.aHref}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                      className="flex items-center text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
-                    >
-                      <span className="inline-flex items-center border-b border-transparent hover:border-current text-sm">
-                        {parsedAcquisition.aText}
-                        <ExternalLink size="16" className="ml-1" />
-                      </span>
-                    </a>
-                  )}
-                  {parsedAcquisition?.date.length > 0 && (
-                    <p className="text-[var(--color-fg-text)] text-sm">
-                      {datePlantAcquired}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-          {parsedMeasurement && (
-            <div className="col-span-1 rounded-md bg-[var(--color-bg-2)] p-5">
-              <div className="flex flex-col items-center justify-center">
-                <div className="rounded-4xl bg-[var(--color-bg-green)] p-[5px] text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
-                  <Ruler size={34} />
-                </div>
-                <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
-                  Measurements
-                </p>
-                <p className="text-[var(--color-fg-text)] text-sm">
-                  {parsedMeasurement[0].height} x {parsedMeasurement[0].width}{' '}
-                  in a {parsedMeasurement[0].pot}
-                </p>
-                <p className="text-[var(--color-fg-text)] text-sm">
-                  {dateMeasurementTaken}
-                </p>
-              </div>
-            </div>
-          )}
-          <div className="col-span-1 rounded-md bg-[var(--color-bg-3)] p-5">
-            <div className="flex flex-col items-center justify-center">
-              <div className="relative rounded-4xl bg-[var(--color-bg-green)] p-[7px] text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
-                <Shovel
-                  className="relative left-[1.25px] bottom-[1.25px]"
-                  size={30}
-                />
-              </div>
-              <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
-                Soil Mix
-              </p>
-              <ul className="text-[var(--color-fg-text)] text-center text-pretty text-sm">
-                <li>8 parts pumice</li>
-                <li>1 part calcinated clay</li>
-                <li>1 part cactus soil</li>
-              </ul>
-              <p className="font-bold text-[var(--color-fg-green)] mt-3 text-sm">
-                Top Dressing
-              </p>
-              <p className="text-[var(--color-fg-text)] text-sm">
-                {' '}
-                calcinated clay
-              </p>
-            </div>
-          </div>
-          <div className="col-span-1 rounded-md bg-[var(--color-bg-4)] p-5">
-            <div className="flex flex-col items-center justify-center">
-              <div className="relative rounded-4xl bg-[var(--color-bg-green)] p-[7px] text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
-                <Pipette
-                  className="relative left-[.25px] bottom-[.25px]"
-                  size={30}
-                />
-              </div>
-              <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
-                Fertilizer Regimen{' '}
-              </p>
-            </div>
-            <p className="text-[var(--color-fg-text)] mb-3 text-center text-sm">
-              Mix into 1 L reverse osmosis water:
-            </p>
-
-            <ul className="text-[var(--color-fg-text)] text-center text-pretty text-sm">
-              <li>67 μL Schultz Cactus Plus (2–2–7)</li>
-              <li>133 μL Grow More Cactus Juice (1–7–6)</li>
-              <li>133 μL epsom salt stock solution (5 g/30 mL)</li>
-              <li>30 mg chelated micronutrients</li>
-            </ul>
-          </div>
-          <div className="col-span-1 rounded-md bg-[var(--color-bg-5)] p-5">
-            <div className="flex flex-col items-center justify-center">
-              <div className="relative rounded-4xl bg-[var(--color-bg-green)] p-[7px] text-[var(--color-fg-text)] border-[1.5px] border-[var(--color-fg-text)]">
-                <Leaf
-                  className="relative left-[1.25px] bottom-[1.25px]"
-                  size={30}
-                />
-              </div>
-              <p className="font-bold text-[var(--color-fg-green)] mt-1 text-sm">
-                Care Regimen
-              </p>
-              <ul className="text-[var(--color-fg-text)] text-center text-pretty text-sm">
-                <li>Grown indoors with 24/7 fan circulation</li>
-                <li>15 hours of light daily under T5 6500K LEDs</li>
-                <li>Deep watered every {wateringFrequency}</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div></div>
-
-      {isImageGalleryVisible ? (
-        <ImageGalleryComponent
-          images={imageGalleryArray}
-          startIndex={imageGalleryStartIndex}
-          handleImageGalleryClick={handleImageGalleryClick}
-          setImageGalleryStartIndex={setImageGalleryStartIndex}
-        />
-      ) : null}
-      {/* Deferred journal entry block — Suspense + Await */}
-      <Suspense fallback={<p> Loading journal...</p>}>
-        <Await resolve={journalPromise}>
-          {/* data is the resolved value of journalPromise */}
-          {(data) => {
-            // Await gives us the result of journalPromise when it's done
-            const metafield = data?.product?.journal;
-
-            let journal: JournalEntry[] = [];
-
-            try {
-              // Parse the raw metafield JSON into a JS array
-              journal = metafield?.value
-                ? (JSON.parse(metafield.value) as JournalEntry[])
-                : [];
-            } catch (error) {
-              console.error('Failed to parse journal JSON:', error);
-            }
-
-            // Render parsed journal entries
-            return journal.length > 0 ? (
-              <div className="mt-10">
-                <h3 className="text-3xl mb-5 mt-3 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
-                  Journal Entries
-                </h3>
-
-                <div className="journal-entries">
-                  {journal.map((entry) => (
-                    <JournalEntry
-                      entry={entry}
-                      key={entry.date}
-                      parsedImageData={parsedImageData}
-                      productTitle={product.title}
-                      latestCarouselDateString={latestCarouselDateString}
-                      setImageGalleryArray={setImageGalleryArray}
-                      setIsImageGalleryVisible={setIsImageGalleryVisible}
-                      isImageGalleryVisible={isImageGalleryVisible}
-                      width={200}
-                      height={200}
-                      imageGalleryStartIndex={imageGalleryStartIndex}
-                      setImageGalleryStartIndex={setImageGalleryStartIndex}
-                    />
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <p>No journal entries yet.</p>
-            );
-          }}
-        </Await>
-      </Suspense>
+      <PlantPageSpecs
+        productTitle={product.title}
+        llifleDatabaseLink={llifleDatabaseLink}
+        parsedAcquisition={parsedAcquisition}
+        datePlantAcquired={datePlantAcquired}
+        parsedMeasurement={parsedMeasurement}
+        dateMeasurementTaken={dateMeasurementTaken}
+        wateringFrequency={wateringFrequency}
+      />
+      <PlantPageJournalComponent
+        journalPromise={journalPromise}
+        parsedImageData={parsedImageData}
+        productTitle={product.title}
+        latestCarouselDateString={latestCarouselDateString}
+        setImageGalleryArray={setImageGalleryArray}
+        setIsImageGalleryVisible={setIsImageGalleryVisible}
+        isImageGalleryVisible={isImageGalleryVisible}
+        thumbnailImageWidth={200}
+        thumbnailImageHeight={200}
+        imageGalleryStartIndex={imageGalleryStartIndex}
+        setImageGalleryStartIndex={setImageGalleryStartIndex}
+      />
     </div>
   );
 }
