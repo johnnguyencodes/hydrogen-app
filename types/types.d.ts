@@ -57,13 +57,6 @@ declare global {
 
   export type AdminFile = FilesResponse['files']['edges'][number]['node'];
 
-  // type AdminImage = {
-  //   alt: string;
-  //   image: {
-  //     url: string;
-  //   };
-  // };
-
   type AdminImageWithMetadata = AdminFile & {
     meta: {
       category: string;
@@ -81,6 +74,33 @@ declare global {
     className?: string;
     width: number;
     height: number;
+  };
+
+  type AcquisitionData = {
+    method: string;
+    pText: string;
+    aHref: string;
+    aText: string;
+    date: string;
+  };
+
+  type MeasurementData = {
+    height: string;
+    width: string;
+    pot: string;
+    date: string;
+  };
+
+  type MeasurementDataArray = MeasurementData[];
+
+  type PlantPageSpecsProps = {
+    productTitle: string;
+    llifleDatabaseLink: string;
+    parsedAcquisition: AcquisitionData;
+    datePlantAcquired: string;
+    parsedMeasurement: MeasurementDataArray;
+    dateMeasurementTaken: string;
+    wateringFrequency: string;
   };
 
   type JournalEntry = {
@@ -125,6 +145,22 @@ declare global {
     imageGalleryStartIndex: number;
   };
 
+  type PlantPageJournalComponentProps = {
+    journalPromise: Promise<PlantJournalQuery & StoreFrontError>;
+    parsedImageData: AdminImageWithMetadata[];
+    productTitle: string;
+    latestCarouselDateString: string;
+    setImageGalleryArray: React.Dispatch<
+      React.SetStateAction<imageGalleryArray>
+    >;
+    setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    isImageGalleryVisible: boolean;
+    thumbnailImageWidth: number;
+    thumbnailImageHeight: number;
+    imageGalleryStartIndex: number;
+    setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
+  };
+
   type JournalEntryComponentProps = {
     entry: JournalEntry;
     key: string;
@@ -148,23 +184,6 @@ declare global {
     value: string;
     type: string;
   };
-
-  type AcquisitionData = {
-    method: string;
-    pText: string;
-    aHref: string;
-    aText: string;
-    date: string;
-  };
-
-  type MeasurementData = {
-    height: string;
-    width: string;
-    pot: string;
-    date: string;
-  };
-
-  type MeasurementDataArray = MeasurementData[];
 
   type ShopifyFilesResponse = {
     data: {
