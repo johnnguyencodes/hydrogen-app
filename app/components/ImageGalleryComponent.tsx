@@ -1,5 +1,6 @@
 import ImageGallery from 'react-image-gallery';
 import {Button} from './ui/button';
+import {X} from 'lucide-react';
 
 export function ImageGalleryComponent({
   images,
@@ -18,13 +19,13 @@ export function ImageGalleryComponent({
         onClick={(event) => event.stopPropagation()}
       >
         <Button
-          className="absolute top-2 -right-20 z-10"
+          className="absolute top-0 right-0 z-100 bg-transparent text-white hover:text-blue-500 bg-black/40 rounded-none leading-none py-2.5 px-5 font-bold hover:bg-black/40 cursor-pointer transition-none"
           onClick={() => {
             handleImageGalleryClick();
             setImageGalleryStartIndex(0);
           }}
         >
-          X
+          <X size={24} className="size-custom" />
         </Button>
         <ImageGallery
           items={images}

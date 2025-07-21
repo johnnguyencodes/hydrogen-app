@@ -25,3 +25,8 @@ body {
 body > main {
   margin: 0 1rem 1rem 1rem;
 }
+
+.image-gallery-index {
+  right: auto !important;
+  left: 0;
+}
