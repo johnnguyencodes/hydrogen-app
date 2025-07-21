@@ -8,7 +8,6 @@ export function ImageGalleryComponent({
   setImageGalleryStartIndex,
   handleImageGalleryClick,
 }: ImageGalleryComponentProps) {
-  console.log('startIndex:', startIndex);
   return (
     <div
       className="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-90"
