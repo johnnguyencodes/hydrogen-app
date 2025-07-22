@@ -57,7 +57,7 @@ export function JournalEntry({
           ></div>
         </div>
         {journalImageGalleryArray.length > 0 && (
-          <div className="journal-image-mobile-container md:hidden">
+          <div className="journal-image-mobile-container lg:hidden -mx-10">
             <ImageGallery
               items={journalImageGalleryArray}
               showPlayButton={false}
@@ -87,7 +87,7 @@ export function JournalEntry({
             />
           </div>
         )}
-        <div className="journal-image-desktop-container flex-shrink-0 hidden md:inline md:max-w-[250px] lg:max-w-[350px] xl:max-w-[650px]">
+        <div className="journal-image-desktop-container flex-shrink-0 hidden lg:inline lg:max-w-[350px] xl:max-w-[650px]">
           <div className="flex gap-3 overflow-x-auto scrollbar-hide">
             {parsedImageData.map((image, idx) => {
               if (image.meta.date === entry.date) {

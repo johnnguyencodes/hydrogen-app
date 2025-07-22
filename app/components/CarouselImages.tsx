@@ -30,8 +30,8 @@ export function CarouselImages({
     <div className="lg:col-start-1 lg:row-span-full ">
       <div className="lg:top-[var(--navbar-height)] lg:sticky">
         {images.length > 0 && (
-          <>
-            <div className="carousel-image-mobile-container md:hidden">
+          <div>
+            <div className="carousel-image-mobile-container lg:hidden gap-1 grid-cols-2 -mx-5">
               <ImageGallery
                 items={imageCarouselImageArray}
                 showPlayButton={false}
@@ -60,7 +60,7 @@ export function CarouselImages({
                 )}
               />
             </div>
-            <div className="carousel-image-desktop-container hidden md:inline grid gap-1 grid-cols-2">
+            <div className="carousel-image-desktop-container hidden lg:grid gap-1 grid-cols-2">
               {images.map((image: AdminImageWithMetadata, index: number) => (
                 <ProductImage
                   key={image.image.url ?? index}
@@ -79,7 +79,7 @@ export function CarouselImages({
                 />
               ))}
             </div>
-          </>
+          </div>
         )}
       </div>
     </div>
