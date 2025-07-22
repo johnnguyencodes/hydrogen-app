@@ -61,6 +61,7 @@ export function JournalEntry({
             <ImageGallery
               items={journalImageGalleryArray}
               showPlayButton={false}
+              showFullscreenButton={false}
               additionalClass="h-full"
               showIndex={true}
               slideOnThumbnailOver={true}

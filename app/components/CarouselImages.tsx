@@ -35,6 +35,7 @@ export function CarouselImages({
               <ImageGallery
                 items={imageCarouselImageArray}
                 showPlayButton={false}
+                showFullscreenButton={false}
                 additionalClass="h-full"
                 showIndex={true}
                 slideOnThumbnailOver={true}
