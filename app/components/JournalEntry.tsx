@@ -12,7 +12,9 @@ export function JournalEntry({
   width,
   height,
 }: JournalEntryComponentProps) {
-  function generatedImageGallery(parsedImageData: AdminImageWithMetadata[]) {
+  function generateJournalImageGalleryArray(
+    parsedImageData: AdminImageWithMetadata[],
+  ) {
     return parsedImageData
       .filter((image) => image.meta.date === entry.date)
       .map((image) => ({
@@ -22,10 +24,11 @@ export function JournalEntry({
       }));
   }
 
-  const imageGalleryData = generatedImageGallery(parsedImageData);
+  const journalImageGalleryArray =
+    generateJournalImageGalleryArray(parsedImageData);
 
   function handleImageClick(): void {
-    setImageGalleryArray(imageGalleryData);
+    setImageGalleryArray(journalImageGalleryArray);
     setIsImageGalleryVisible(!isImageGalleryVisible);
   }
 
@@ -53,32 +56,38 @@ export function JournalEntry({
             dangerouslySetInnerHTML={{__html: entry.content}}
           ></div>
         </div>
-        <div className="journal-image-mobile-container lg:hidden">
-          <ImageGallery
-            items={imageGalleryData}
-            showPlayButton={false}
-            additionalClass="h-full"
-            showIndex={true}
-            slideOnThumbnailOver={true}
-            startIndex={0}
-            renderItem={(item) => (
-              <a
-                href={item.original}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{display: 'block', width: '100%', height: '100%'}}
-              >
-                <img
-                  className="image-gallery-image"
-                  src={item.gallery}
-                  style={{width: '100%', height: '100%', objectFit: 'contain'}}
-                  alt=""
-                />
-              </a>
-            )}
-          />
-        </div>
-        <div className="journal-image-desktop-container flex-shrink-0 hidden lg:inline lg:max-w-[350px] xl:max-w-[650px]">
+        {journalImageGalleryArray.length > 0 && (
+          <div className="journal-image-mobile-container md:hidden">
+            <ImageGallery
+              items={journalImageGalleryArray}
+              showPlayButton={false}
+              additionalClass="h-full"
+              showIndex={true}
+              slideOnThumbnailOver={true}
+              startIndex={0}
+              renderItem={(item) => (
+                <a
+                  href={item.original}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{display: 'block', width: '100%', height: '100%'}}
+                >
+                  <img
+                    className="image-gallery-image"
+                    src={item.gallery}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                    }}
+                    alt=""
+                  />
+                </a>
+              )}
+            />
+          </div>
+        )}
+        <div className="journal-image-desktop-container flex-shrink-0 hidden md:inline md:max-w-[250px] lg:max-w-[350px] xl:max-w-[650px]">
           <div className="flex gap-3 overflow-x-auto scrollbar-hide">
             {parsedImageData.map((image, idx) => {
               if (image.meta.date === entry.date) {

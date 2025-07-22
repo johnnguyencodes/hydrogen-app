@@ -1,3 +1,4 @@
+import ImageGallery from 'react-image-gallery';
 import {ProductImage} from './ProductImage';
 
 export function CarouselImages({
@@ -10,14 +11,18 @@ export function CarouselImages({
   width,
   height,
 }: CarouselImagesProps) {
-  function handleImageClick(): void {
-    const generatedImageGallery = images.map((image) => ({
+  function generateCarouselImageGalleryArray(images: AdminImageWithMetadata[]) {
+    return images.map((image) => ({
       original: `${image.image.url}&width=${image.image.width}&height=${image.image.height}&crop=center`,
       gallery: `${image.image.url}&width=1000&height=1000&crop=center`,
       thumbnail: `${image.image.url}&width=100&height=100&crop=center`,
     }));
+  }
 
-    setImageGalleryArray(generatedImageGallery);
+  const imageCarouselImageArray = generateCarouselImageGalleryArray(images);
+
+  function handleImageClick(): void {
+    setImageGalleryArray(imageCarouselImageArray);
     setIsImageGalleryVisible(!isImageGalleryVisible);
   }
 
@@ -25,25 +30,56 @@ export function CarouselImages({
     <div className="lg:col-start-1 lg:row-span-full ">
       <div className="lg:top-[var(--navbar-height)] lg:sticky">
         {images.length > 0 && (
-          <div className="carousel-images grid gap-1 grid-cols-2">
-            {images.map((image: AdminImageWithMetadata, index: number) => (
-              <ProductImage
-                key={image.image.url ?? index}
-                id={image.image.url ?? index}
-                image={{
-                  __typename: 'Image',
-                  url: image.image.url,
-                }}
-                alt={image.alt || `${productTitle} image`}
-                onClick={() => {
-                  handleImageClick();
-                  setImageGalleryStartIndex(image.meta.index);
-                }}
-                width={width}
-                height={height}
+          <>
+            <div className="carousel-image-mobile-container md:hidden">
+              <ImageGallery
+                items={imageCarouselImageArray}
+                showPlayButton={false}
+                additionalClass="h-full"
+                showIndex={true}
+                slideOnThumbnailOver={true}
+                startIndex={0}
+                renderItem={(item) => (
+                  <a
+                    href={item.original}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{display: 'block', width: '100%', height: '100%'}}
+                  >
+                    <img
+                      className="image-gallery-image"
+                      src={item.gallery}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                      }}
+                      alt=""
+                    />
+                  </a>
+                )}
               />
-            ))}
-          </div>
+            </div>
+            <div className="carousel-image-desktop-container hidden md:inline grid gap-1 grid-cols-2">
+              {images.map((image: AdminImageWithMetadata, index: number) => (
+                <ProductImage
+                  key={image.image.url ?? index}
+                  id={image.image.url ?? index}
+                  image={{
+                    __typename: 'Image',
+                    url: image.image.url,
+                  }}
+                  alt={image.alt || `${productTitle} image`}
+                  onClick={() => {
+                    handleImageClick();
+                    setImageGalleryStartIndex(image.meta.index);
+                  }}
+                  width={width}
+                  height={height}
+                />
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>
