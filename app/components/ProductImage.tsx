@@ -15,7 +15,7 @@ export function ProductImage({
   }
 
   return (
-    <div className="product-image cursor-pointer" onClick={onClick}>
+    <div className="product-image cursor-zoom-in" onClick={onClick}>
       <Image
         id={id}
         alt={alt}

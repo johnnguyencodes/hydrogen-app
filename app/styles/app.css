@@ -419,11 +419,6 @@ button.reset:hover:not(:has(> *)) {
   margin-top: 0;
 }
 
-.product-image img {
-  /* height: auto; */
-  /* width: 100%; */
-}
-
 .product-main {
   align-self: start;
   position: sticky;

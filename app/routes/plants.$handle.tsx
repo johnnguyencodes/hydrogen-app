@@ -211,12 +211,14 @@ export default function Plant() {
   return (
     <div className="plant-page xs:mx-5 2xl:mx-0">
       {isImageGalleryVisible ? (
-        <ImageGalleryComponent
-          images={imageGalleryArray}
-          startIndex={imageGalleryStartIndex}
-          handleImageGalleryClick={handleImageGalleryClick}
-          setImageGalleryStartIndex={setImageGalleryStartIndex}
-        />
+        <div className="desktop-image-gallery-container">
+          <ImageGalleryComponent
+            images={imageGalleryArray}
+            startIndex={imageGalleryStartIndex}
+            handleImageGalleryClick={handleImageGalleryClick}
+            setImageGalleryStartIndex={setImageGalleryStartIndex}
+          />
+        </div>
       ) : null}
       <div className="grid lg:grid-cols-[1fr_400px] lg:grid-rows-[min-content_1fr] gap-5 gap-x-10 relative min-h-screen">
         {/* Render core product info immediately */}
