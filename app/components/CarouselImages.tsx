@@ -28,6 +28,26 @@ export function CarouselImages({
     setIsImageGalleryVisible(!isImageGalleryVisible);
   }
 
+  function handleTouchMove(e: React.TouchEvent) {
+    const touch = e.touches[0];
+    const deltaY = Math.abs(touch.clientY - touchStartY);
+    const deltaX = Math.abs(touch.clientX - touchStartX);
+
+    // Prevent swipe if the user moved more vertically than horizontally
+    if (deltaY > deltaX) {
+      e.stopPropagation(); // stop gallery from handling it
+    }
+  }
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  function handleTouchStart(e: React.TouchEvent) {
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+  }
+
   return (
     <div className="lg:col-start-1 lg:row-span-full ">
       <div className="lg:top-[var(--navbar-height)] lg:sticky">
@@ -49,24 +69,29 @@ export function CarouselImages({
                   <RightNav onClick={onClick} disabled={disabled} />
                 )}
                 renderItem={(item) => (
-                  <a
-                    href={item.original}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:cursor-zoom-in"
-                    style={{display: 'block', width: '100%', height: '100%'}}
+                  <div
+                    onTouchStart={handleTouchStart}
+                    onTouchMove={handleTouchMove}
                   >
-                    <img
-                      className="image-gallery-image"
-                      src={item.gallery}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                      }}
-                      alt=""
-                    />
-                  </a>
+                    <a
+                      href={item.original}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:cursor-zoom-in"
+                      style={{display: 'block', width: '100%', height: '100%'}}
+                    >
+                      <img
+                        className="image-gallery-image"
+                        src={item.gallery}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'contain',
+                        }}
+                        alt=""
+                      />
+                    </a>
+                  </div>
                 )}
               />
             </div>
