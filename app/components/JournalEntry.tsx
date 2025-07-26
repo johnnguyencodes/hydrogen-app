@@ -1,4 +1,3 @@
-import {useRef} from 'react';
 import ImageGallery from 'react-image-gallery';
 import {ProductImage} from './ProductImage';
 import LeftNav from './ImageGalleryLeftNav';
@@ -33,26 +32,6 @@ export function JournalEntry({
   function handleImageClick(): void {
     setImageGalleryArray(journalImageGalleryArray);
     setIsImageGalleryVisible(!isImageGalleryVisible);
-  }
-
-  const startY = useRef(0);
-  const startX = useRef(0);
-
-  function handleTouchStart(e: React.TouchEvent) {
-    const touch = e.touches[0];
-    startY.current = touch.clientY;
-    startX.current = touch.clientX;
-  }
-
-  function handleTouchMove(e: React.TouchEvent) {
-    const touch = e.touches[0];
-    const diffY = Math.abs(touch.clientY - startY.current);
-    const diffX = Math.abs(touch.clientX - startX.current);
-
-    // Let vertical scroll pass through
-    if (diffY > diffX) {
-      e.stopPropagation(); // Stop the gallery from hijacking the gesture
-    }
   }
 
   return (
@@ -95,30 +74,24 @@ export function JournalEntry({
                   <RightNav onClick={onClick} disabled={disabled} />
                 )}
                 renderItem={(item) => (
-                  <div
-                    onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
-                    className="overflow-hidden"
+                  <a
+                    href={item.original}
+                    className="hover:cursor-zoom-in"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{display: 'block', width: '100%', height: '100%'}}
                   >
-                    <a
-                      href={item.original}
-                      className="hover:cursor-zoom-in"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{display: 'block', width: '100%', height: '100%'}}
-                    >
-                      <img
-                        className="image-gallery-image"
-                        src={item.gallery}
-                        style={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'contain',
-                        }}
-                        alt=""
-                      />
-                    </a>
-                  </div>
+                    <img
+                      className="image-gallery-image"
+                      src={item.gallery}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                      }}
+                      alt=""
+                    />
+                  </a>
                 )}
               />
             </div>

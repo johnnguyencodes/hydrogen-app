@@ -1,4 +1,3 @@
-import {useRef} from 'react';
 import ImageGallery from 'react-image-gallery';
 import {Button} from './ui/button';
 import {X} from 'lucide-react';
@@ -11,25 +10,6 @@ export function ImageGalleryComponent({
   setImageGalleryStartIndex,
   handleImageGalleryClick,
 }: ImageGalleryComponentProps) {
-  const startY = useRef(0);
-  const startX = useRef(0);
-
-  function handleTouchStart(e: React.TouchEvent) {
-    const touch = e.touches[0];
-    startY.current = touch.clientY;
-    startX.current = touch.clientX;
-  }
-
-  function handleTouchMove(e: React.TouchEvent) {
-    const touch = e.touches[0];
-    const diffY = Math.abs(touch.clientY - startY.current);
-    const diffX = Math.abs(touch.clientX - startX.current);
-
-    // Let vertical scroll pass through
-    if (diffY > diffX) {
-      e.stopPropagation(); // Stop the gallery from hijacking the gesture
-    }
-  }
   return (
     <div
       className="fixed inset-0 z-50 items-center justify-center bg-black bg-opacity-90"
@@ -56,7 +36,6 @@ export function ImageGalleryComponent({
           showIndex={true}
           slideOnThumbnailOver={true}
           startIndex={startIndex}
-          swipeThreshold={100}
           renderLeftNav={(onClick, disabled) => (
             <LeftNav onClick={onClick} disabled={disabled} />
           )}
@@ -64,25 +43,19 @@ export function ImageGalleryComponent({
             <RightNav onClick={onClick} disabled={disabled} />
           )}
           renderItem={(item) => (
-            <div
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              className="overflow-hidden"
+            <a
+              href={item.original}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{display: 'block', width: '100%', height: '100%'}}
             >
-              <a
-                href={item.original}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{display: 'block', width: '100%', height: '100%'}}
-              >
-                <img
-                  className="image-gallery-image cursor-zoom-in"
-                  src={item.gallery}
-                  style={{width: '100%', height: '100%', objectFit: 'contain'}}
-                  alt=""
-                />
-              </a>
-            </div>
+              <img
+                className="image-gallery-image cursor-zoom-in"
+                src={item.gallery}
+                style={{width: '100%', height: '100%', objectFit: 'contain'}}
+                alt=""
+              />
+            </a>
           )}
         />
       </div>
