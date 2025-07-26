@@ -36,7 +36,6 @@ export function ImageGalleryComponent({
           showIndex={true}
           slideOnThumbnailOver={true}
           startIndex={startIndex}
-          disableSwipe={true}
           renderLeftNav={(onClick, disabled) => (
             <LeftNav onClick={onClick} disabled={disabled} />
           )}
