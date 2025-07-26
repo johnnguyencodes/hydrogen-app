@@ -1,6 +1,6 @@
 import ImageGallery from 'react-image-gallery';
 import {Button} from './ui/button';
-import {Dice1, Heart, X} from 'lucide-react';
+import {X} from 'lucide-react';
 import LeftNav from './ImageGalleryLeftNav';
 import RightNav from './ImageGalleryRightNav';
 
