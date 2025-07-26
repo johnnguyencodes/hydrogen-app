@@ -20,7 +20,7 @@ export function ImageGalleryComponent({
         onClick={(event) => event.stopPropagation()}
       >
         <Button
-          className="absolute top-0 right-0 z-100 bg-transparent text-white hover:text-blue-500 bg-black/40 rounded-none leading-none py-2.5 px-5 font-bold hover:bg-black/40 cursor-pointer transition-none"
+          className="absolute top-0 right-0 z-100 bg-transparent text-white bg-black/40 rounded-none leading-none py-2.5 px-5 font-bold cursor-pointer"
           onClick={() => {
             handleImageGalleryClick();
             setImageGalleryStartIndex(0);
