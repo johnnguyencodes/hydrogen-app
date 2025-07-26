@@ -1,3 +1,4 @@
+import {useRef} from 'react';
 import ImageGallery from 'react-image-gallery';
 import {ProductImage} from './ProductImage';
 import LeftNav from './ImageGalleryLeftNav';
