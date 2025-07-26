@@ -1,5 +1,7 @@
 import ImageGallery from 'react-image-gallery';
 import {ProductImage} from './ProductImage';
+import LeftNav from './ImageGalleryLeftNav';
+import RightNav from './ImageGalleryRightNav';
 
 export function JournalEntry({
   entry,
@@ -55,39 +57,46 @@ export function JournalEntry({
             className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)] max-w-prose"
             dangerouslySetInnerHTML={{__html: entry.content}}
           ></div>
+          {journalImageGalleryArray.length > 0 && (
+            <div className="journal-image-mobile-container lg:hidden -mx-10">
+              <ImageGallery
+                items={journalImageGalleryArray}
+                showPlayButton={false}
+                showFullscreenButton={false}
+                additionalClass="h-full"
+                showIndex={true}
+                slideOnThumbnailOver={true}
+                startIndex={0}
+                renderLeftNav={(onClick, disabled) => (
+                  <LeftNav onClick={onClick} disabled={disabled} />
+                )}
+                renderRightNav={(onClick, disabled) => (
+                  <RightNav onClick={onClick} disabled={disabled} />
+                )}
+                renderItem={(item) => (
+                  <a
+                    href={item.original}
+                    className="hover:cursor-zoom-in"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{display: 'block', width: '100%', height: '100%'}}
+                  >
+                    <img
+                      className="image-gallery-image"
+                      src={item.gallery}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain',
+                      }}
+                      alt=""
+                    />
+                  </a>
+                )}
+              />
+            </div>
+          )}
         </div>
-        {journalImageGalleryArray.length > 0 && (
-          <div className="journal-image-mobile-container lg:hidden -mx-10">
-            <ImageGallery
-              items={journalImageGalleryArray}
-              showPlayButton={false}
-              showFullscreenButton={false}
-              additionalClass="h-full"
-              showIndex={true}
-              slideOnThumbnailOver={true}
-              startIndex={0}
-              renderItem={(item) => (
-                <a
-                  href={item.original}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{display: 'block', width: '100%', height: '100%'}}
-                >
-                  <img
-                    className="image-gallery-image"
-                    src={item.gallery}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain',
-                    }}
-                    alt=""
-                  />
-                </a>
-              )}
-            />
-          </div>
-        )}
         <div className="journal-image-desktop-container flex-shrink-0 hidden lg:inline lg:max-w-[350px] xl:max-w-[650px]">
           <div className="flex gap-3 overflow-x-auto scrollbar-hide">
             {parsedImageData.map((image, idx) => {

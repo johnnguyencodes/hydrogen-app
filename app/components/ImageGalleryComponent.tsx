@@ -1,6 +1,8 @@
 import ImageGallery from 'react-image-gallery';
 import {Button} from './ui/button';
-import {X} from 'lucide-react';
+import {Heart, X} from 'lucide-react';
+import LeftNav from './ImageGalleryLeftNav';
+import RightNav from './ImageGalleryRightNav';
 
 export function ImageGalleryComponent({
   images,
@@ -29,10 +31,17 @@ export function ImageGalleryComponent({
         <ImageGallery
           items={images}
           showPlayButton={false}
+          showFullscreenButton={false}
           additionalClass="h-full"
           showIndex={true}
           slideOnThumbnailOver={true}
           startIndex={startIndex}
+          renderLeftNav={(onClick, disabled) => (
+            <LeftNav onClick={onClick} disabled={disabled} />
+          )}
+          renderRightNav={(onClick, disabled) => (
+            <RightNav onClick={onClick} disabled={disabled} />
+          )}
           renderItem={(item) => (
             <a
               href={item.original}
@@ -41,7 +50,7 @@ export function ImageGalleryComponent({
               style={{display: 'block', width: '100%', height: '100%'}}
             >
               <img
-                className="image-gallery-image"
+                className="image-gallery-image cursor-zoom-in"
                 src={item.gallery}
                 style={{width: '100%', height: '100%', objectFit: 'contain'}}
                 alt=""

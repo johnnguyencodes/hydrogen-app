@@ -1,5 +1,7 @@
 import ImageGallery from 'react-image-gallery';
 import {ProductImage} from './ProductImage';
+import LeftNav from './ImageGalleryLeftNav';
+import RightNav from './ImageGalleryRightNav';
 
 export function CarouselImages({
   images,
@@ -40,11 +42,18 @@ export function CarouselImages({
                 showIndex={true}
                 slideOnThumbnailOver={true}
                 startIndex={0}
+                renderLeftNav={(onClick, disabled) => (
+                  <LeftNav onClick={onClick} disabled={disabled} />
+                )}
+                renderRightNav={(onClick, disabled) => (
+                  <RightNav onClick={onClick} disabled={disabled} />
+                )}
                 renderItem={(item) => (
                   <a
                     href={item.original}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="hover:cursor-zoom-in"
                     style={{display: 'block', width: '100%', height: '100%'}}
                   >
                     <img
@@ -77,6 +86,7 @@ export function CarouselImages({
                   }}
                   width={width}
                   height={height}
+                  className="hover:brightness-90"
                 />
               ))}
             </div>
