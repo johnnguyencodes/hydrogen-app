@@ -26,13 +26,6 @@ body > main {
   margin: 0 1rem 1rem 1rem;
 }
 
-/* Overriding vertical swipes to allow page to scroll on mobile when finger is touching a react image gallery */
-
-.image-gallery-slide-wrapper {
-  touch-action: pan-y !important;
-  overscroll-behavior: contain;
-}
-
 /* Gallery Index */
 
 .desktop-image-gallery-container .image-gallery-index,

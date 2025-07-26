@@ -67,6 +67,7 @@ export function JournalEntry({
                 showIndex={true}
                 slideOnThumbnailOver={true}
                 startIndex={0}
+                disableSwipe={true}
                 renderLeftNav={(onClick, disabled) => (
                   <LeftNav onClick={onClick} disabled={disabled} />
                 )}
