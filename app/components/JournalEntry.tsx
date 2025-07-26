@@ -34,24 +34,24 @@ export function JournalEntry({
     setIsImageGalleryVisible(!isImageGalleryVisible);
   }
 
-  function handleTouchMove(e: React.TouchEvent) {
-    const touch = e.touches[0];
-    const deltaY = Math.abs(touch.clientY - touchStartY);
-    const deltaX = Math.abs(touch.clientX - touchStartX);
-
-    // Prevent swipe if the user moved more vertically than horizontally
-    if (deltaY > deltaX) {
-      e.stopPropagation(); // stop gallery from handling it
-    }
-  }
-
-  let touchStartX = 0;
-  let touchStartY = 0;
+  const startY = useRef(0);
+  const startX = useRef(0);
 
   function handleTouchStart(e: React.TouchEvent) {
     const touch = e.touches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
+    startY.current = touch.clientY;
+    startX.current = touch.clientX;
+  }
+
+  function handleTouchMove(e: React.TouchEvent) {
+    const touch = e.touches[0];
+    const diffY = Math.abs(touch.clientY - startY.current);
+    const diffX = Math.abs(touch.clientX - startX.current);
+
+    // Let vertical scroll pass through
+    if (diffY > diffX) {
+      e.stopPropagation(); // Stop the gallery from hijacking the gesture
+    }
   }
 
   return (
@@ -97,6 +97,7 @@ export function JournalEntry({
                   <div
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
+                    className="overflow-hidden"
                   >
                     <a
                       href={item.original}
