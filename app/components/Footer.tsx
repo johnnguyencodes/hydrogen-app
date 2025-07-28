@@ -17,14 +17,16 @@ export function Footer({
     <Suspense>
       <Await resolve={footerPromise}>
         {(footer) => (
-          <footer className="footer bg-[var(--color-bg-5)] mt-10 rounded-tl-md rounded-tr-md">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
+          <footer className="footer bg-[var(--color-bg-5)] mt-10 relative before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)]">
+            <div className="relative z-10 flex items-center justify-start xs:mx-5 2xl:mx-0">
+              {footer?.menu && header.shop.primaryDomain?.url && (
+                <FooterMenu
+                  menu={footer.menu}
+                  primaryDomainUrl={header.shop.primaryDomain.url}
+                  publicStoreDomain={publicStoreDomain}
+                />
+              )}
+            </div>
           </footer>
         )}
       </Await>
@@ -42,28 +44,10 @@ function FooterMenu({
   publicStoreDomain: string;
 }) {
   return (
-    <nav className="footer-menu text-[var(--color-fg-text)]" role="navigation">
-      {FALLBACK_FOOTER_MENU.items.map((item) => {
-        if (!item.url) return null;
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        const isExternal = !url.startsWith('/');
-        return isExternal ? (
-          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
-            {item.title}
-          </a>
-        ) : (
-          <NavLink end key={item.id} prefetch="intent" to={url}>
-            {item.title}
-          </NavLink>
-        );
-      })}
-    </nav>
+    <div className="flex">
+      <p>Shopify</p>
+      <p>Hydrogen</p>
+    </div>
   );
 }
 

@@ -30,7 +30,7 @@ export function CarouselImages({
 
   return (
     <div className="lg:col-start-1 lg:row-span-full ">
-      <div className="lg:top-[var(--navbar-height)] lg:sticky">
+      <div className="lg:top-0 lg:sticky">
         {images.length > 0 && (
           <div>
             <div className="carousel-image-mobile-container lg:hidden gap-1 grid-cols-2 -mx-5">

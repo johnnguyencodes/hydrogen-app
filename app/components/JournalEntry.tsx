@@ -117,7 +117,7 @@ export function JournalEntry({
                       }
                       key={image.image.url ?? idx}
                       id={image.image.url ?? idx}
-                      className="object-cover w-full h-full"
+                      className="object-cover w-full h-full hover:brightness-90"
                       onClick={() => {
                         handleImageClick();
                         setImageGalleryStartIndex(image.meta.index);

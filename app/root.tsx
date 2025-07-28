@@ -159,7 +159,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Links />
       </head>
       <body className="debug-screens bg-[var(--color-bg-0)]">
-        <div className="max-w-[1440px] mx-auto">
+        <div className="max-w-[1400px] mx-auto">
           {data ? (
             <Analytics.Provider
               cart={data.cart}
