@@ -250,7 +250,7 @@ const HEADER_MENU_1 = {
     {
       id: 'header-menu-blog',
       title: 'Blog',
-      url: '/blog/dev',
+      url: '/blogs/dev',
     },
   ],
 };
@@ -276,7 +276,7 @@ const HEADER_MENU_2 = {
     {
       id: 'header-menu-notes',
       title: 'Notes',
-      url: '/blog/notes',
+      url: '/blogs/notes',
     },
   ],
 };
