@@ -1,3 +1,3 @@
-export default function Env() {
-  return <div className="mt-10">This is the Env page</div>;
+export default function Gadgets() {
+  return <div className="mt-10">This is the Gadgets page</div>;
 }

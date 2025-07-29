@@ -244,13 +244,13 @@ const HEADER_MENU_1 = {
     },
     {
       id: 'header-menu-env',
-      title: 'Env',
-      url: '/env',
+      title: 'Gadgets',
+      url: '/gadgets',
     },
     {
       id: 'header-menu-blog',
       title: 'Blog',
-      url: '/blogs/dev',
+      url: '/blogs/blog',
     },
   ],
 };
