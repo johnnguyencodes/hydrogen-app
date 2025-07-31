@@ -27,18 +27,23 @@ export function Header({
 }: HeaderProps) {
   const {shop, menu} = header;
   return (
-    <header className="header relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)]">
-      <div className="relative z-10 xs:mx-5 2xl:mx-0 flex items-center">
-        <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-          <strong>{shop.name}</strong>
-        </NavLink>
+    <header className="header relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] h-16 flex items-center">
+      <NavLink
+        prefetch="intent"
+        to="/"
+        style={activeLinkStyle}
+        className="z-10"
+        end
+      >
+        <strong>{shop.name}</strong>
+      </NavLink>
+      <div className="relative z-10 xs:mx-5 2xl:mx-0 flex-1">
         <HeaderMenu
           menu={menu}
           viewport="desktop"
           primaryDomainUrl={header.shop.primaryDomain.url}
           publicStoreDomain={publicStoreDomain}
         />
-        <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
       </div>
     </header>
   );
@@ -55,7 +60,7 @@ export function HeaderMenu({
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
-  const className = `header-menu-${viewport} flex items-center`;
+  const headerMenuClassName = `header-menu-${viewport} flex items-center justify-between w-full`;
   const {close} = useAside();
 
   const loadFromLocalStorage = (key: string): string | null => {
@@ -99,70 +104,72 @@ export function HeaderMenu({
     return {isDarkMode, toggleDarkMode};
   }
   return (
-    <nav className={className} role="navigation">
-      {viewport === 'mobile' && (
-        <NavLink
-          end
-          onClick={close}
-          prefetch="intent"
-          style={activeLinkStyle}
-          to="/"
-        >
-          Home
-        </NavLink>
-      )}
-      {HEADER_MENU_1.items.map((item) => {
-        if (!item.url) return null;
-
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        return (
+    <nav className={headerMenuClassName} role="navigation">
+      <div className="flex items-center">
+        {viewport === 'mobile' && (
           <NavLink
-            className="header-menu-item text-[var(--color-fg-text)]"
             end
-            key={item.id}
             onClick={close}
             prefetch="intent"
             style={activeLinkStyle}
-            to={url}
+            to="/"
           >
-            {item.title}
+            Home
           </NavLink>
-        );
-      })}
-      |
-      {HEADER_MENU_2.items.map((item) => {
-        if (!item.url) return null;
+        )}
+        {HEADER_MENU_1.items.map((item) => {
+          if (!item.url) return null;
 
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        return (
-          <NavLink
-            className="header-menu-item text-[var(--color-fg-text)]"
-            end
-            key={item.id}
-            onClick={close}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
-        );
-      })}
+          // if the url is internal, we strip the domain
+          const url =
+            item.url.includes('myshopify.com') ||
+            item.url.includes(publicStoreDomain) ||
+            item.url.includes(primaryDomainUrl)
+              ? new URL(item.url).pathname
+              : item.url;
+          return (
+            <NavLink
+              className="header-menu-item text-[var(--color-fg-text)] mx-2"
+              end
+              key={item.id}
+              onClick={close}
+              prefetch="intent"
+              style={activeLinkStyle}
+              to={url}
+            >
+              {item.title}
+            </NavLink>
+          );
+        })}
+        |
+        {HEADER_MENU_2.items.map((item) => {
+          if (!item.url) return null;
+
+          // if the url is internal, we strip the domain
+          const url =
+            item.url.includes('myshopify.com') ||
+            item.url.includes(publicStoreDomain) ||
+            item.url.includes(primaryDomainUrl)
+              ? new URL(item.url).pathname
+              : item.url;
+          return (
+            <NavLink
+              className="header-menu-item text-[var(--color-fg-text)] mx-2"
+              end
+              key={item.id}
+              onClick={close}
+              prefetch="intent"
+              style={activeLinkStyle}
+              to={url}
+            >
+              {item.title}
+            </NavLink>
+          );
+        })}
+      </div>
       <Button
         onClick={toggleDarkMode}
-        className="ml-2 w-[40px] p-0"
+        className="w-7 h-7"
         data-testid="themeToggle"
         variant="default"
       >
@@ -290,6 +297,6 @@ function activeLinkStyle({
 }) {
   return {
     fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? '--color-fg-text' : '--color-fg-text',
+    color: isPending ? 'var(--color-fg-text)' : 'var(--color-fg-text)',
   };
 }
