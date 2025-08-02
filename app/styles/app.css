@@ -190,12 +190,12 @@ button.reset:hover:not(:has(> *)) {
   cursor: pointer;
 }
 
-/* .header-ctas { */
-/*   align-items: center; */
-/*   display: flex; */
-/*   grid-gap: 1rem; */
-/*   margin-left: auto; */
-/* } */
+.header-ctas {
+  align-items: center;
+  display: flex;
+  grid-gap: 1rem;
+  margin-left: auto;
+}
 
 /*
 * --------------------------------------------------

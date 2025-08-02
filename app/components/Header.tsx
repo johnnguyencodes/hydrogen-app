@@ -17,26 +17,32 @@ type Viewport = 'desktop' | 'mobile';
 export function Header({header, publicStoreDomain}: HeaderProps) {
   const {shop, menu} = header;
   return (
-    <header className="header relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] h-16 flex items-center">
-      <NavLink
-        prefetch="intent"
-        to="/"
-        style={activeLinkStyle}
-        className="z-10"
-        end
-      >
-        <strong>{shop.name}</strong>
-      </NavLink>
-      <div className="relative z-10 xs:mx-5 2xl:mx-0 flex-1">
-        <HeaderMenu
-          menu={menu}
-          viewport="desktop"
-          primaryDomainUrl={header.shop.primaryDomain.url}
-          publicStoreDomain={publicStoreDomain}
-        />
-      </div>
-      <HeaderCtas />
-    </header>
+    <div>
+      <header className="header relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] flex items-center">
+        <NavLink
+          prefetch="intent"
+          to="/"
+          style={activeLinkStyle}
+          className="z-10"
+          end
+        >
+          <strong>{shop.name}</strong>
+        </NavLink>
+        <div className="relative z-10 xs:mx-5 2xl:mx-0 flex-1">
+          <div className="hidden sm:block">
+            <HeaderMenu
+              menu={menu}
+              viewport="desktop"
+              primaryDomainUrl={header.shop.primaryDomain.url}
+              publicStoreDomain={publicStoreDomain}
+            />
+          </div>
+        </div>
+        <div className="flex sm:hidden z-50 h-16 items-center">
+          <HeaderMenuMobileToggle />
+        </div>
+      </header>
+    </div>
   );
 }
 
@@ -51,7 +57,7 @@ export function HeaderMenu({
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
-  const headerMenuClassName = `header-menu-${viewport} flex items-center justify-between w-full mx-auto`;
+  const headerMenuClassName = `header-menu-${viewport} flex items-center justify-between w-full h-16`;
   const {close} = useAside();
 
   const loadFromLocalStorage = (key: string): string | null => {
@@ -97,17 +103,6 @@ export function HeaderMenu({
   return (
     <nav className={headerMenuClassName} role="navigation">
       <div className="flex items-center mx-auto">
-        {viewport === 'mobile' && (
-          <NavLink
-            end
-            onClick={close}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to="/"
-          >
-            Home
-          </NavLink>
-        )}
         {HEADER_MENU_1.items.map((item) => {
           if (!item.url) return null;
 
@@ -178,23 +173,14 @@ export function HeaderMenu({
   );
 }
 
-function HeaderCtas() {
-  return (
-    <nav className="header-ctas" role="navigation">
-      <HeaderMenuMobileToggle />
-    </nav>
-  );
-}
-
 function HeaderMenuMobileToggle() {
   const {open} = useAside();
   return (
-    <button
-      className="header-menu-mobile-toggle reset"
-      onClick={() => open('mobile')}
-    >
-      <h3>☰</h3>
-    </button>
+    <nav role="navigation">
+      <button onClick={() => open('mobile')}>
+        <h3>☰</h3>
+      </button>
+    </nav>
   );
 }
 

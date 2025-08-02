@@ -15,7 +15,7 @@ export function Footer({footer: footerPromise, header}: FooterProps) {
     <Suspense>
       <Await resolve={footerPromise}>
         {(footer) => (
-          <footer className="relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] h-16 flex items-center">
+          <footer className="relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] flex items-center">
             <div className="relative z-10 2xl:mx-0 flex-1">
               {footer?.menu && header.shop.primaryDomain?.url && <FooterMenu />}
             </div>
@@ -34,7 +34,7 @@ function FooterMenu() {
   }, []);
 
   return (
-    <div className="flex justify-end">
+    <div className="flex items-center justify-end h-16">
       <p className="mx-2">&copy; {year} John Nguyen</p>
       <span className="mx-2">|</span>
       <a
