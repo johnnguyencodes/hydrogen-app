@@ -1,10 +1,5 @@
-import {Suspense, useEffect, useState} from 'react';
-import {Await, NavLink, useAsyncValue} from '@remix-run/react';
-import {
-  type CartViewPayload,
-  useAnalytics,
-  useOptimisticCart,
-} from '@shopify/hydrogen';
+import {useEffect, useState} from 'react';
+import {NavLink} from '@remix-run/react';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {Button} from './ui/button';
@@ -19,12 +14,7 @@ interface HeaderProps {
 
 type Viewport = 'desktop' | 'mobile';
 
-export function Header({
-  header,
-  isLoggedIn,
-  cart,
-  publicStoreDomain,
-}: HeaderProps) {
+export function Header({header, publicStoreDomain}: HeaderProps) {
   const {shop, menu} = header;
   return (
     <header className="header relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] h-16 flex items-center">
@@ -45,6 +35,7 @@ export function Header({
           publicStoreDomain={publicStoreDomain}
         />
       </div>
+      <HeaderCtas />
     </header>
   );
 }
@@ -60,7 +51,7 @@ export function HeaderMenu({
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
-  const headerMenuClassName = `header-menu-${viewport} flex items-center justify-between w-full`;
+  const headerMenuClassName = `header-menu-${viewport} flex items-center justify-between w-full mx-auto`;
   const {close} = useAside();
 
   const loadFromLocalStorage = (key: string): string | null => {
@@ -105,7 +96,7 @@ export function HeaderMenu({
   }
   return (
     <nav className={headerMenuClassName} role="navigation">
-      <div className="flex items-center">
+      <div className="flex items-center mx-auto">
         {viewport === 'mobile' && (
           <NavLink
             end
@@ -130,18 +121,20 @@ export function HeaderMenu({
           return (
             <NavLink
               className="header-menu-item text-[var(--color-fg-text)] mx-2"
-              end
+              end={false}
               key={item.id}
               onClick={close}
               prefetch="intent"
-              style={activeLinkStyle}
+              style={({isActive}) => ({
+                fontWeight: isActive ? 'bold' : undefined,
+              })}
               to={url}
             >
               {item.title}
             </NavLink>
           );
         })}
-        |
+        <span className="mx-2">|</span>
         {HEADER_MENU_2.items.map((item) => {
           if (!item.url) return null;
 
@@ -155,11 +148,13 @@ export function HeaderMenu({
           return (
             <NavLink
               className="header-menu-item text-[var(--color-fg-text)] mx-2"
-              end
+              end={false}
               key={item.id}
               onClick={close}
               prefetch="intent"
-              style={activeLinkStyle}
+              style={({isActive}) => ({
+                fontWeight: isActive ? 'bold' : undefined,
+              })}
               to={url}
             >
               {item.title}
@@ -183,10 +178,7 @@ export function HeaderMenu({
   );
 }
 
-function HeaderCtas({
-  isLoggedIn,
-  cart,
-}: Pick<HeaderProps, 'isLoggedIn' | 'cart'>) {
+function HeaderCtas() {
   return (
     <nav className="header-ctas" role="navigation">
       <HeaderMenuMobileToggle />
@@ -213,27 +205,6 @@ function SearchToggle() {
       Search
     </button>
   );
-}
-
-function CartBadge({count}: {count: number | null}) {
-  const {open} = useAside();
-  const {publish, shop, cart, prevCart} = useAnalytics();
-}
-
-function CartToggle({cart}: Pick<HeaderProps, 'cart'>) {
-  return (
-    <Suspense fallback={<CartBadge count={null} />}>
-      <Await resolve={cart}>
-        <CartBanner />
-      </Await>
-    </Suspense>
-  );
-}
-
-function CartBanner() {
-  const originalCart = useAsyncValue() as CartApiQueryFragment | null;
-  const cart = useOptimisticCart(originalCart);
-  return <CartBadge count={cart?.totalQuantity ?? 0} />;
 }
 
 const HEADER_MENU_1 = {

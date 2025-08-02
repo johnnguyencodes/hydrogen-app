@@ -1,6 +1,8 @@
 import {Suspense} from 'react';
-import {Await, NavLink} from '@remix-run/react';
+import {Await} from '@remix-run/react';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
+import {ExternalLink} from 'lucide-react';
+import {useState, useEffect} from 'react';
 
 interface FooterProps {
   footer: Promise<FooterQuery | null>;
@@ -8,24 +10,14 @@ interface FooterProps {
   publicStoreDomain: string;
 }
 
-export function Footer({
-  footer: footerPromise,
-  header,
-  publicStoreDomain,
-}: FooterProps) {
+export function Footer({footer: footerPromise, header}: FooterProps) {
   return (
     <Suspense>
       <Await resolve={footerPromise}>
         {(footer) => (
-          <footer className="footer bg-[var(--color-bg-5)] mt-10 relative before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)]">
-            <div className="relative z-10 flex items-center justify-start xs:mx-5 2xl:mx-0">
-              {footer?.menu && header.shop.primaryDomain?.url && (
-                <FooterMenu
-                  menu={footer.menu}
-                  primaryDomainUrl={header.shop.primaryDomain.url}
-                  publicStoreDomain={publicStoreDomain}
-                />
-              )}
+          <footer className="relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] h-16 flex items-center">
+            <div className="relative z-10 2xl:mx-0 flex-1">
+              {footer?.menu && header.shop.primaryDomain?.url && <FooterMenu />}
             </div>
           </footer>
         )}
@@ -34,47 +26,50 @@ export function Footer({
   );
 }
 
-function FooterMenu({
-  menu,
-  primaryDomainUrl,
-  publicStoreDomain,
-}: {
-  menu: FooterQuery['menu'];
-  primaryDomainUrl: FooterProps['header']['shop']['primaryDomain']['url'];
-  publicStoreDomain: string;
-}) {
+function FooterMenu() {
+  const [year, setYear] = useState(new Date().getFullYear());
+
+  useEffect(() => {
+    setYear(new Date().getFullYear());
+  }, []);
+
   return (
-    <div className="flex">
-      <p>Shopify</p>
-      <p>Hydrogen</p>
+    <div className="flex justify-end">
+      <p className="mx-2">&copy; {year} John Nguyen</p>
+      <span className="mx-2">|</span>
+      <a
+        href="https://www.shopfiy.com"
+        target="_blank"
+        rel="noreferrer noopener"
+        className="flex items-center mx-2 text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
+      >
+        <span className="inline-flex items-center border-b border-transparent hover:border-current">
+          Shopify
+          <ExternalLink size="16" className="ml-1" />
+        </span>
+      </a>
+      <a
+        href="https://hydrogen.shopfiy.com"
+        target="_blank"
+        rel="noreferrer noopener"
+        className="flex items-center mx-2 text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
+      >
+        <span className="inline-flex items-center border-b border-transparent hover:border-current">
+          Hydrogen
+          <ExternalLink size="16" className="ml-1" />
+        </span>
+      </a>
+      <a
+        href="https://github.com/johnnguyencodes/hydrogen-app"
+        target="_blank"
+        rel="noreferrer noopener"
+        className="flex items-center mx-2 text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
+      >
+        <span className="inline-flex items-center border-b border-transparent hover:border-current">
+          GitHub
+          <ExternalLink size="16" className="ml-1" />
+        </span>
+      </a>
     </div>
   );
-}
-
-const FALLBACK_FOOTER_MENU = {
-  id: 'gid://shopify/Menu/199655620664',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461633060920',
-      resourceId: 'gid://shopify/ShopPolicy/23358046264',
-      tags: [],
-      title: 'Privacy Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/privacy-policy',
-      items: [],
-    },
-  ],
-};
-
-function activeLinkStyle({
-  isActive,
-  isPending,
-}: {
-  isActive: boolean;
-  isPending: boolean;
-}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : '--color-fg-text',
-  };
 }
