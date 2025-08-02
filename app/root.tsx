@@ -158,8 +158,10 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Meta />
         <Links />
       </head>
-      <body className="debug-screens bg-[var(--color-bg-0)]">
-        <div className="max-w-[1440px] mx-auto">
+      <body
+        className={`${process.env.NODE_ENV === 'development' ? 'debug-screens' : ''} bg-[var(--color-bg-0)]`}
+      >
+        <div className="max-w-[1400px] mx-auto flex flex-col h-screen">
           {data ? (
             <Analytics.Provider
               cart={data.cart}
