@@ -18,7 +18,7 @@ export function Header({header, publicStoreDomain}: HeaderProps) {
   const {shop, menu} = header;
   return (
     <div>
-      <header className="header relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] flex items-center">
+      <header className="header relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] flex items-center h-16">
         <NavLink
           prefetch="intent"
           to="/"
@@ -38,7 +38,7 @@ export function Header({header, publicStoreDomain}: HeaderProps) {
             />
           </div>
         </div>
-        <div className="flex sm:hidden z-50 h-16 items-center">
+        <div className="flex sm:hidden z-50 items-center">
           <HeaderMenuMobileToggle />
         </div>
       </header>
@@ -57,7 +57,7 @@ export function HeaderMenu({
   viewport: Viewport;
   publicStoreDomain: HeaderProps['publicStoreDomain'];
 }) {
-  const headerMenuClassName = `header-menu-${viewport} flex items-center justify-between w-full h-16`;
+  const headerMenuClassName = `header-menu-${viewport} flex items-center justify-between w-full`;
   const {close} = useAside();
 
   const loadFromLocalStorage = (key: string): string | null => {
