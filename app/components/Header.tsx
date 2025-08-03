@@ -18,7 +18,7 @@ export function Header({header, publicStoreDomain}: HeaderProps) {
   const {shop, menu} = header;
   return (
     <div>
-      <header className="header relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] flex items-center h-16 text-sm">
+      <header className="header relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] flex items-center h-16 text-base">
         <NavLink
           prefetch="intent"
           to="/"

@@ -28,7 +28,7 @@ export function Footer({footer: footerPromise, header}: FooterProps) {
 function FooterMenu() {
   return (
     <>
-      <div className="xxs:block xs:flex items-center justify-end sm:h-16 xxs:text-sm sm:text-base xxs:mx-0 xs:mx-5 2xl:mx-0">
+      <div className="xxs:block xs:flex items-center justify-end xxs:text-sm sm:text-base xxs:mx-0 xs:mx-5 2xl:mx-0">
         <div className="justify-end items-center text-center xxs:block md:flex my-2">
           <p className="mx-2">John Nguyen</p>
         </div>

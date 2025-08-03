@@ -58,7 +58,7 @@ function loadDeferredData({context}: LoaderFunctionArgs) {
 export default function Plantpage() {
   const data = useLoaderData<typeof loader>();
   return (
-    <div className="home">
+    <div className="plants-page xxs:mx-5 2xl:mx-0">
       <FeaturedCollection collection={data.featuredCollection} />
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
