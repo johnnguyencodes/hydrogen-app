@@ -3,7 +3,7 @@ import {NavLink} from '@remix-run/react';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {Button} from './ui/button';
-import {MoonStar, Sun} from 'lucide-react';
+import {AlignJustify, MoonStar, Sun} from 'lucide-react';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -18,17 +18,17 @@ export function Header({header, publicStoreDomain}: HeaderProps) {
   const {shop, menu} = header;
   return (
     <div>
-      <header className="header relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] flex items-center h-16">
+      <header className="header relative bg-[var(--color-bg-5)] text-[var(--color-fg-text)] before:content-[''] before:absolute before:inset-0 before:-mx-[calc((100vw-100%)/2)] before:w-screen before:bg-[var(--color-bg-5)] flex items-center h-16 text-base">
         <NavLink
           prefetch="intent"
           to="/"
           style={activeLinkStyle}
-          className="z-10"
+          className="z-10 ml-5 2xl:ml-0"
           end
         >
           <strong>{shop.name}</strong>
         </NavLink>
-        <div className="relative z-10 xs:mx-5 2xl:mx-0 flex-1">
+        <div className="relative z-10 flex-1">
           <div className="hidden sm:block">
             <HeaderMenu
               menu={menu}
@@ -38,7 +38,7 @@ export function Header({header, publicStoreDomain}: HeaderProps) {
             />
           </div>
         </div>
-        <div className="flex sm:hidden z-50 items-center">
+        <div className="flex sm:hidden z-50 items-center mr-5">
           <HeaderMenuMobileToggle />
         </div>
       </header>
@@ -159,7 +159,7 @@ export function HeaderMenu({
       </div>
       <Button
         onClick={toggleDarkMode}
-        className="w-7 h-7"
+        className="w-7 h-7 mr-5 2xl:mr-0"
         data-testid="themeToggle"
         variant="default"
       >
@@ -178,7 +178,9 @@ function HeaderMenuMobileToggle() {
   return (
     <nav role="navigation">
       <button onClick={() => open('mobile')}>
-        <h3>☰</h3>
+        <h3>
+          <AlignJustify />
+        </h3>
       </button>
     </nav>
   );
