@@ -209,7 +209,7 @@ export default function Plant() {
    */
 
   return (
-    <div className="plant-page xs:mx-5 2xl:mx-0">
+    <div className="plant-page xxs:mx-5 2xl:mx-0 mt-4">
       {isImageGalleryVisible ? (
         <div className="desktop-image-gallery-container">
           <ImageGalleryComponent
