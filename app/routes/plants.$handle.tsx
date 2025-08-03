@@ -220,7 +220,7 @@ export default function Plant() {
           />
         </div>
       ) : null}
-      <div className="grid lg:grid-cols-[1fr_400px] lg:grid-rows-[min-content_1fr] gap-5 gap-x-10 relative min-h-screen">
+      <div className="grid lg:grid-cols-[1fr_440px] lg:grid-rows-[min-content_1fr] gap-5 gap-x-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <PlantPageTitle productTitle={product.title} />
         <CarouselImages
