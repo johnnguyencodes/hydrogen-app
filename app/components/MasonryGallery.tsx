@@ -1,7 +1,7 @@
 export default function MasonryGallery({images}: {images: any[]}) {
   return (
     <div className="p-4 max-w-screen-xl mx-auto">
-      <div className="grid grid-cols-3 auto-rows-[250px] gap-4">
+      <div className="grid grid-cols-12 auto-rows-[250px] gap-1">
         {images.map((image, index) => (
           <div
             key={index}

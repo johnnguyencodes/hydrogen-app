@@ -100,6 +100,7 @@ export function JournalEntry({
         </div>
         <div className="journal-image-desktop-container flex-shrink-0 hidden lg:inline lg:max-w-[350px] xl:max-w-[650px]">
           <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+            <div className=""></div>
             {parsedImageData.map((image, idx) => {
               if (image.meta.date === entry.date) {
                 return (

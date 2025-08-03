@@ -34,8 +34,8 @@ export default function About() {
 
   const images = [
     {src: '', alt: 'Portrait 1', className: 'row-span-2'},
-    {src: '', alt: 'Portrait 2'},
-    {src: '', alt: 'Portrait 3'},
+    {src: '', alt: 'Portrait 2', className: 'col-span-6'},
+    {src: '', alt: 'Portrait 3', className: 'col-span-4'},
     {src: '', alt: 'Portrait 4', className: 'col-span-2'},
     {src: '', alt: 'Portrait 5'},
     {src: '', alt: 'Portrait 6', className: 'row-span-2 col-span-2'},
