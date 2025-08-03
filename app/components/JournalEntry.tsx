@@ -1,4 +1,5 @@
 import ImageGallery from 'react-image-gallery';
+import {motion, AnimatePresence} from 'motion/react';
 import {ProductImage} from './ProductImage';
 import LeftNav from './ImageGalleryLeftNav';
 import RightNav from './ImageGalleryRightNav';
