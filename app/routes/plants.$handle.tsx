@@ -257,11 +257,12 @@ export default function Plant() {
         setImageGalleryArray={setImageGalleryArray}
         setIsImageGalleryVisible={setIsImageGalleryVisible}
         isImageGalleryVisible={isImageGalleryVisible}
-        thumbnailImageWidth={200}
-        thumbnailImageHeight={200}
+        thumbnailImageWidth={400}
+        thumbnailImageHeight={400}
         imageGalleryStartIndex={imageGalleryStartIndex}
         setImageGalleryStartIndex={setImageGalleryStartIndex}
       />
+      <div className="w-full xl:mt-15"></div>
     </div>
   );
 }

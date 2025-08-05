@@ -38,7 +38,7 @@ export function PlantPageJournalComponent({
           return journal.length > 0 ? (
             <div className="mt-10">
               <div className="journal-entries">
-                {journal.map((entry) => (
+                {journal.map((entry, index) => (
                   <JournalEntry
                     entry={entry}
                     key={entry.date}
@@ -52,6 +52,7 @@ export function PlantPageJournalComponent({
                     height={thumbnailImageHeight}
                     imageGalleryStartIndex={imageGalleryStartIndex}
                     setImageGalleryStartIndex={setImageGalleryStartIndex}
+                    backgroundColor={index % 2 === 0 ? 4 : 0}
                   />
                 ))}
               </div>
