@@ -37,12 +37,8 @@ export function PlantPageJournalComponent({
           // Render parsed journal entries
           return journal.length > 0 ? (
             <div className="mt-10">
-              <h3 className="text-3xl mb-5 mt-3 font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
-                Journal Entries
-              </h3>
-
               <div className="journal-entries">
-                {journal.map((entry) => (
+                {journal.map((entry, index) => (
                   <JournalEntry
                     entry={entry}
                     key={entry.date}
@@ -56,6 +52,7 @@ export function PlantPageJournalComponent({
                     height={thumbnailImageHeight}
                     imageGalleryStartIndex={imageGalleryStartIndex}
                     setImageGalleryStartIndex={setImageGalleryStartIndex}
+                    backgroundColor={index % 2 === 0 ? 4 : 0}
                   />
                 ))}
               </div>

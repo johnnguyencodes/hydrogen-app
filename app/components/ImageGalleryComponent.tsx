@@ -16,7 +16,7 @@ export function ImageGalleryComponent({
       onClick={handleImageGalleryClick}
     >
       <div
-        className="relative w-full h-full max-w-5xl max-h-[100vh] mx-auto"
+        className="relative w-full max-w-5xl max-h-[100vh] mx-auto"
         onClick={(event) => event.stopPropagation()}
       >
         <Button
@@ -32,10 +32,10 @@ export function ImageGalleryComponent({
           items={images}
           showPlayButton={false}
           showFullscreenButton={false}
-          additionalClass="h-full"
           showIndex={true}
           slideOnThumbnailOver={true}
           startIndex={startIndex}
+          slideInterval={0}
           renderLeftNav={(onClick, disabled) => (
             <LeftNav onClick={onClick} disabled={disabled} />
           )}

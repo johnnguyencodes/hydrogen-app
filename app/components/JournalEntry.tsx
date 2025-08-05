@@ -1,7 +1,9 @@
 import ImageGallery from 'react-image-gallery';
+import {motion, AnimatePresence} from 'motion/react';
 import {ProductImage} from './ProductImage';
 import LeftNav from './ImageGalleryLeftNav';
 import RightNav from './ImageGalleryRightNav';
+import {returnFormattedDate} from '~/lib/plantPageUtils';
 
 export function JournalEntry({
   entry,
@@ -13,6 +15,7 @@ export function JournalEntry({
   isImageGalleryVisible,
   width,
   height,
+  backgroundColor,
 }: JournalEntryComponentProps) {
   function generateJournalImageGalleryArray(
     parsedImageData: AdminImageWithMetadata[],
@@ -34,78 +37,39 @@ export function JournalEntry({
     setIsImageGalleryVisible(!isImageGalleryVisible);
   }
 
+  const bgColor = `bg-[var(--color-bg-${backgroundColor})]`;
+
+  const formattedEntryDate = returnFormattedDate(entry.date);
+
   return (
     <div
-      className="journal-entry bg-[var(--color-bg-5)] rounded-md p-5 mb-10 "
+      className={`journal-entry ${bgColor} -mx-25 px-25 pb-15 pt-10 rounded-md `}
       key={entry.date}
     >
-      <div className="flex flex-col md:flex-row md:items-start gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex-1">
           <div className="mb-3 flex justify-between items-center">
-            <div className="flex items-center">
-              <span className="text-sm font-medium text-[var(--color-fg-green)]">
+            <div className="flex flex-col">
+              <span className="text-2xl font-medium text-[var(--color-fg-green)]">
                 {entry.title}
               </span>
-            </div>
-            <div className="flex items-center">
-              <span className="text-sm font-medium text-[var(--color-fg-green)]">
-                {entry.date}
+              <span className="text-lg font-medium text-[var(--color-fg-green)]">
+                {formattedEntryDate}
               </span>
             </div>
+            <div className="flex items-center"></div>
           </div>
           <div
             className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)] max-w-prose"
             dangerouslySetInnerHTML={{__html: entry.content}}
           ></div>
-          {journalImageGalleryArray.length > 0 && (
-            <div className="journal-image-mobile-container lg:hidden -mx-10">
-              <ImageGallery
-                items={journalImageGalleryArray}
-                showPlayButton={false}
-                showFullscreenButton={false}
-                additionalClass="h-full"
-                showIndex={true}
-                slideOnThumbnailOver={true}
-                startIndex={0}
-                renderLeftNav={(onClick, disabled) => (
-                  <LeftNav onClick={onClick} disabled={disabled} />
-                )}
-                renderRightNav={(onClick, disabled) => (
-                  <RightNav onClick={onClick} disabled={disabled} />
-                )}
-                renderItem={(item) => (
-                  <a
-                    href={item.original}
-                    className="hover:cursor-zoom-in"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{display: 'block', width: '100%', height: '100%'}}
-                  >
-                    <img
-                      className="image-gallery-image"
-                      src={item.gallery}
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'contain',
-                      }}
-                      alt=""
-                    />
-                  </a>
-                )}
-              />
-            </div>
-          )}
         </div>
-        <div className="journal-image-desktop-container flex-shrink-0 hidden lg:inline lg:max-w-[350px] xl:max-w-[650px]">
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+        <div className="journal-image-desktop-container lg:block">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1">
             {parsedImageData.map((image, idx) => {
               if (image.meta.date === entry.date) {
                 return (
-                  <div
-                    className="overflow-hidden flex-shrink-0 w-48 h-48"
-                    key={image.image?.url ?? idx}
-                  >
+                  <div className="gap-1" key={image.image?.url ?? idx}>
                     <ProductImage
                       image={{
                         __typename: 'Image',
