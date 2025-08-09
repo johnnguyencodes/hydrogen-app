@@ -36,7 +36,6 @@
     "motion": "^12.23.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-image-gallery": "^1.4.0",
     "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
@@ -89,7 +88,5 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "browserslist": [
-    "defaults"
-  ]
+  "browserslist": ["defaults"]
 }
