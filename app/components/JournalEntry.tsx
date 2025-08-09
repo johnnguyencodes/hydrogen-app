@@ -41,6 +41,10 @@ export function JournalEntry({
 
   const formattedEntryDate = returnFormattedDate(entry.date);
 
+  // use these npm packages
+  // lightbox: https://yet-another-react-lightbox.com/plugins/thumbnails
+  // justified gallery: https://benhowell.github.io/react-grid-gallery/examples/with-yet-another-react-lightbox
+
   return (
     <div
       className={`journal-entry ${bgColor} -mx-25 px-25 pb-15 pt-10 rounded-md `}
@@ -53,16 +57,15 @@ export function JournalEntry({
               <span className="text-2xl font-medium text-[var(--color-fg-green)]">
                 {entry.title}
               </span>
-              <span className="text-lg font-medium text-[var(--color-fg-green)]">
+              <span className="text-lg font-medium text-[var(--color-fg-green)] mb-2">
                 {formattedEntryDate}
               </span>
+              <div
+                className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)] max-w-prose mx-auto"
+                dangerouslySetInnerHTML={{__html: entry.content}}
+              ></div>
             </div>
-            <div className="flex items-center"></div>
           </div>
-          <div
-            className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)] max-w-prose"
-            dangerouslySetInnerHTML={{__html: entry.content}}
-          ></div>
         </div>
         <div className="journal-image-desktop-container lg:block">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1">
