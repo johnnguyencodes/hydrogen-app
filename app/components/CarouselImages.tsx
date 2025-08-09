@@ -1,6 +1,5 @@
 import {ProductImage} from './ProductImage';
 import useFancybox from '~/lib/useFancybox';
-import '@fancyapps/ui/dist/fancybox/fancybox.css';
 
 export function CarouselImages({
   images,
@@ -8,7 +7,9 @@ export function CarouselImages({
   width,
   height,
 }: CarouselImagesProps) {
-  const [fancyboxRef] = useFancybox({});
+  const [fancyboxRef] = useFancybox({
+    groupAll: true,
+  });
 
   return (
     <div className="lg:col-start-1 lg:row-span-full ">
@@ -39,6 +40,7 @@ export function CarouselImages({
                     width={1000}
                     height={1000}
                     className="hover:brightness-90"
+                    data-fancybox="gallery"
                   />
                 </div>
               ))}

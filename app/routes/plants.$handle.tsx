@@ -2,8 +2,6 @@
 import {useState} from 'react';
 import {useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import useFancybox from '~/lib/useFancybox';
-import '@fancyapps/ui/dist/fancybox/fancybox.css';
 import {CarouselImages} from '~/components/CarouselImages';
 import {
   returnCarouselImages,
@@ -16,6 +14,7 @@ import {PlantPageDescription} from '~/components/PlantPageDescription';
 import {PlantPageSpecs} from '~/components/PlantPageSpecs';
 import {PlantPageJournalComponent} from '~/components/PlantPageJournalComponent';
 import {PlantPageTitle} from '~/components/PlantPageTitle';
+import useFancybox from '~/lib/useFancybox';
 
 // =========================
 // Loader Function
@@ -158,6 +157,7 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Plant() {
   // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
+  const [fancyboxRef] = useFancybox({});
 
   // preparing metafield data
   const metafieldValues = extractMetafieldValues(
@@ -200,7 +200,7 @@ export default function Plant() {
    */
 
   return (
-    <div className="plant-page xxs:mx-5 2xl:mx-0 mt-4">
+    <div className="plant-page xxs:mx-5 2xl:mx-0 mt-4" ref={fancyboxRef}>
       <div className="grid lg:grid-cols-[1fr_440px] lg:grid-rows-[min-content_1fr] gap-5 gap-x-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <PlantPageTitle productTitle={product.title} />
