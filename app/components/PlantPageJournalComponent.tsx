@@ -7,13 +7,13 @@ export function PlantPageJournalComponent({
   parsedImageData,
   productTitle,
   latestCarouselDateString,
-  setImageGalleryArray,
-  setIsImageGalleryVisible,
-  isImageGalleryVisible,
-  thumbnailImageWidth,
-  thumbnailImageHeight,
-  imageGalleryStartIndex,
-  setImageGalleryStartIndex,
+  // setImageGalleryArray,
+  // setIsImageGalleryVisible,
+  // isImageGalleryVisible,
+  // thumbnailImageWidth,
+  // thumbnailImageHeight,
+  // imageGalleryStartIndex,
+  // setImageGalleryStartIndex,
 }: PlantPageJournalComponentProps) {
   return (
     <Suspense fallback={<p> Loading journal...</p>}>
@@ -45,13 +45,13 @@ export function PlantPageJournalComponent({
                     parsedImageData={parsedImageData}
                     productTitle={productTitle}
                     latestCarouselDateString={latestCarouselDateString}
-                    setImageGalleryArray={setImageGalleryArray}
-                    setIsImageGalleryVisible={setIsImageGalleryVisible}
-                    isImageGalleryVisible={isImageGalleryVisible}
-                    width={thumbnailImageWidth}
-                    height={thumbnailImageHeight}
-                    imageGalleryStartIndex={imageGalleryStartIndex}
-                    setImageGalleryStartIndex={setImageGalleryStartIndex}
+                    // setImageGalleryArray={setImageGalleryArray}
+                    // setIsImageGalleryVisible={setIsImageGalleryVisible}
+                    // isImageGalleryVisible={isImageGalleryVisible}
+                    // width={thumbnailImageWidth}
+                    // height={thumbnailImageHeight}
+                    // imageGalleryStartIndex={imageGalleryStartIndex}
+                    // setImageGalleryStartIndex={setImageGalleryStartIndex}
                     backgroundColor={index % 2 === 0 ? 4 : 0}
                   />
                 ))}

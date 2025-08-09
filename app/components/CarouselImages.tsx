@@ -6,10 +6,10 @@ import RightNav from './ImageGalleryRightNav';
 export function CarouselImages({
   images,
   productTitle,
-  setImageGalleryArray,
-  setIsImageGalleryVisible,
-  setImageGalleryStartIndex,
-  isImageGalleryVisible,
+  // setImageGalleryArray,
+  // setIsImageGalleryVisible,
+  // setImageGalleryStartIndex,
+  // isImageGalleryVisible,
   width,
   height,
 }: CarouselImagesProps) {
@@ -23,10 +23,10 @@ export function CarouselImages({
 
   const imageCarouselImageArray = generateCarouselImageGalleryArray(images);
 
-  function handleImageClick(): void {
-    setImageGalleryArray(imageCarouselImageArray);
-    setIsImageGalleryVisible(!isImageGalleryVisible);
-  }
+  // function handleImageClick(): void {
+  //   setImageGalleryArray(imageCarouselImageArray);
+  //   setIsImageGalleryVisible(!isImageGalleryVisible);
+  // }
 
   return (
     <div className="lg:col-start-1 lg:row-span-full ">
@@ -81,8 +81,8 @@ export function CarouselImages({
                   }}
                   alt={image.alt || `${productTitle} image`}
                   onClick={() => {
-                    handleImageClick();
-                    setImageGalleryStartIndex(image.meta.index);
+                    // handleImageClick();
+                    // setImageGalleryStartIndex(image.meta.index);
                   }}
                   width={width}
                   height={height}

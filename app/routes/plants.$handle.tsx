@@ -157,16 +157,16 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Plant() {
   // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
-  const [isImageGalleryVisible, setIsImageGalleryVisible] = useState(false);
-  const [imageGalleryArray, setImageGalleryArray] = useState<
-    ImageGalleryItem[]
-  >([]);
-  const [imageGalleryStartIndex, setImageGalleryStartIndex] =
-    useState<number>(0);
+  // const [isImageGalleryVisible, setIsImageGalleryVisible] = useState(false);
+  // const [imageGalleryArray, setImageGalleryArray] = useState<
+  //   ImageGalleryItem[]
+  // >([]);
+  // const [imageGalleryStartIndex, setImageGalleryStartIndex] =
+  //   useState<number>(0);
 
-  const handleImageGalleryClick = () => {
-    setIsImageGalleryVisible(!isImageGalleryVisible);
-  };
+  // const handleImageGalleryClick = () => {
+  //   setIsImageGalleryVisible(!isImageGalleryVisible);
+  // };
 
   // preparing metafield data
   const metafieldValues = extractMetafieldValues(
@@ -210,30 +210,30 @@ export default function Plant() {
 
   return (
     <div className="plant-page xxs:mx-5 2xl:mx-0 mt-4">
-      {isImageGalleryVisible ? (
+      {/* {isImageGalleryVisible ? (
         <div className="desktop-image-gallery-container">
           <ImageGalleryComponent
-            images={imageGalleryArray}
-            startIndex={imageGalleryStartIndex}
-            handleImageGalleryClick={handleImageGalleryClick}
-            setImageGalleryStartIndex={setImageGalleryStartIndex}
+          // images={imageGalleryArray}
+          // startIndex={imageGalleryStartIndex}
+          // handleImageGalleryClick={handleImageGalleryClick}
+          // setImageGalleryStartIndex={setImageGalleryStartIndex}
           />
         </div>
-      ) : null}
+      ) : null} */}
       <div className="grid lg:grid-cols-[1fr_440px] lg:grid-rows-[min-content_1fr] gap-5 gap-x-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <PlantPageTitle productTitle={product.title} />
         <CarouselImages
-          handleImageGalleryClick={handleImageGalleryClick}
+          // handleImageGalleryClick={handleImageGalleryClick}
           images={latestCarouselImages}
           productTitle={product.title}
-          setImageGalleryArray={setImageGalleryArray}
-          setIsImageGalleryVisible={setIsImageGalleryVisible}
-          isImageGalleryVisible={isImageGalleryVisible}
+          // setImageGalleryArray={setImageGalleryArray}
+          // setIsImageGalleryVisible={setIsImageGalleryVisible}
+          // isImageGalleryVisible={isImageGalleryVisible}
           width={500}
           height={500}
-          imageGalleryStartIndex={imageGalleryStartIndex}
-          setImageGalleryStartIndex={setImageGalleryStartIndex}
+          // imageGalleryStartIndex={imageGalleryStartIndex}
+          // setImageGalleryStartIndex={setImageGalleryStartIndex}
         />
         <PlantPageDescription
           modifiedProductDescription={modifiedProductDescription}
@@ -254,13 +254,13 @@ export default function Plant() {
         parsedImageData={parsedImageData}
         productTitle={product.title}
         latestCarouselDateString={latestCarouselDateString}
-        setImageGalleryArray={setImageGalleryArray}
-        setIsImageGalleryVisible={setIsImageGalleryVisible}
-        isImageGalleryVisible={isImageGalleryVisible}
+        // setImageGalleryArray={setImageGalleryArray}
+        // setIsImageGalleryVisible={setIsImageGalleryVisible}
+        // isImageGalleryVisible={isImageGalleryVisible}
         thumbnailImageWidth={400}
         thumbnailImageHeight={400}
-        imageGalleryStartIndex={imageGalleryStartIndex}
-        setImageGalleryStartIndex={setImageGalleryStartIndex}
+        // imageGalleryStartIndex={imageGalleryStartIndex}
+        // setImageGalleryStartIndex={setImageGalleryStartIndex}
       />
       <div className="w-full xl:mt-15"></div>
     </div>

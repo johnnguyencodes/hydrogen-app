@@ -134,18 +134,18 @@ declare global {
   };
 
   type CarouselImagesProps = {
-    handleImageGalleryClick: () => void;
+    // handleImageGalleryClick: () => void;
     images: AdminImageWithMetadata[];
     productTitle: string;
-    setImageGalleryArray: React.Dispatch<
-      React.SetStateAction<imageGalleryArray>
-    >;
-    setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
-    isImageGalleryVisible: boolean;
+    // setImageGalleryArray: React.Dispatch<
+    //   React.SetStateAction<imageGalleryArray>
+    // >;
+    // setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    // isImageGalleryVisible: boolean;
     width: number;
     height: number;
-    setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
-    imageGalleryStartIndex: number;
+    // setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
+    // imageGalleryStartIndex: number;
   };
 
   type PlantPageJournalComponentProps = {

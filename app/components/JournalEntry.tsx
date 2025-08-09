@@ -9,33 +9,33 @@ export function JournalEntry({
   entry,
   parsedImageData,
   productTitle,
-  setImageGalleryArray,
-  setIsImageGalleryVisible,
-  setImageGalleryStartIndex,
-  isImageGalleryVisible,
+  // setImageGalleryArray,
+  // setIsImageGalleryVisible,
+  // setImageGalleryStartIndex,
+  // isImageGalleryVisible,
   width,
   height,
   backgroundColor,
 }: JournalEntryComponentProps) {
-  function generateJournalImageGalleryArray(
-    parsedImageData: AdminImageWithMetadata[],
-  ) {
-    return parsedImageData
-      .filter((image) => image.meta.date === entry.date)
-      .map((image) => ({
-        original: `${image.image.url}&width=${image.image.width}&height=${image.image.height}&crop=center`,
-        gallery: `${image.image.url}&width=1000&height=1000&crop=center`,
-        thumbnail: `${image.image.url}&width=100&height=100&crop=center`,
-      }));
-  }
+  // function generateJournalImageGalleryArray(
+  //   parsedImageData: AdminImageWithMetadata[],
+  // ) {
+  //   return parsedImageData
+  //     .filter((image) => image.meta.date === entry.date)
+  //     .map((image) => ({
+  //       original: `${image.image.url}&width=${image.image.width}&height=${image.image.height}&crop=center`,
+  //       gallery: `${image.image.url}&width=1000&height=1000&crop=center`,
+  //       thumbnail: `${image.image.url}&width=100&height=100&crop=center`,
+  //     }));
+  // }
 
-  const journalImageGalleryArray =
-    generateJournalImageGalleryArray(parsedImageData);
+  // const journalImageGalleryArray =
+  //   generateJournalImageGalleryArray(parsedImageData);
 
-  function handleImageClick(): void {
-    setImageGalleryArray(journalImageGalleryArray);
-    setIsImageGalleryVisible(!isImageGalleryVisible);
-  }
+  // function handleImageClick(): void {
+  //   setImageGalleryArray(journalImageGalleryArray);
+  //   setIsImageGalleryVisible(!isImageGalleryVisible);
+  // }
 
   const bgColor = `bg-[var(--color-bg-${backgroundColor})]`;
 
@@ -85,10 +85,10 @@ export function JournalEntry({
                       key={image.image.url ?? idx}
                       id={image.image.url ?? idx}
                       className="object-cover w-full h-full hover:brightness-90"
-                      onClick={() => {
-                        handleImageClick();
-                        setImageGalleryStartIndex(image.meta.index);
-                      }}
+                      // onClick={() => {
+                      //   handleImageClick();
+                      //   setImageGalleryStartIndex(image.meta.index);
+                      // }}
                       width={width}
                       height={height}
                     />
