@@ -15,8 +15,9 @@ export function ProductImage({
   }
 
   return (
-    <div className="product-image cursor-zoom-in" onClick={onClick}>
+    <div className="product-image cursor-zoom-in">
       <Image
+        data-fancybox="gallery"
         id={id}
         alt={alt}
         aspectRatio="1/1"

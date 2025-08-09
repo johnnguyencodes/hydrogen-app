@@ -2,27 +2,15 @@ import {AnimatePresence, motion} from 'motion/react';
 import {useState, useEffect} from 'react';
 import {Button, ButtonGroup} from 'flowbite-react';
 import MasonryGallery from '~/components/MasonryGallery';
-import {Fancybox} from '@fancyapps/ui/dist/fancybox';
+import useFancybox from '~/lib/useFancybox';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
-
-function useFancybox(options = {}) {
-  const [root, setRoot] = useState(null);
-
-  useEffect(() => {
-    if (root) {
-      Fancybox.bind(root, '[data-fancybox]', options);
-      return () => Fancybox.unbind(root);
-    }
-  }, [root, options]);
-
-  return [setRoot];
-}
 
 export default function About() {
   const [isVisible, setIsVisible] = useState(true);
   const [fancyboxRef1] = useFancybox({});
   const [fancyboxRef2] = useFancybox({});
 
+  // Framer motion variables
   const container: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
@@ -49,6 +37,7 @@ export default function About() {
     right: 0,
   };
 
+  // Masonry gallery
   const images = [
     {src: '', alt: 'Portrait 1', className: 'row-span-7 col-span-5'},
     {src: '', alt: 'Portrait 2', className: 'row-span-20 col-span-7'},
@@ -56,6 +45,7 @@ export default function About() {
     {src: '', alt: 'Portrait 4', className: 'row-span-12 col-span-5'},
     {src: '', alt: 'Portrait 5', className: 'row-span-6 col-span-7'},
   ];
+
   return (
     <div className="about-page xxs:mx-5 2xl:mx-0">
       <p>This is the about page</p>
