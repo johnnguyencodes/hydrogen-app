@@ -158,6 +158,18 @@ export default function Plant() {
   // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
   const [fancyboxRef] = useFancybox({});
+  const [carouselImageDimensions, setCarouselImageDimensions] = useState({
+    heroWidth: 0,
+    heroHeight: 0,
+    width: 0,
+    height: 0,
+  });
+  const [journalImageDimensions, setJournalHeroImageDimensions] = useState({
+    heroWidth: 0,
+    heroHeight: 0,
+    width: 0,
+    height: 0,
+  });
 
   // preparing metafield data
   const metafieldValues = extractMetafieldValues(
