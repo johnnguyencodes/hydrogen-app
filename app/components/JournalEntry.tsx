@@ -9,6 +9,7 @@ export function JournalEntry({
   width,
   height,
   backgroundColor,
+  sizes,
 }: JournalEntryComponentProps) {
   const bgColor = `bg-[var(--color-bg-${backgroundColor})]`;
 
@@ -67,6 +68,11 @@ export function JournalEntry({
                       className="object-cover w-full h-full hover:brightness-90"
                       width={width}
                       height={height}
+                      sizes={
+                        image.meta.index <= 2
+                          ? '(max-width: 350px) 100px, (max-width: 650px) 200px, (max-width: 950px) 300px, (max-width: 1246px) 400px, 500px'
+                          : '(max-width: 660px) 100px, (max-width: 1260px) 200px, 300px'
+                      }
                       data-fancybox="gallery"
                     />
                   </div>

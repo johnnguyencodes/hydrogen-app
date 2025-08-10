@@ -74,6 +74,7 @@ declare global {
     className?: string;
     width: number;
     height: number;
+    sizes: string;
   };
 
   type AcquisitionData = {
@@ -140,6 +141,7 @@ declare global {
     latestCarouselDateString: string;
     thumbnailImageWidth: number;
     thumbnailImageHeight: number;
+    sizes: string;
   };
 
   type JournalEntryComponentProps = {
@@ -157,6 +159,7 @@ declare global {
     height: number;
     setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
     imageGalleryStartIndex: number;
+    sizes: string;
   };
 
   type PlantCriticalMetafield = {

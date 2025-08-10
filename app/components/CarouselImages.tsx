@@ -30,8 +30,11 @@ export function CarouselImages({
                       url: image.image.url,
                     }}
                     alt={image.alt || `${productTitle} image`}
-                    width={1000}
-                    height={1000}
+                    sizes={
+                      image.meta.index === 0
+                        ? '(max-width: 440px) 400px, (max-width: 540px) 500px, (max-width: 640px) 600px, (max-width: 740px) 700px, (max-width: 840px) 800px, (max-width: 940px) 900px, (max-width: 1023px) 1000px, (max-width: 1120px) 600px, (max-width: 1220px) 700px, (max-width: 1320px) 800px, (max-width: 1535px) 900px, 1000px'
+                        : '(max-width: 345px) 100px, (max-width: 650px) 200px, (max-width: 940px) 300px, (max-width: 1023px) 400px, (max-width: 1124px) 300px, (max-width: 1324px) 400px, 500px'
+                    }
                     className="hover:brightness-90"
                     data-fancybox="gallery"
                   />

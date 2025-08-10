@@ -6,10 +6,10 @@ export function ProductImage({
   alt,
   id,
   className,
-  onClick,
   width,
   height,
-}: ProductImageProps & {onClick?: () => void}) {
+  sizes,
+}: ProductImageProps) {
   if (!image) {
     return <div className="product-image"></div>;
   }
@@ -23,8 +23,7 @@ export function ProductImage({
         aspectRatio="1/1"
         data={image}
         className={clsx(className)}
-        width={width}
-        height={height}
+        sizes={sizes}
       />
     </div>
   );
