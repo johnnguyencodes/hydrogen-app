@@ -41,11 +41,18 @@ export function JournalEntry({
           </div>
         </div>
         <div className="journal-image-desktop-container lg:block">
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-1">
+          <div className="grid grid-cols-12 gap-1">
             {parsedImageData.map((image, idx) => {
               if (image.meta.date === entry.date) {
                 return (
-                  <div className="gap-1" key={image.image?.url ?? idx}>
+                  <div
+                    className={
+                      image.meta.index <= 2
+                        ? 'gap-1 col-span-4'
+                        : 'gap-1 col-span-2'
+                    }
+                    key={image.image?.url ?? idx}
+                  >
                     <ProductImage
                       image={{
                         __typename: 'Image',
