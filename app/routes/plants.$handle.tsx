@@ -157,7 +157,14 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Plant() {
   // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
-  const [fancyboxRef] = useFancybox({});
+  const [fancyboxRef] = useFancybox({
+    Carousel: {
+      infinite: true,
+      Thumbs: {
+        type: 'classic',
+      },
+    },
+  });
 
   // preparing metafield data
   const metafieldValues = extractMetafieldValues(
