@@ -74,6 +74,7 @@ declare global {
     className?: string;
     width: number;
     height: number;
+    sizes: string;
   };
 
   type AcquisitionData = {
@@ -118,13 +119,6 @@ declare global {
 
   type ImageGalleryArray = ImageGalleryItem[];
 
-  type ImageGalleryComponentProps = {
-    images: imageGalleryItem[];
-    startIndex: number;
-    setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
-    handleImageGalleryClick: () => void;
-  };
-
   type PlantPageTitleProps = {
     productTitle: string;
   };
@@ -134,18 +128,10 @@ declare global {
   };
 
   type CarouselImagesProps = {
-    handleImageGalleryClick: () => void;
     images: AdminImageWithMetadata[];
     productTitle: string;
-    setImageGalleryArray: React.Dispatch<
-      React.SetStateAction<imageGalleryArray>
-    >;
-    setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
-    isImageGalleryVisible: boolean;
     width: number;
     height: number;
-    setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
-    imageGalleryStartIndex: number;
   };
 
   type PlantPageJournalComponentProps = {
@@ -153,15 +139,9 @@ declare global {
     parsedImageData: AdminImageWithMetadata[];
     productTitle: string;
     latestCarouselDateString: string;
-    setImageGalleryArray: React.Dispatch<
-      React.SetStateAction<imageGalleryArray>
-    >;
-    setIsImageGalleryVisible: React.Dispatch<React.SetStateAction<boolean>>;
-    isImageGalleryVisible: boolean;
     thumbnailImageWidth: number;
     thumbnailImageHeight: number;
-    imageGalleryStartIndex: number;
-    setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
+    sizes: string;
   };
 
   type JournalEntryComponentProps = {
@@ -179,6 +159,7 @@ declare global {
     height: number;
     setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
     imageGalleryStartIndex: number;
+    sizes: string;
   };
 
   type PlantCriticalMetafield = {

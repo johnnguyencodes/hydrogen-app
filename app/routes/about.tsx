@@ -1,11 +1,16 @@
 import {AnimatePresence, motion} from 'motion/react';
-import {useState} from 'react';
-import {Button} from 'flowbite-react';
+import {useState, useEffect} from 'react';
+import {Button, ButtonGroup} from 'flowbite-react';
 import MasonryGallery from '~/components/MasonryGallery';
+import useFancybox from '~/lib/useFancybox';
+import '@fancyapps/ui/dist/fancybox/fancybox.css';
 
 export default function About() {
   const [isVisible, setIsVisible] = useState(true);
+  const [fancyboxRef1] = useFancybox({});
+  const [fancyboxRef2] = useFancybox({});
 
+  // Framer motion variables
   const container: React.CSSProperties = {
     display: 'flex',
     flexDirection: 'column',
@@ -32,23 +37,20 @@ export default function About() {
     right: 0,
   };
 
+  // Masonry gallery
   const images = [
-    {src: '', alt: 'Portrait 1', className: 'row-span-2'},
-    {src: '', alt: 'Portrait 2', className: 'col-span-6'},
-    {src: '', alt: 'Portrait 3', className: 'col-span-4'},
-    {src: '', alt: 'Portrait 4', className: 'col-span-2'},
-    {src: '', alt: 'Portrait 5'},
-    {src: '', alt: 'Portrait 6', className: 'row-span-2 col-span-2'},
-    {
-      src: '',
-      alt: 'Portrait 7',
-      className: 'row-span-2 col-span-2',
-    },
+    {src: '', alt: 'Portrait 1', className: 'row-span-7 col-span-5'},
+    {src: '', alt: 'Portrait 2', className: 'row-span-20 col-span-7'},
+    {src: '', alt: 'Portrait 3', className: 'row-span-7 col-span-5'},
+    {src: '', alt: 'Portrait 4', className: 'row-span-12 col-span-5'},
+    {src: '', alt: 'Portrait 5', className: 'row-span-6 col-span-7'},
   ];
+
   return (
     <div className="about-page xxs:mx-5 2xl:mx-0">
       <p>This is the about page</p>
       <p>This is the flowbite button</p>
+      <Button> Hello </Button>
       <MasonryGallery images={images} />
       <p>
         Donec cursus ipsum quis felis imperdiet pretium. Maecenas ut mauris
@@ -65,7 +67,69 @@ export default function About() {
         semper mi. Quisque lacus felis, lobortis vel felis id, pharetra
         imperdiet leo. Mauris tempor euismod nulla vitae mollis.
       </p>
+
+      <div className="fancybox" ref={fancyboxRef1}>
+        <p>This is fancybox</p>
+        <a
+          data-fancybox="gallery"
+          href="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--001.webp?v=1748282238&width=1000&height=1000&crop=center"
+        >
+          <img
+            src="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--001.webp?v=1748282238&width=1000&height=1000&crop=center"
+            alt="Sample image #1"
+          />
+        </a>
+        <a
+          data-fancybox="gallery"
+          href="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--002.webp?v=1748282238&width=1000&height=1000&crop=center"
+        >
+          <img
+            src="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--002.webp?v=1748282238&width=1000&height=1000&crop=center"
+            alt="Sample image #1"
+          />
+        </a>
+        <a
+          data-fancybox="gallery"
+          href="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--003.webp?v=1748282238&width=1000&height=1000&crop=center"
+        >
+          <img
+            src="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--003.webp?v=1748282238&width=1000&height=1000&crop=center"
+            alt="Sample image #1"
+          />
+        </a>
+      </div>
+      <div className="fancybox" ref={fancyboxRef2}>
+        <p>This is fancybox</p>
+        <a
+          data-fancybox="gallery"
+          href="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--004.webp?v=1748282238&width=1000&height=1000&crop=center"
+        >
+          <img
+            src="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--004.webp?v=1748282238&width=1000&height=1000&crop=center"
+            alt="Sample image #1"
+          />
+        </a>
+        <a
+          data-fancybox="gallery"
+          href="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--005.webp?v=1748282238&width=1000&height=1000&crop=center"
+        >
+          <img
+            src="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--005.webp?v=1748282238&width=1000&height=1000&crop=center"
+            alt="Sample image #1"
+          />
+        </a>
+        <a
+          data-fancybox="gallery"
+          href="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--006.webp?v=1748282238&width=1000&height=1000&crop=center"
+        >
+          <img
+            src="https://cdn.shopify.com/s/files/1/0934/9293/6987/files/plants--mammillaria-crucigera-tlalocii-3--2025-05-25--carousel--006.webp?v=1748282238&width=1000&height=1000&crop=center"
+            alt="Sample image #1"
+          />
+        </a>
+      </div>
       <div style={container}>
+        <p>This is framer motion</p>
         <AnimatePresence initial={false}>
           {isVisible ? (
             <motion.div

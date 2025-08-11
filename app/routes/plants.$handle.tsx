@@ -3,7 +3,6 @@ import {useState} from 'react';
 import {useLoaderData} from '@remix-run/react';
 import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {CarouselImages} from '~/components/CarouselImages';
-import {ImageGalleryComponent} from '~/components/ImageGalleryComponent';
 import {
   returnCarouselImages,
   getLatestCarouselDate,
@@ -15,6 +14,7 @@ import {PlantPageDescription} from '~/components/PlantPageDescription';
 import {PlantPageSpecs} from '~/components/PlantPageSpecs';
 import {PlantPageJournalComponent} from '~/components/PlantPageJournalComponent';
 import {PlantPageTitle} from '~/components/PlantPageTitle';
+import useFancybox from '~/lib/useFancybox';
 
 // =========================
 // Loader Function
@@ -157,16 +157,14 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Plant() {
   // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
-  const [isImageGalleryVisible, setIsImageGalleryVisible] = useState(false);
-  const [imageGalleryArray, setImageGalleryArray] = useState<
-    ImageGalleryItem[]
-  >([]);
-  const [imageGalleryStartIndex, setImageGalleryStartIndex] =
-    useState<number>(0);
-
-  const handleImageGalleryClick = () => {
-    setIsImageGalleryVisible(!isImageGalleryVisible);
-  };
+  const [fancyboxRef] = useFancybox({
+    Carousel: {
+      infinite: true,
+      Thumbs: {
+        type: 'classic',
+      },
+    },
+  });
 
   // preparing metafield data
   const metafieldValues = extractMetafieldValues(
@@ -209,31 +207,15 @@ export default function Plant() {
    */
 
   return (
-    <div className="plant-page xxs:mx-5 2xl:mx-0 mt-4">
-      {isImageGalleryVisible ? (
-        <div className="desktop-image-gallery-container">
-          <ImageGalleryComponent
-            images={imageGalleryArray}
-            startIndex={imageGalleryStartIndex}
-            handleImageGalleryClick={handleImageGalleryClick}
-            setImageGalleryStartIndex={setImageGalleryStartIndex}
-          />
-        </div>
-      ) : null}
+    <div className="plant-page xxs:mx-5 2xl:mx-0 mt-4" ref={fancyboxRef}>
       <div className="grid lg:grid-cols-[1fr_440px] lg:grid-rows-[min-content_1fr] gap-5 gap-x-10 relative min-h-screen">
         {/* Render core product info immediately */}
         <PlantPageTitle productTitle={product.title} />
         <CarouselImages
-          handleImageGalleryClick={handleImageGalleryClick}
           images={latestCarouselImages}
           productTitle={product.title}
-          setImageGalleryArray={setImageGalleryArray}
-          setIsImageGalleryVisible={setIsImageGalleryVisible}
-          isImageGalleryVisible={isImageGalleryVisible}
           width={500}
           height={500}
-          imageGalleryStartIndex={imageGalleryStartIndex}
-          setImageGalleryStartIndex={setImageGalleryStartIndex}
         />
         <PlantPageDescription
           modifiedProductDescription={modifiedProductDescription}
@@ -254,13 +236,9 @@ export default function Plant() {
         parsedImageData={parsedImageData}
         productTitle={product.title}
         latestCarouselDateString={latestCarouselDateString}
-        setImageGalleryArray={setImageGalleryArray}
-        setIsImageGalleryVisible={setIsImageGalleryVisible}
-        isImageGalleryVisible={isImageGalleryVisible}
         thumbnailImageWidth={400}
         thumbnailImageHeight={400}
-        imageGalleryStartIndex={imageGalleryStartIndex}
-        setImageGalleryStartIndex={setImageGalleryStartIndex}
+        sizes=""
       />
       <div className="w-full xl:mt-15"></div>
     </div>
