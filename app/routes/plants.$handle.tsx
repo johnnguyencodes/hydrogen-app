@@ -157,11 +157,27 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Plant() {
   // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
+  let messageShown = false;
   const [fancyboxRef] = useFancybox({
+    on: {
+      ready: (fancybox) => {
+        if (!messageShown) {
+          alert('Welcome!');
+          messageShown = true;
+        }
+      },
+    },
+    placeFocusBack: false,
     Carousel: {
       infinite: true,
       Thumbs: {
         type: 'classic',
+      },
+      Zoomable: {
+        Panzoom: {
+          panMode: 'mousemove',
+          mouseMoveFactor: 1.0,
+        },
       },
     },
   });

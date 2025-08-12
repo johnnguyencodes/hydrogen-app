@@ -25,3 +25,11 @@ body {
 body > main {
   margin: 0 1rem 1rem 1rem;
 }
+
+.fancybox__dialog .is-horizontal.is-ltr .f-button.is-arrow.is-prev {
+  left: 8px;
+}
+
+.fancybox__dialog .is-horizontal.is-ltr .f-button.is-arrow.is-next {
+  right: 8px;
+}
