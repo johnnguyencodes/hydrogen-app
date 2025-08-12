@@ -15,7 +15,6 @@ import {PlantPageSpecs} from '~/components/PlantPageSpecs';
 import {PlantPageJournalComponent} from '~/components/PlantPageJournalComponent';
 import {PlantPageTitle} from '~/components/PlantPageTitle';
 import useFancybox from '~/lib/useFancybox';
-import {PanzoomAction} from '@fancyapps/ui/dist/fancybox';
 
 // =========================
 // Loader Function
