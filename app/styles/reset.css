@@ -33,3 +33,41 @@ body > main {
 .fancybox__dialog .is-horizontal.is-ltr .f-button.is-arrow.is-next {
   right: 8px;
 }
+
+#welcome {
+  background-color: var(--color-bg-0);
+  color: var(--color-fg-text);
+}
+
+.fancybox__slide--current {
+  opacity: 1 !important; /* Force full opacity for current slide */
+  transition: none !important; /* Optionally disable transition if causing flicker */
+}
+
+@media (max-width: 768px) {
+  .fancybox__dialog .is-horizontal.is-ltr button.f-button.is-arrow.is-prev,
+  .fancybox__dialog .is-horizontal.is-ltr button.f-button.is-arrow.is-next {
+    width: 35px;
+    height: 35px;
+  }
+
+  .fancybox__dialog .is-horizontal.is-ltr .f-button.is-arrow.is-next svg,
+  .fancybox__dialog .is-horizontal.is-ltr .f-button.is-arrow.is-prev svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+@media (max-width: 400px) {
+  .fancybox__dialog .is-horizontal.is-ltr button.f-button.is-arrow.is-prev,
+  .fancybox__dialog .is-horizontal.is-ltr button.f-button.is-arrow.is-next {
+    width: 25px;
+    height: 25px;
+  }
+
+  .fancybox__dialog .is-horizontal.is-ltr .f-button.is-arrow.is-next svg,
+  .fancybox__dialog .is-horizontal.is-ltr .f-button.is-arrow.is-prev svg {
+    width: 15px;
+    height: 15px;
+  }
+}
