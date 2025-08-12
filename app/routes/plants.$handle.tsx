@@ -15,6 +15,7 @@ import {PlantPageSpecs} from '~/components/PlantPageSpecs';
 import {PlantPageJournalComponent} from '~/components/PlantPageJournalComponent';
 import {PlantPageTitle} from '~/components/PlantPageTitle';
 import useFancybox from '~/lib/useFancybox';
+import {PanzoomAction} from '@fancyapps/ui/dist/fancybox';
 
 // =========================
 // Loader Function
@@ -157,11 +158,27 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Plant() {
   // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
+  let messageShown = false;
   const [fancyboxRef] = useFancybox({
+    on: {
+      ready: (fancybox) => {
+        if (!messageShown) {
+          alert('Welcome!');
+          messageShown = true;
+        }
+      },
+    },
+    placeFocusBack: false,
     Carousel: {
       infinite: true,
       Thumbs: {
         type: 'classic',
+      },
+      Zoomable: {
+        Panzoom: {
+          panMode: 'mousemove',
+          mouseMoveFactor: 1.0,
+        },
       },
     },
   });
