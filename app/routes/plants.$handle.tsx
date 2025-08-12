@@ -15,8 +15,9 @@ import {PlantPageSpecs} from '~/components/PlantPageSpecs';
 import {PlantPageJournalComponent} from '~/components/PlantPageJournalComponent';
 import {PlantPageTitle} from '~/components/PlantPageTitle';
 import useFancybox from '~/lib/useFancybox';
-
+import {Fancybox} from '@fancyapps/ui';
 // =========================
+//
 // Loader Function
 // =========================
 
@@ -157,13 +158,12 @@ function loadDeferredData({context, params}: LoaderFunctionArgs) {
 export default function Plant() {
   // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
-  let messageShown = false;
   const [fancyboxRef] = useFancybox({
     on: {
-      ready: (fancybox) => {
-        if (!messageShown) {
-          alert('Welcome!');
-          messageShown = true;
+      ready: () => {
+        if (!localStorage.getItem('fancyboxWelcomeShown')) {
+          showInstructions();
+          localStorage.setItem('fancyboxWelcomeShown', 'true');
         }
       },
     },
@@ -181,6 +181,38 @@ export default function Plant() {
       },
     },
   });
+
+  const showInstructions = () => {
+    Fancybox.show([
+      {
+        html: `
+          <div id="welcome">
+            <h2 class="text-lg mb-3">Best viewing tips</h2>
+            <ul class="list-disc list-inside">
+              <li>
+                <strong>Desktop</strong>: Use mouse's scroll wheel to zoom
+              </li>
+              <li>
+                <strong>Mobile</strong>: Pinch to zoom
+              </li>
+            </ul>
+            <p class="mt-3">This message will only appear once. Thanks for visiting!</p>
+            <p class="mt-3 text-right">--John</p>
+          </div>
+        `,
+      },
+    ]);
+
+    // Wait a tick, then add click listener
+    setTimeout(() => {
+      const btn = document.getElementById('closeInstructionsBtn');
+      if (btn) {
+        btn.addEventListener('click', () => {
+          Fancybox.close();
+        });
+      }
+    }, 0);
+  };
 
   // preparing metafield data
   const metafieldValues = extractMetafieldValues(
