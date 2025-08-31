@@ -25,17 +25,19 @@ export function PlantPageSpecs({
           <h2 className="text-balance text-5xl font-medium text-[var(--color-fg-green)]">
             {productTitle}
           </h2>
-          <a
-            href={llifleDatabaseLink}
-            target="_blank"
-            rel="noreferrer noopener"
-            className="mt-3 flex items-center text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
-          >
-            <span className="inline-flex items-center border-b border-transparent hover:border-current text-sm">
-              View species info on LLIFLE
-              <ExternalLink size="16" className="ml-1" />
-            </span>
-          </a>
+          {llifleDatabaseLink && (
+            <a
+              href={llifleDatabaseLink}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="mt-3 flex items-center text-[var(--color-fg-text)] hover:text-[var(--color-fg-text-hover)]"
+            >
+              <span className="inline-flex items-center border-b border-transparent hover:border-current text-sm">
+                View species info on LLIFLE
+                <ExternalLink size="16" className="ml-1" />
+              </span>
+            </a>
+          )}
         </div>
         {parsedAcquisition && (
           <div className="col-span-1 rounded-md bg-[var(--color-bg-1)] flex flex-col items-center p-5">
