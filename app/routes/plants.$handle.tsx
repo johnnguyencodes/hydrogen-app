@@ -164,9 +164,14 @@ export default function Plant() {
       Thumbs: {
         type: 'classic',
       },
+      Toolbar: {
+        display: {
+          left: ['counter'],
+          right: ['close'],
+        },
+      },
       Zoomable: {
         Panzoom: {
-          panMode: 'mousemove',
           mouseMoveFactor: 1.0,
         },
       },
