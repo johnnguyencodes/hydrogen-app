@@ -1,12 +1,6 @@
 import {ProductImage} from './ProductImage';
-import useFancybox from '~/lib/useFancybox';
 
-export function CarouselImages({
-  images,
-  productTitle,
-  width,
-  height,
-}: CarouselImagesProps) {
+export function CarouselImages({images, productTitle}: CarouselImagesProps) {
   return (
     <div className="lg:col-start-1 lg:row-span-full ">
       <div className="lg:top-4 lg:sticky">

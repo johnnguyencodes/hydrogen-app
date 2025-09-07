@@ -14,7 +14,12 @@ export function ProductImage({
 
   return (
     <div className="product-image cursor-zoom-in">
-      <a data-fancybox="gallery" href={image.url} data-sizes="100vw">
+      <a
+        data-fancybox="gallery"
+        href={image.url}
+        data-sizes="100vw"
+        data-lazy-src={image.url}
+      >
         <Image
           id={id}
           alt={alt}
@@ -22,6 +27,7 @@ export function ProductImage({
           data={image}
           className={clsx(className)}
           sizes={sizes}
+          loading="lazy"
         ></Image>
       </a>
     </div>

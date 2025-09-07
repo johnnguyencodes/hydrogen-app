@@ -142,6 +142,7 @@ declare global {
     thumbnailImageWidth: number;
     thumbnailImageHeight: number;
     sizes: string;
+    fancyboxRef: any;
   };
 
   type JournalEntryComponentProps = {
@@ -160,6 +161,7 @@ declare global {
     setImageGalleryStartIndex: React.Dispatch<React.SetStateAction<number>>;
     imageGalleryStartIndex: number;
     sizes: string;
+    backgroundColor: number;
   };
 
   type PlantCriticalMetafield = {
