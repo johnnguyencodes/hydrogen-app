@@ -158,14 +158,6 @@ export default function Plant() {
   // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
   const [fancyboxRef] = useFancybox({
-    on: {
-      ready: () => {
-        if (!localStorage.getItem('fancyboxWelcomeShown')) {
-          showInstructions();
-          localStorage.setItem('fancyboxWelcomeShown', 'true');
-        }
-      },
-    },
     placeFocusBack: false,
     Carousel: {
       infinite: true,
@@ -180,38 +172,6 @@ export default function Plant() {
       },
     },
   });
-
-  const showInstructions = () => {
-    Fancybox.show([
-      {
-        html: `
-          <div id="welcome">
-            <h2 class="text-lg mb-3">Best viewing tips</h2>
-            <ul class="list-disc list-inside">
-              <li>
-                <strong>Desktop</strong>: Use mouse's scroll wheel to zoom
-              </li>
-              <li>
-                <strong>Mobile</strong>: Pinch to zoom
-              </li>
-            </ul>
-            <p class="mt-3">This message will only appear once. Thanks for visiting!</p>
-            <p class="mt-3 text-right">--John</p>
-          </div>
-        `,
-      },
-    ]);
-
-    // Wait a tick, then add click listener
-    setTimeout(() => {
-      const btn = document.getElementById('closeInstructionsBtn');
-      if (btn) {
-        btn.addEventListener('click', () => {
-          Fancybox.close();
-        });
-      }
-    }, 0);
-  };
 
   // preparing metafield data
   const metafieldValues = extractMetafieldValues(
