@@ -158,8 +158,24 @@ export default function Plant() {
   // state, state setters, and state handlers
   const {product, journalPromise} = useLoaderData<typeof loader>();
   const [fancyboxRef] = useFancybox({
+    on: {
+      '*': (_fb, slide) => {
+        const img = slide.$el?.querySelector(
+          'img, picture img',
+        ) as HTMLImageElement | null;
+        if (img) {
+          img.loading = 'eager'; // don’t lazy the modal image
+          // @ts-ignore – new attribute in modern browsers
+          img.fetchPriority = 'high'; // promote in Chromium
+          img.decoding = 'sync'; // decode sooner
+        }
+      },
+    },
     placeFocusBack: false,
     Carousel: {
+      Lazyload: {
+        preload: 6,
+      },
       infinite: true,
       Thumbs: {
         type: 'classic',
