@@ -148,7 +148,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
   const data = useRouteLoaderData<RootLoader>('root');
 
   return (
-    <html lang="en">
+    <html lang="en" className="overflow-x-hidden">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -159,7 +159,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Links />
       </head>
       <body
-        className={`${process.env.NODE_ENV === 'development' ? 'debug-screens' : ''} bg-[var(--color-bg-0)]`}
+        className={`${process.env.NODE_ENV === 'development' ? 'debug-screens' : ''} bg-[var(--color-bg-0)] overflow-x-hidden`}
       >
         <div className="max-w-[1400px] mx-auto flex flex-col h-screen">
           {data ? (

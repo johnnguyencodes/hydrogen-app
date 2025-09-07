@@ -21,7 +21,7 @@ export function JournalEntry({
 
   return (
     <div
-      className={`journal-entry ${bgColor} xxs:-mx-5 xxs:px-5 xxs:rounded-none xl:-mx-25 xl:px-25 pb-15 pt-10 xl:rounded-md `}
+      className={`journal-entry ${bgColor} xxs:-mx-5 xxs:px-5 xxs:rounded-none xl:-mx-25 xl:px-25 pb-15 pt-10 xl:rounded-md`}
       key={entry.date}
     >
       <div className="flex flex-col gap-4">
