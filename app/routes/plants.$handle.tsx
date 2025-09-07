@@ -174,7 +174,7 @@ export default function Plant() {
     placeFocusBack: false,
     Carousel: {
       Lazyload: {
-        preload: 6,
+        preload: 9,
       },
       infinite: true,
       Thumbs: {

@@ -9,7 +9,6 @@ export function JournalEntry({
   width,
   height,
   backgroundColor,
-  sizes,
 }: JournalEntryComponentProps) {
   const bgColor = `bg-[var(--color-bg-${backgroundColor})]`;
 

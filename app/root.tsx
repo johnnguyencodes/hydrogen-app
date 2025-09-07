@@ -155,7 +155,7 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <link
           rel="preconnect"
           href="https://cdn.shopify.com"
-          crossorigin
+          crossOrigin="true"
         ></link>
         <link rel="dns-prefetch" href="https://cdn.shopify.com"></link>
         <link rel="stylesheet" href={tailwindCss}></link>
