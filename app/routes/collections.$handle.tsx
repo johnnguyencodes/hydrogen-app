@@ -38,7 +38,7 @@ async function loadCriticalData({
   const {handle} = params;
   const {storefront} = context;
   const paginationVariables = getPaginationVariables(request, {
-    pageBy: 8,
+    pageBy: 28,
   });
 
   if (!handle) {
@@ -76,18 +76,22 @@ export default function Collection() {
   const {collection} = useLoaderData<typeof loader>();
 
   return (
-    <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
+    <div className="collection xxs:mx-5 2xl:mx-0 mt-4">
+      <h1 className="text-5xl font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-green)]">
+        {collection.title}
+      </h1>
+      <div className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)] max-w-prose">
+        <p>{collection.description}</p>
+      </div>
       <PaginatedResourceSection
         connection={collection.products}
-        resourcesClassName="products-grid"
+        resourcesClassName="plant-collection grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-10"
       >
         {({node: product, index}) => (
-          <ProductItem
+          <PlantProductItem
             key={product.id}
             product={product}
-            loading={index < 8 ? 'eager' : undefined}
+            loading={index < 8 ? 'eager' : 'lazy'}
           />
         )}
       </PaginatedResourceSection>
@@ -103,35 +107,38 @@ export default function Collection() {
   );
 }
 
-function ProductItem({
+function PlantProductItem({
   product,
   loading,
 }: {
   product: ProductItemFragment;
   loading?: 'eager' | 'lazy';
 }) {
-  const variantUrl = useVariantUrl(product.handle);
+  const productUrl = `/plants/${product.handle}`;
   return (
-    <Link
-      className="product-item"
-      key={product.id}
-      prefetch="intent"
-      to={variantUrl}
-    >
-      {product.featuredImage && (
-        <Image
-          alt={product.featuredImage.altText || product.title}
-          aspectRatio="1/1"
-          data={product.featuredImage}
-          loading={loading}
-          sizes="(min-width: 45em) 400px, 100vw"
-        />
-      )}
-      <h4>{product.title}</h4>
-      <small>
-        <Money data={product.priceRange.minVariantPrice} />
-      </small>
-    </Link>
+    <div className="rounded-md bg-[var(--color-bg-dim)]">
+      <Link
+        className="product-item"
+        key={product.id}
+        prefetch="intent"
+        to={productUrl}
+      >
+        <div className="p-5">
+          {product.featuredImage && (
+            <Image
+              alt={product.featuredImage.altText || product.title}
+              aspectRatio="1/1"
+              data={product.featuredImage}
+              loading={loading}
+              sizes="(min-width: 45em) 400px, 100vw"
+            />
+          )}
+          <h4 className="text-md text-[var(--color-fg-green)]">
+            {product.title}
+          </h4>
+        </div>
+      </Link>
+    </div>
   );
 }
 
