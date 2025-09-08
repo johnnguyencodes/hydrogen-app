@@ -101,21 +101,26 @@ function RecommendedProducts({
             <div className="recommended-products-grid">
               {response
                 ? response.products.nodes.map((product) => (
-                    <Link
+                    <div
+                      className="rounded-md bg-[var(--color-bg-dim)]"
                       key={product.id}
-                      className="recommended-product"
-                      to={`/${product.productType}/${product.handle}`}
                     >
-                      <Image
-                        data={product.images.nodes[0]}
-                        aspectRatio="1/1"
-                        sizes="(min-width: 45em) 20vw, 50vw"
-                      />
-                      <h4>{product.title}</h4>
-                      <small>
-                        <Money data={product.priceRange.minVariantPrice} />
-                      </small>
-                    </Link>
+                      <Link
+                        className="recommended-product"
+                        to={`/${product.productType}/${product.handle}`}
+                      >
+                        <div className="p-5">
+                          <Image
+                            data={product.images.nodes[0]}
+                            aspectRatio="1/1"
+                            sizes="(min-width: 45em) 20vw, 50vw"
+                          />
+                          <h4 className="text-md text-[var(--color-fg-green)]">
+                            {product.title}
+                          </h4>
+                        </div>
+                      </Link>
+                    </div>
                   ))
                 : null}
             </div>
