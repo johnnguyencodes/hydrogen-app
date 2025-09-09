@@ -230,6 +230,11 @@ const HEADER_MENU_2 = {
       url: '/plants',
     },
     {
+      id: 'header-menu-photography',
+      title: 'Photography',
+      url: '/photography',
+    },
+    {
       id: 'header-menu-trails',
       title: 'Trails',
       url: '/trails',
