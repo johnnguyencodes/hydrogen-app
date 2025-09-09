@@ -48,7 +48,7 @@ export default defineConfig({
        * Include 'example-dep' in the array below.
        * @see https://vitejs.dev/config/dep-optimization-options
        */
-      include: ['debounce', 'classnames', 'prop-types'],
+      include: ['react-grid-gallery', 'debounce', 'classnames', 'prop-types'],
     },
   },
 });
