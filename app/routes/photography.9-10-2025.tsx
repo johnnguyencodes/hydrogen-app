@@ -40,112 +40,46 @@ export default function Photography() {
   });
   const images = [
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--000.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-05--half-frame--pentax-17--25mm--fujifilm--400--unknown--unknown--008.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--002.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-04--full-frame--nikon-f2--35mm-105mm-zoom-ais--kodak-gold--200--unknown--unknown--001.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--004.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-04--full-frame--nikon-f2--35mm-105mm-zoom-ais--kodak-gold--200--unknown--unknown--002.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--006.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-04--full-frame--nikon-f2--35mm-105mm-zoom-ais--kodak-gold--200--unknown--unknown--003.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--008.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-04--full-frame--nikon-f2--35mm-105mm-zoom-ais--kodak-gold--200--unknown--unknown--004.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--010.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-04--full-frame--nikon-f2--35mm-105mm-zoom-ais--kodak-gold--200--unknown--unknown--005.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--012.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-04--full-frame--nikon-f2--35mm-105mm-zoom-ais--kodak-gold--200--unknown--unknown--006.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--014.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-05--half-frame--pentax-17--25mm--fujifilm--400--unknown--unknown--001.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--016.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-05--half-frame--pentax-17--25mm--fujifilm--400--unknown--unknown--002.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--018.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-05--half-frame--pentax-17--25mm--fujifilm--400--unknown--unknown--003.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--020.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-05--half-frame--pentax-17--25mm--fujifilm--400--unknown--unknown--004.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--022.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-05--half-frame--pentax-17--25mm--fujifilm--400--unknown--unknown--005.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--024.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-05--half-frame--pentax-17--25mm--fujifilm--400--unknown--unknown--006.jpg',
     },
     {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--026.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--028.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--030.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--032.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--034.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--036.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--038.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--040.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--042.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--044.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--046.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--048.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--050.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--052.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--054.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--056.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--058.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--060.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--062.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--064.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--066.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--068.jpg',
-    },
-    {
-      src: 'https://cdn.shopify.com/s/files/1/0934/9293/6987/files/photography--pentax-17--half-frame--2025-09-10--25mm--fujifilm--400--unknown--unknown--070.jpg',
+      src: 'https://files.johnnguyen.codes/cdn/shop/files/photography--2025-10-05--half-frame--pentax-17--25mm--fujifilm--400--unknown--unknown--007.jpg',
     },
   ];
 
