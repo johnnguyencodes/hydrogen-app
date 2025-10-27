@@ -8,7 +8,7 @@ import * as styles from './styles';
 export const Gallery = <T extends ImageInterface>({
   images,
   id = 'ReactGridGallery',
-  enableImageSelection = true,
+  enableImageSelection = false,
   onSelect = () => {},
   rowHeight = 180,
   maxRows,
