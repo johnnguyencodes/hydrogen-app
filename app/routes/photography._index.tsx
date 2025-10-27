@@ -7,8 +7,9 @@ export default function Photography() {
 
       <p>Checkout my photography albums</p>
 
-      <Link to="/photography/9-10-2025">9-10-2025</Link>
-      <Link to="/photography/8-22-2025">8-22-2025</Link>
+      <Link to="/photography/08-22-2025">08-22-2025</Link>
+      <Link to="/photography/09-10-2025">09-10-2025</Link>
+      <Link to="/photography/10-25-2025">10-25-2025</Link>
     </div>
   );
 }
