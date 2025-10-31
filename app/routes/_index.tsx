@@ -47,28 +47,22 @@ const carouselItems = [
 export default function Homepage() {
   return (
     <div className="home-page xxs:mx-5 2xl:mx-0 mt-4">
-      <HeroCarousel2 items={carouselItems} />
+      <HeroCarousel2
+        items={carouselItems}
+        autoPlay={true}
+        autoPlayInterval={15000}
+      />
       <header className="hero rounded-md text-base lg:top-4">
-        <h1 className="hero-title text-balance text-5xl font-medium text-[var(--color-fg-green)] mb-5">
-          Hey there, John here!
+        <h1 className="hero-title text-pretty text-5xl font-medium text-[var(--color-fg-green)] max-w-[35ch] mb-5">
+          Web developer, plant dad, and an <u>obsessed</u> beginner
+          photographer.
         </h1>
-        <h2 className="hero-paragraph text-3xl font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-text)]">
-          I am a web developer, and welcome to my digital corner.
-        </h2>
+        <div className="prose max-w-prose prose-p:text-small">
+          <p className="hero-paragraph font-medium leading-tight max-w-prose text-pretty text-[var(--color-fg-text)]">
+            My name is John and welcome to my corner of the internet.
+          </p>
+        </div>
       </header>
-      <div className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)] max-w-prose">
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel
-          varius enim. Maecenas vel lacus ut elit aliquam egestas eu ut metus.
-          Vivamus luctus sodales tempus. Nullam malesuada nunc a lectus aliquam
-          varius. Nam turpis purus, mattis vitae cursus sed, viverra quis magna.
-          Sed vel egestas mi, et bibendum neque. Nullam consequat, tortor nec
-          hendrerit bibendum, quam ex blandit tellus, a aliquam dolor orci a
-          erat. Ut vel vestibulum urna. Etiam euismod nulla dui, vitae efficitur
-          ligula posuere sit amet. Donec sed quam nec dui blandit hendrerit in
-          vel erat.
-        </p>
-      </div>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import type React from 'react';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {cn} from '~/lib/utils';
 
 interface CarouselProps {
@@ -10,8 +10,8 @@ interface CarouselProps {
 
 export default function HeroCarousel({
   items,
-  autoPlay = false,
-  autoPlayInterval = 3000,
+  autoPlay,
+  autoPlayInterval,
 }: CarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -19,17 +19,15 @@ export default function HeroCarousel({
     setCurrentIndex(index);
   };
 
-  const goToPrevious = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? items.length - 1 : prevIndex - 1,
-    );
-  };
+  useEffect(() => {
+    if (!autoPlay) return; // Only run if autoplay is enabled
 
-  const goToNext = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === items.length - 1 ? 0 : prevIndex + 1,
-    );
-  };
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % items.length);
+    }, autoPlayInterval);
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [autoPlay, autoPlayInterval, items.length]);
 
   return (
     <div className="relative w-full">
