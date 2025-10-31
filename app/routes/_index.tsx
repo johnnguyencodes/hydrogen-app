@@ -1,183 +1,74 @@
-import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import {Await, useLoaderData, Link, type MetaFunction} from '@remix-run/react';
-import {Suspense} from 'react';
-import {Image, Money} from '@shopify/hydrogen';
-import type {
-  FeaturedCollectionFragment,
-  RecommendedProductsQuery,
-} from 'storefrontapi.generated';
+import {type MetaFunction} from '@remix-run/react';
+import HeroCarousel2 from '../components/HeroCarousel';
 
 export const meta: MetaFunction = () => {
   return [{title: 'Hydrogen | Home'}];
 };
 
-export async function loader(args: LoaderFunctionArgs) {
-  // Start fetching non-critical data without blocking time to first byte
-  const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
-  const criticalData = await loadCriticalData(args);
-
-  return {...deferredData, ...criticalData};
-}
-
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
-async function loadCriticalData({context}: LoaderFunctionArgs) {
-  const [{collections}] = await Promise.all([
-    context.storefront.query(FEATURED_COLLECTION_QUERY),
-    // Add other queries here, so that they are loaded in parallel
-  ]);
-
-  return {
-    featuredCollection: collections.nodes[0],
-  };
-}
-
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
-function loadDeferredData({context}: LoaderFunctionArgs) {
-  const recommendedProducts = context.storefront
-    .query(RECOMMENDED_PRODUCTS_QUERY)
-    .catch((error) => {
-      // Log query errors, but don't throw them so the page can still render
-      console.error(error);
-      return null;
-    });
-
-  return {
-    recommendedProducts,
-  };
-}
+const carouselItems = [
+  <div
+    key="1"
+    className="flex h-96 items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white"
+  >
+    <div className="text-center">
+      <h2 className="text-4xl font-bold mb-2">Slide 1</h2>
+      <p className="text-lg">Welcome to the carousel</p>
+    </div>
+  </div>,
+  <div
+    key="2"
+    className="flex h-96 items-center justify-center bg-gradient-to-br from-green-500 to-teal-600 text-white"
+  >
+    <div className="text-center">
+      <h2 className="text-4xl font-bold mb-2">Slide 2</h2>
+      <p className="text-lg">Navigate with arrows or dots</p>
+    </div>
+  </div>,
+  <div
+    key="3"
+    className="flex h-96 items-center justify-center bg-gradient-to-br from-orange-500 to-red-600 text-white"
+  >
+    <div className="text-center">
+      <h2 className="text-4xl font-bold mb-2">Slide 3</h2>
+      <p className="text-lg">Smooth transitions included</p>
+    </div>
+  </div>,
+  <div
+    key="4"
+    className="flex h-96 items-center justify-center bg-gradient-to-br from-pink-500 to-rose-600 text-white"
+  >
+    <div className="text-center">
+      <h2 className="text-4xl font-bold mb-2">Slide 4</h2>
+      <p className="text-lg">Click any dot to jump to a slide</p>
+    </div>
+  </div>,
+];
 
 export default function Homepage() {
-  const data = useLoaderData<typeof loader>();
   return (
-    <div className="home">
-      <FeaturedCollection collection={data.featuredCollection} />
-      <RecommendedProducts products={data.recommendedProducts} />
+    <div className="home-page xxs:mx-5 2xl:mx-0 mt-4">
+      <HeroCarousel2 items={carouselItems} />
+      <header className="hero rounded-md text-base lg:top-4">
+        <h1 className="hero-title text-balance text-5xl font-medium text-[var(--color-fg-green)] mb-5">
+          Hey there, John here!
+        </h1>
+        <h2 className="hero-paragraph text-3xl font-medium leading-tight max-w-[30ch] text-balance text-[var(--color-fg-text)]">
+          I am a web developer, and welcome to my digital corner.
+        </h2>
+      </header>
+      <div className="prose prose-p:text-[var(--color-fg-text)] prose-p:text-sm text-base prose-strong:text-[var(--color-fg-green)] max-w-prose">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vel
+          varius enim. Maecenas vel lacus ut elit aliquam egestas eu ut metus.
+          Vivamus luctus sodales tempus. Nullam malesuada nunc a lectus aliquam
+          varius. Nam turpis purus, mattis vitae cursus sed, viverra quis magna.
+          Sed vel egestas mi, et bibendum neque. Nullam consequat, tortor nec
+          hendrerit bibendum, quam ex blandit tellus, a aliquam dolor orci a
+          erat. Ut vel vestibulum urna. Etiam euismod nulla dui, vitae efficitur
+          ligula posuere sit amet. Donec sed quam nec dui blandit hendrerit in
+          vel erat.
+        </p>
+      </div>
     </div>
   );
 }
-
-function FeaturedCollection({
-  collection,
-}: {
-  collection: FeaturedCollectionFragment;
-}) {
-  if (!collection) return null;
-  const image = collection?.image;
-  return (
-    <Link
-      className="featured-collection"
-      to={`/collections/${collection.handle}`}
-    >
-      {image && (
-        <div className="featured-collection-image">
-          <Image data={image} sizes="100vw" />
-        </div>
-      )}
-      <h1>{collection.title}</h1>
-    </Link>
-  );
-}
-
-function RecommendedProducts({
-  products,
-}: {
-  products: Promise<RecommendedProductsQuery | null>;
-}) {
-  return (
-    <div className="recommended-products">
-      <h2>Recommended Products</h2>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Await resolve={products}>
-          {(response) => (
-            <div className="recommended-products-grid">
-              {response
-                ? response.products.nodes.map((product) => (
-                    <Link
-                      key={product.id}
-                      className="recommended-product"
-                      to={`/${product.productType}/${product.handle}`}
-                    >
-                      <Image
-                        data={product.images.nodes[0]}
-                        aspectRatio="1/1"
-                        sizes="(min-width: 45em) 20vw, 50vw"
-                      />
-                      <h4>{product.title}</h4>
-                      <small>
-                        <Money data={product.priceRange.minVariantPrice} />
-                      </small>
-                    </Link>
-                  ))
-                : null}
-            </div>
-          )}
-        </Await>
-      </Suspense>
-      <br />
-    </div>
-  );
-}
-
-const FEATURED_COLLECTION_QUERY = `#graphql
-  fragment FeaturedCollection on Collection {
-    id
-    title
-    image {
-      id
-      url
-      altText
-      width
-      height
-    }
-    handle
-  }
-  query FeaturedCollection($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    collections(first: 1, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...FeaturedCollection
-      }
-    }
-  }
-` as const;
-
-const RECOMMENDED_PRODUCTS_QUERY = `#graphql
-  fragment RecommendedProduct on Product {
-    id
-    title
-    handle
-    priceRange {
-      minVariantPrice {
-        amount
-        currencyCode
-      }
-    }
-    images(first: 1) {
-      nodes {
-        id
-        url
-        altText
-        width
-        height
-      }
-    }
-    productType
-  }
-  query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
-    @inContext(country: $country, language: $language) {
-    products(first: 250, sortKey: UPDATED_AT, reverse: true) {
-      nodes {
-        ...RecommendedProduct
-      }
-    }
-  }
-` as const;
