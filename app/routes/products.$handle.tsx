@@ -1,9 +1,11 @@
-// Import type-safe loader context from Hydrogen
-import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-
 // useLoaderData gives us the data returned from the loader
 // MetaFunction helps generate SEO-friendly metadata
-import { useLoaderData, type MetaFunction } from 'react-router';
+// Import type-safe loader context from React Router
+import {
+  useLoaderData,
+  type MetaFunction,
+  type LoaderFunctionArgs,
+} from 'react-router';
 
 // Hydrogen helpers for working with product variants and analytics
 import {

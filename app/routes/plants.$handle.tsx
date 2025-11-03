@@ -1,7 +1,6 @@
 // React and Remix imports
 import {useState} from 'react';
-import { useLoaderData } from 'react-router';
-import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
+import {useLoaderData, type LoaderFunctionArgs} from 'react-router';
 import {CarouselImages} from '~/components/CarouselImages';
 import {
   returnCarouselImages,

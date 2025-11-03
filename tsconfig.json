@@ -1,20 +1,19 @@
 {
   "include": [
     "./**/*.d.ts",
-    "./**/*.ts",
-    "./**/*.tsx",
-    "types"
+    "types",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "app/**/*.d.ts",
+    "*.ts",
+    "*.tsx",
+    "*.d.ts",
+    ".graphqlrc.ts",
+    ".react-router/types/**/*"
   ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ],
+  "exclude": ["node_modules", "dist"],
   "compilerOptions": {
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ES2022"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
@@ -31,12 +30,13 @@
       "node",
       "@shopify/oxygen-workers-types",
       "@react-router/node",
-      "vite/client"
+      "vite/client",
+      "react-router",
+      "@shopify/hydrogen/react-router-types"
     ],
+    "rootDirs": [".", "./.react-router/types"],
     "paths": {
-      "~/*": [
-        "app/*"
-      ]
+      "~/*": ["app/*"]
     },
     "noEmit": true
   }

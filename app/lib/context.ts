@@ -9,14 +9,25 @@ import {AppSession} from '~/lib/session';
 // A reusable GraphQL fragment used to fetch cart data
 import {CART_QUERY_FRAGMENT} from '~/lib/fragments';
 
+// React Router v7
+const additionalContext = {
+  // Additional context for custom properties, CMS clients, 3P SDKs, etc.
+} as const;
+
+type AdditionalContextType = typeof additionalContext;
+
+declare global {
+  interface HydrogenAdditionalContext extends AdditionalContextType {}
+}
+
 /**
  * The context implementation is separate from server.ts
- * so that type can be extracted for AppLoadContext
+ * so that type can be extracted for HydrogenRouterContext
  *
  * This function is called in server.ts and returns an object that becomes
  * available in every Remix route's loader/action as `context`
  */
-export async function createAppLoadContext(
+export async function createHydrogenRouterContext(
   request: Request, // Incoming HTTP request (from server.ts)
   env: Env, // Environment variables (Shopify tokens, etc)
   executionContext: ExecutionContext, // Oxygen background context
@@ -39,21 +50,24 @@ export async function createAppLoadContext(
   ]);
 
   // Core Hydrogen context setup
-  const hydrogenContext = createHydrogenContext({
-    // storefront is internally set up and returned when createHydrogenContext is invoked
-    env, // For access to storefront token, domain, etc.
-    request, // Used to read headers, cookies, method, etc.
-    cache, // Optional cache to store/persist query results
-    waitUntil, // For background tasks
-    session, // Hydrogen-compatible session manager
-    i18n: {
-      language: 'EN',
-      country: 'US',
+  const hydrogenContext = createHydrogenContext(
+    {
+      // storefront is internally set up and returned when createHydrogenContext is invoked
+      env, // For access to storefront token, domain, etc.
+      request, // Used to read headers, cookies, method, etc.
+      cache, // Optional cache to store/persist query results
+      waitUntil, // For background tasks
+      session, // Hydrogen-compatible session manager
+      i18n: {
+        language: 'EN',
+        country: 'US',
+      },
+      cart: {
+        queryFragment: CART_QUERY_FRAGMENT, // Default cart fields used when calling `cart.create()` or `cart.fetch()`
+      },
     },
-    cart: {
-      queryFragment: CART_QUERY_FRAGMENT, // Default cart fields used when calling `cart.create()` or `cart.fetch()`
-    },
-  });
+    additionalContext,
+  );
 
   return {
     ...hydrogenContext,

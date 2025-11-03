@@ -1,5 +1,8 @@
-import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
-import { useLoaderData, type MetaFunction } from 'react-router';
+import {
+  useLoaderData,
+  type MetaFunction,
+  type LoaderFunctionArgs,
+} from 'react-router';
 
 export const meta: MetaFunction<typeof loader> = ({data}) => {
   return [{title: `Hydrogen | ${data?.page.title ?? ''}`}];

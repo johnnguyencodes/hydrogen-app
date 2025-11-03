@@ -1,33 +1,17 @@
 import {defineConfig} from 'vite';
 import {hydrogen} from '@shopify/hydrogen/vite';
 import {oxygen} from '@shopify/mini-oxygen/vite';
-import { reactRouter } from '@react-router/dev/vite';
+import {reactRouter} from '@react-router/dev/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import tailwindcss from '@tailwindcss/vite';
 import flowbiteReact from 'flowbite-react/plugin/vite';
-
-declare module '@remix-run/server-runtime' {
-  interface Future {
-    v3_singleFetch: true;
-  }
-}
 
 export default defineConfig({
   plugins: [
     tailwindcss(),
     hydrogen(),
     oxygen(),
-    reactRouter({
-      presets: [hydrogen.v3preset()],
-      future: {
-        v3_fetcherPersist: true,
-        v3_relativeSplatPath: true,
-        v3_throwAbortReason: true,
-        v3_lazyRouteDiscovery: true,
-        v3_singleFetch: true,
-        v3_routeConfig: true,
-      },
-    }),
+    reactRouter(),
     tsconfigPaths(),
     flowbiteReact(),
   ],

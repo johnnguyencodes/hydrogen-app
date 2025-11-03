@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import { NavLink } from 'react-router';
+import {NavLink} from 'react-router';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {Button} from './ui/button';
@@ -209,7 +209,7 @@ const HEADER_MENU_1 = {
       url: '/projects',
     },
     {
-      id: 'header-menu-env',
+      id: 'header-menu-gadgets',
       title: 'Gadgets',
       url: '/gadgets',
     },

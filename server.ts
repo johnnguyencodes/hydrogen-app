@@ -16,7 +16,9 @@ import {storefrontRedirect} from '@shopify/hydrogen';
 // JS-standard Fetch, Streams, URL, Cache-Control, and Web Crypto APIs when the hydrogen store is deployed to Oxygen.
 // Essentially, It's an HTTP server function that accepts an HTTP request, it runs your JavaScript code and it spits out an HTTP
 // response.  It allows the ability to run React code on the server without having to worry about how it's going to scale.
-import {createRequestHandler} from '@shopify/remix-oxygen';
+import {createRequestHandler} from '@shopify/hydrogen/oxygen';
+import {createHydrogenRouterContext} from '~/lib/context';
+
 /**
  * The request object could look like this if the user visits https://johnnguyen.codes/products/plant-1
  * Request {
@@ -38,9 +40,6 @@ import {createRequestHandler} from '@shopify/remix-oxygen';
   into the Remix route loaders or actions to provide access to cookies, headers, form data, URL parameters on the server, just like in the browser.
  */
 
-// You define this file — it sets up your app context (Shopify client, sessions, etc.)
-import {createAppLoadContext} from '~/lib/context';
-
 /**
  * Export a fetch handler in module format.
  * Shopify Oxygen looks for this `fetch()` method when serving your app.
@@ -53,8 +52,7 @@ export default {
     executionContext: ExecutionContext, // Worker execution context (background tasks)
   ): Promise<Response> {
     try {
-      // 👇 Sets up the app’s context: Shopify API client, session, provides custom logic or helpers to all Remix loaders, etc.
-      const appLoadContext = await createAppLoadContext(
+      const hydrogenContext = await createHydrogenRouterContext(
         request,
         env,
         executionContext,
@@ -71,20 +69,20 @@ export default {
        */
 
       const handleRequest = createRequestHandler({
-        build: remixBuild,
+        build: await import('virtual:react-router/server-build'),
         mode: process.env.NODE_ENV,
-        getLoadContext: () => appLoadContext, // makes `context` available in Remix loaders
+        getLoadContext: () => hydrogenContext, // makes `context` available in Hydrogen loaders
       });
 
-      // 👇 Call Remix to handle the request (routes, loaders, rendering, etc.)
-      // This actually runs the Remix app and returns a response
+      // 👇 Call Hydrogen Router to handle the request (routes, loaders, rendering, etc.)
+      // This actually runs the Hydrogen Router app and returns a response
       const response = await handleRequest(request);
 
       // 👇 If session data has changed (e.g., user login, cart update), commit the cookie
-      if (appLoadContext.session.isPending) {
+      if (hydrogenContext.session.isPending) {
         response.headers.set(
           'Set-Cookie',
-          await appLoadContext.session.commit(),
+          await hydrogenContext.session.commit(),
         );
       }
 
