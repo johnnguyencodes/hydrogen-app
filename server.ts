@@ -4,7 +4,7 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 // eslint-disable-next-line import/no-unresolved
-import * as remixBuild from 'virtual:remix/server-build';
+import * as remixBuild from 'virtual:react-router/server-build';
 
 // Handles redirects (e.g., /products -> /collections/all) using Shopify settings
 // Lets you use 301 URL redirects managed from the Shopify admin panel.

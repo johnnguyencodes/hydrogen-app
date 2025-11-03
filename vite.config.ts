@@ -1,7 +1,7 @@
 import {defineConfig} from 'vite';
 import {hydrogen} from '@shopify/hydrogen/vite';
 import {oxygen} from '@shopify/mini-oxygen/vite';
-import {vitePlugin as remix} from '@remix-run/dev';
+import { reactRouter } from '@react-router/dev/vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import tailwindcss from '@tailwindcss/vite';
 import flowbiteReact from 'flowbite-react/plugin/vite';
@@ -17,7 +17,7 @@ export default defineConfig({
     tailwindcss(),
     hydrogen(),
     oxygen(),
-    remix({
+    reactRouter({
       presets: [hydrogen.v3preset()],
       future: {
         v3_fetcherPersist: true,

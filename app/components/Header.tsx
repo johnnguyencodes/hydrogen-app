@@ -1,5 +1,5 @@
 import {useEffect, useState} from 'react';
-import {NavLink} from '@remix-run/react';
+import { NavLink } from 'react-router';
 import type {HeaderQuery, CartApiQueryFragment} from 'storefrontapi.generated';
 import {useAside} from '~/components/Aside';
 import {Button} from './ui/button';

@@ -1,8 +1,20 @@
 {
-  "include": ["./**/*.d.ts", "./**/*.ts", "./**/*.tsx", "types"],
-  "exclude": ["node_modules", "dist"],
+  "include": [
+    "./**/*.d.ts",
+    "./**/*.ts",
+    "./**/*.tsx",
+    "types"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
   "compilerOptions": {
-    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ES2022"
+    ],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
@@ -18,11 +30,13 @@
     "types": [
       "node",
       "@shopify/oxygen-workers-types",
-      "@remix-run/node",
+      "@react-router/node",
       "vite/client"
     ],
     "paths": {
-      "~/*": ["app/*"]
+      "~/*": [
+        "app/*"
+      ]
     },
     "noEmit": true
   }

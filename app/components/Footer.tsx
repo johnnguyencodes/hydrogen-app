@@ -1,5 +1,5 @@
 import {Suspense} from 'react';
-import {Await} from '@remix-run/react';
+import { Await } from 'react-router';
 import type {FooterQuery, HeaderQuery} from 'storefrontapi.generated';
 import {ExternalLink} from 'lucide-react';
 

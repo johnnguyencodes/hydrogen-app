@@ -3,7 +3,7 @@ import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 
 // useLoaderData gives us the data returned from the loader
 // MetaFunction helps generate SEO-friendly metadata
-import {useLoaderData, type MetaFunction} from '@remix-run/react';
+import { useLoaderData, type MetaFunction } from 'react-router';
 
 // Hydrogen helpers for working with product variants and analytics
 import {
