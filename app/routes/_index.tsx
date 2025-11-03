@@ -53,9 +53,14 @@ export default function Homepage() {
         autoPlayInterval={15000}
       />
       <header className="hero rounded-md text-base lg:top-4">
-        <h1 className="hero-title text-pretty text-5xl font-medium text-[var(--color-fg-green)] max-w-[35ch] mb-5">
-          Web developer, plant dad, and an <u>obsessed</u> beginner
-          photographer.
+        <h1 className="hero-title text-pretty text-5xl font-medium text-[var(--color-fg-green)] max-w-[30ch] mb-5">
+          Web developer, plant dad, and an{' '}
+          <span className="bg-[var(--color-bg-4)]">
+            <i>
+              <u>obsessed</u>
+            </i>{' '}
+          </span>
+          beginner photographer.
         </h1>
         <div className="prose max-w-prose prose-p:text-small">
           <p className="hero-paragraph font-medium leading-tight max-w-prose text-pretty text-[var(--color-fg-text)]">
@@ -63,6 +68,30 @@ export default function Homepage() {
           </p>
         </div>
       </header>
+      <div>
+        <h2>Updates</h2>
+        <section>
+          <h3>Plants</h3>
+        </section>
+        <section>
+          <h3>Photography</h3>
+        </section>
+        <section>
+          <h3>Trails</h3>
+        </section>
+        <section>
+          <h3>Blog</h3>
+        </section>
+        <section>
+          <h3>Notes</h3>
+        </section>
+        <section>
+          <h3>Gadgets</h3>
+        </section>
+        <section>
+          <h3>Projects</h3>
+        </section>
+      </div>
     </div>
   );
 }
