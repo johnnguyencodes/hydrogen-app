@@ -1,5 +1,4 @@
 import {useNonce, getShopAnalytics, Analytics} from '@shopify/hydrogen';
-import {type LoaderFunctionArgs} from '@shopify/remix-oxygen';
 import {
   Links,
   Meta,
@@ -10,6 +9,7 @@ import {
   ScrollRestoration,
   isRouteErrorResponse,
   type ShouldRevalidateFunction,
+  type LoaderFunctionArgs,
 } from 'react-router';
 import favicon from '~/assets/favicon.svg';
 import resetStyles from '~/styles/reset.css?url';

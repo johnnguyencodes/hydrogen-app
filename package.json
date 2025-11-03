@@ -5,12 +5,12 @@
   "version": "2025.7.0",
   "type": "module",
   "scripts": {
-    "build": "shopify hydrogen build --codegen",
-    "dev": "shopify hydrogen dev --codegen",
+    "build": "react-router typegen  --watch && shopify hydrogen build --codegen",
+    "dev": "react-router typegen  --watch && shopify hydrogen dev --codegen",
     "preview": "shopify hydrogen preview --build",
     "lint": "eslint --no-error-on-unmatched-pattern .",
     "typecheck": "react-router typegen && tsc --noEmit",
-    "codegen": "shopify hydrogen codegen && react-router typegen",
+    "codegen": "react-router typegen  --watch && shopify hydrogen codegen && react-router typegen",
     "test": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -86,7 +86,5 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "browserslist": [
-    "defaults"
-  ]
+  "browserslist": ["defaults"]
 }

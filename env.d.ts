@@ -32,7 +32,7 @@ declare global {
   }
 }
 
-declare module '@shopify/remix-oxygen' {
+declare module 'react-router' {
   interface AppLoadContext
     extends Awaited<ReturnType<typeof createAppLoadContext>> {
     // to change context type, change the return of createAppLoadContext() instead

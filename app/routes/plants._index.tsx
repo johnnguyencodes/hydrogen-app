@@ -5,6 +5,7 @@ import {
   type MetaFunction,
   type LoaderFunctionArgs,
 } from 'react-router';
+import type {Route} from './+types/plants._index';
 import {Suspense} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
 import type {

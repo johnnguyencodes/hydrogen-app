@@ -1,6 +1,7 @@
 // React and Remix imports
 import {useState} from 'react';
 import {useLoaderData, type LoaderFunctionArgs} from 'react-router';
+import type {Route} from './+types/plants.$handle';
 import {CarouselImages} from '~/components/CarouselImages';
 import {
   returnCarouselImages,

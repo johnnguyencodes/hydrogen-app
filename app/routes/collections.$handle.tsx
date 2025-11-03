@@ -15,10 +15,12 @@ import {
 import type {ProductItemFragment} from 'storefrontapi.generated';
 import {useVariantUrl} from '~/lib/variants';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
+import type {Route} from './+types/collections.$handle'; // ← Auto-generated!
 
-export const meta: MetaFunction<typeof loader> = ({data}) => {
+export const meta: Route.MetaFunction = ({data}) => {
+  // data is fully typed based on loader return
   if (!data?.collection) return [];
-  return getSeoMeta(data.collection);
+  return [{title: `Collection: ${data?.collection.title ?? ''}`}];
 };
 
 export async function loader(args: LoaderFunctionArgs) {

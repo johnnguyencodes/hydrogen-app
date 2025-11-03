@@ -1,11 +1,13 @@
 // useLoaderData gives us the data returned from the loader
 // MetaFunction helps generate SEO-friendly metadata
-// Import type-safe loader context from React Router
+// Import type-safe loader context from Hydrogen
 import {
   useLoaderData,
   type MetaFunction,
   type LoaderFunctionArgs,
 } from 'react-router';
+
+import type {Route} from './+types/products.$handle';
 
 // Hydrogen helpers for working with product variants and analytics
 import {

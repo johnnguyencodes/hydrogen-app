@@ -1,5 +1,6 @@
 import type {LoaderFunctionArgs} from 'react-router';
 import {parseGid} from '@shopify/hydrogen';
+import type {Route} from './+types/[robots.txt]';
 
 export async function loader({request, context}: LoaderFunctionArgs) {
   const url = new URL(request.url);

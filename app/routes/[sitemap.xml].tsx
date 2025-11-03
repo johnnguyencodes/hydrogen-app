@@ -1,5 +1,6 @@
 import type {LoaderFunctionArgs} from 'react-router';
 import {getSitemapIndex} from '@shopify/hydrogen';
+import type {Route} from './+types/[sitemap.xml]';
 
 export async function loader({
   request,

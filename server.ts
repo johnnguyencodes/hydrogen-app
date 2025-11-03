@@ -69,6 +69,7 @@ export default {
        */
 
       const handleRequest = createRequestHandler({
+        // eslint-disable-next-line import/no-unresolved
         build: await import('virtual:react-router/server-build'),
         mode: process.env.NODE_ENV,
         getLoadContext: () => hydrogenContext, // makes `context` available in Hydrogen loaders
@@ -97,7 +98,7 @@ export default {
         return storefrontRedirect({
           request,
           response,
-          storefront: appLoadContext.storefront,
+          storefront: hydrogenContext.storefront,
         });
       }
 

@@ -1,5 +1,6 @@
 import {type MetaFunction} from 'react-router';
 import HeroCarousel2 from '../components/HeroCarousel';
+import type {Route} from './+types/_index';
 
 export const meta: MetaFunction = () => {
   return [{title: 'Hydrogen | Home'}];

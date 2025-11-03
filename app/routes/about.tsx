@@ -4,6 +4,7 @@ import {Button, ButtonGroup} from 'flowbite-react';
 import MasonryGallery from '~/components/MasonryGallery';
 import useFancybox from '~/lib/useFancybox';
 import '@fancyapps/ui/dist/fancybox/fancybox.css';
+import type {Route} from './+types/about';
 
 export default function About() {
   const [isVisible, setIsVisible] = useState(true);
