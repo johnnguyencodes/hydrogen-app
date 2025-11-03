@@ -28,6 +28,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.6.0",
     "flowbite-react": "^0.12.5",
     "graphql": "^16.6.0",
     "graphql-tag": "^2.12.6",
@@ -88,5 +89,7 @@
   "engines": {
     "node": ">=18.0.0"
   },
-  "browserslist": ["defaults"]
+  "browserslist": [
+    "defaults"
+  ]
 }
